@@ -1,0 +1,76 @@
+buildscript {
+	ext {
+		queryDslVersion = "5.0.0"
+	}
+}
+
+plugins {
+	id 'org.springframework.boot' version '2.6.2'
+	id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+	id 'java'
+	id 'war'
+}
+
+group = 'com.lab.smartmobility'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '11'
+
+configurations {
+	compileOnly {
+		extendsFrom annotationProcessor
+	}
+}
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+	implementation 'org.springframework.boot:spring-boot-starter-security'
+	implementation 'org.springframework.boot:spring-boot-starter-mail'
+	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation 'io.springfox:springfox-boot-starter:3.0.0'
+	implementation 'io.springfox:springfox-swagger-ui:3.0.0'
+	implementation 'com.google.code.gson:gson:2.9.0'
+	implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity5'
+	implementation group: 'org.springframework', name: 'spring-context-support', version: '5.3.18'
+	implementation 'commons-io:commons-io:2.11.0'
+	implementation 'org.springframework.boot:spring-boot-starter-validation'
+	implementation 'com.google.code.findbugs:jsr305:3.0.2'
+	implementation 'org.springframework.boot:spring-boot-starter-websocket'
+	implementation 'org.webjars:stomp-websocket:2.3.4'
+	implementation 'org.modelmapper:modelmapper:2.4.2'
+	compileOnly 'org.projectlombok:lombok'
+	compileOnly group: 'jakarta.websocket', name: 'jakarta.websocket-api', version: '2.0.0'
+	runtimeOnly 'org.mariadb.jdbc:mariadb-java-client'
+	annotationProcessor 'org.projectlombok:lombok'
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testImplementation 'org.springframework.security:spring-security-test'
+
+	compileOnly group: 'io.jsonwebtoken', name: 'jjwt-api', version: '0.11.2'
+	runtimeOnly group: 'io.jsonwebtoken', name: 'jjwt-impl', version: '0.11.2'
+	runtimeOnly group: 'io.jsonwebtoken', name: 'jjwt-jackson', version: '0.11.2'
+
+	// QueryDSL
+	implementation "com.querydsl:querydsl-jpa:${queryDslVersion}"
+	annotationProcessor(
+			"javax.persistence:javax.persistence-api",
+			"javax.annotation:javax.annotation-api",
+			"com.querydsl:querydsl-apt:${queryDslVersion}:jpa")
+}
+
+// QueryDSL
+sourceSets {
+	main {
+		java {
+			srcDirs = ["$projectDir/src/main/java/", "$projectDir/build/generated/annotationProcessor/java/main"]
+		}
+	}
+}
+
+test {
+	useJUnitPlatform()
+}
+
