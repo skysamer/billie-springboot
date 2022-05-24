@@ -3,21 +3,21 @@ package com.lab.smartmobility.billie.service;
 import com.lab.smartmobility.billie.dto.ApplyRentalVehicleDTO;
 import com.lab.smartmobility.billie.dto.VehicleDTO;
 import com.lab.smartmobility.billie.dto.VehicleReturnDTO;
-import com.lab.smartmobility.billie.dto.VehicleReturnHistoryInfo;
-import com.lab.smartmobility.billie.entity.ImageVehicle;
-import com.lab.smartmobility.billie.entity.Staff;
-import com.lab.smartmobility.billie.entity.Vehicle;
-import com.lab.smartmobility.billie.entity.VehicleReservation;
-import com.lab.smartmobility.billie.repository.ReturnVehicleImageRepository;
-import com.lab.smartmobility.billie.repository.StaffRepository;
-import com.lab.smartmobility.billie.repository.VehicleReservationRepository;
-import com.lab.smartmobility.billie.repository.VehicleRepository;
+import com.lab.smartmobility.billie.entity.*;
+import com.lab.smartmobility.billie.repository.*;
+import com.lab.smartmobility.billie.util.BaseDateParser;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -25,8 +25,10 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.*;
 
 @RequiredArgsConstructor
@@ -38,6 +40,8 @@ public class VehicleService {
     private final ReturnVehicleImageRepository imageRepository;
     private final StaffRepository staffRepository;
     private final ModelMapper modelMapper;
+    private final VehicleReservationRepositoryImpl reservationRepositoryImpl;
+    private final BaseDateParser baseDateParser;
     private final Log log = LogFactory.getLog(getClass());
 
     /*보유 차량 및 대여 가능 여부 조회*/
@@ -137,9 +141,16 @@ public class VehicleService {
 
             if(LocalDateTime.now().isAfter(rentedAt)){
                 return 400;
-            }else if(vehicle.getRentalStatus()==1){
-                return 500;
             }
+            List<VehicleReservation> reservationList=reservationRepository.findAllByReturnStatusCode(0);
+            for(VehicleReservation reservation : reservationList){
+                if(((reservation.getRentedAt().isBefore(rentedAt) || reservation.getRentedAt().isEqual(rentedAt)) &&
+                        (reservation.getReturnedAt().isAfter(rentedAt)))
+                        && vehicle.getVehicleNum().equals(reservation.getVehicle().getVehicleNum())){
+                    return 500;
+                }
+            }
+
             VehicleReservation applicationRentalVehicle=new VehicleReservation();
             modelMapper.map(rentalVehicleDTO, applicationRentalVehicle);
             applicationRentalVehicle.setVehicle(vehicle);
@@ -183,12 +194,18 @@ public class VehicleService {
         try{
             if(LocalDateTime.now().isAfter(rentedAt)){
                 return 400;
-            }else if(vehicle.getRentalStatus()==1 && !reservationInfo.getVehicle().getVehicleName().equals(vehicle.getVehicleName())){
-                return 500;
             }else if(!applyRentalVehicleDTO.getStaffNum().equals(reservationInfo.getStaff().getStaffNum())){
                 return 300;
             }else if(LocalDateTime.now().isAfter(reservationInfo.getRentedAt())){
                 return 303;
+            }
+            List<VehicleReservation> reservationList=reservationRepository.findAllByReturnStatusCode(0);
+            for(VehicleReservation reservation : reservationList){
+                if(((reservation.getRentedAt().isBefore(rentedAt) || reservation.getRentedAt().isEqual(rentedAt)) &&
+                        (reservation.getReturnedAt().isAfter(rentedAt)))
+                        && vehicle.getVehicleNum().equals(reservation.getVehicle().getVehicleNum())){
+                    return 500;
+                }
             }
 
             modelMapper.map(applyRentalVehicleDTO, reservationInfo);
@@ -246,7 +263,6 @@ public class VehicleService {
                         .build();
                 imageRepository.save(imageVehicle);
             }
-
             changeVehicleInfo(vehicleReturnDTO);
             updateReturnInfo(vehicleReturnDTO);
         }catch (Exception e){
@@ -268,44 +284,43 @@ public class VehicleService {
                 vehicleReturnDTO.getDateOfReturn().getMonth(), vehicleReturnDTO.getDateOfReturn().getDayOfMonth(),
                 vehicleReturnDTO.getTimeOfReturn().getHour(),
                 vehicleReturnDTO.getTimeOfReturn().getMinute(), vehicleReturnDTO.getTimeOfReturn().getSecond());
+        Duration duration = Duration.between(updatedReturnInfo.getReturnedAt(), returnedAt);
+        String totalDrivingTime=String.valueOf(duration).replace("PT", "").replace("H", "시간").replace("M", "분");
 
         modelMapper.map(vehicleReturnDTO, updatedReturnInfo);
         updatedReturnInfo.setReturnStatusCode(1);
-        updatedReturnInfo.setReturnStatusCode(1);
-        updatedReturnInfo.setReturnStatusCode(1);
+        updatedReturnInfo.setReturnedAt(returnedAt);
+        updatedReturnInfo.setTotalDrivingTime(totalDrivingTime);
         reservationRepository.save(updatedReturnInfo);
     }
 
     /*반납 이력 전체 조회*/
-    public List<VehicleReturnHistoryInfo> getReturnList(PageRequest pageRequest){
-        List<VehicleReservation> vehicleReservations=reservationRepository.findAllByReturnStatusCodeOrderByRentNumDesc(1, pageRequest);
-        List<VehicleReturnHistoryInfo> ReturnHistoryList=new ArrayList<>();
-
-        for(VehicleReservation vehicleReservation : vehicleReservations){
-            VehicleReturnHistoryInfo returnHistoryInfo=new VehicleReturnHistoryInfo();
-            returnHistoryInfo.setRender(vehicleReservation.getStaff().getName());
-            returnHistoryInfo.setVehicleName(vehicleReservation.getVehicle().getVehicleName());
-            modelMapper.map(vehicleReservation, returnHistoryInfo);
-
-            ReturnHistoryList.add(returnHistoryInfo);
+    public List<VehicleReservation> getReturnList(int disposalInfo, Long vehicleNum, String baseDate, PageRequest pageRequest){
+        Vehicle vehicle=vehicleRepository.findByVehicleNum(vehicleNum);
+        if(baseDate.equals("all")){
+            return reservationRepositoryImpl.findAll(vehicle, disposalInfo, pageRequest);
         }
-       return ReturnHistoryList;
+
+        LocalDateTime startDateTime=baseDateParser.getStartDateTime(baseDate);
+        LocalDateTime endDateTime=baseDateParser.getEndDateTime(baseDate);
+        return reservationRepositoryImpl.findAll(vehicle, startDateTime, endDateTime, disposalInfo, pageRequest);
     }
 
     /*반납 이력 전체 개수 조회*/
-    public long getReturnCount(){
-        return reservationRepository.countByReturnStatusCode(1);
+    public Long getReturnCount(int disposalInfo, Long vehicleNum, String baseDate){
+        Vehicle vehicle=vehicleRepository.findByVehicleNum(vehicleNum);
+        if(baseDate.equals("all")){
+            return reservationRepositoryImpl.countByReturnStatus(vehicle, disposalInfo);
+        }
+        LocalDateTime startDateTime=baseDateParser.getStartDateTime(baseDate);
+        LocalDateTime endDateTime=baseDateParser.getEndDateTime(baseDate);
+
+        return reservationRepositoryImpl.countByReturnStatus(vehicle, startDateTime, endDateTime, disposalInfo);
     }
 
     /*반납 이력 별 상세 조회*/
-    public VehicleReturnHistoryInfo getReturn(Long rentNum){
-        VehicleReservation vehicleReservation=reservationRepository.findByRentNumAndReturnStatusCode(rentNum, 1);
-        VehicleReturnHistoryInfo returnHistoryInfo=new VehicleReturnHistoryInfo();
-        returnHistoryInfo.setRender(vehicleReservation.getStaff().getName());
-        returnHistoryInfo.setVehicleName(vehicleReservation.getVehicle().getVehicleName());
-        modelMapper.map(vehicleReservation, returnHistoryInfo);
-
-        return returnHistoryInfo;
+    public VehicleReservation getReturn(Long rentNum){
+        return reservationRepository.findByRentNumAndReturnStatusCode(rentNum, 1);
     }
 
     /*반납 이력 별 이미지 파일 조회*/
@@ -333,6 +348,82 @@ public class VehicleService {
             }
         }
         return imageFiles;
+    }
+
+    /*반납 이력 엑셀 다운로드*/
+    public Workbook excelDownload(int disposalInfo, Long vehicleNum, String baseDate){
+        Vehicle vehicle=vehicleRepository.findByVehicleNum(vehicleNum);
+        List<VehicleReservation> reservationList;
+        if(baseDate.equals("all")){
+            reservationList = new ArrayList<>(reservationRepositoryImpl.findAll(vehicle, disposalInfo));
+        }
+
+        LocalDateTime startDateTime=baseDateParser.getStartDateTime(baseDate);
+        LocalDateTime endDateTime=baseDateParser.getEndDateTime(baseDate);
+        reservationList= new ArrayList<>(reservationRepositoryImpl.findAll(vehicle, startDateTime, endDateTime, disposalInfo));
+
+        Workbook wb = new XSSFWorkbook();
+        Sheet sheet = wb.createSheet(baseDate);
+        Row row = null;
+        Cell cell = null;
+        int rowNum = 0;
+
+        // Header
+        row = sheet.createRow(rowNum++);
+        cell = row.createCell(0);
+        cell.setCellValue("차량");
+        cell = row.createCell(1);
+        cell.setCellValue("대여일");
+        cell = row.createCell(2);
+        cell.setCellValue("대여시작 시간");
+        cell = row.createCell(3);
+        cell.setCellValue("반납일");
+        cell = row.createCell(4);
+        cell.setCellValue("대여종료 시간");
+        cell = row.createCell(5);
+        cell.setCellValue("총 주행 시간");
+        cell = row.createCell(6);
+        cell.setCellValue("동승자");
+        cell = row.createCell(7);
+        cell.setCellValue("내용(장소)");
+        cell = row.createCell(8);
+        cell.setCellValue("주행 후 계기판");
+        cell = row.createCell(9);
+        cell.setCellValue("주차위치");
+
+
+        // Body
+        for (VehicleReservation reservation : reservationList) {
+            row = sheet.createRow(rowNum++);
+            LocalDate startDate=LocalDate.of(reservation.getRentedAt().getYear(), reservation.getRentedAt().getMonth(),
+                    reservation.getRentedAt().getDayOfMonth());
+            LocalTime startTime=LocalTime.of(reservation.getRentedAt().getHour(), reservation.getRentedAt().getMinute(), 0);
+            LocalDate endDate=LocalDate.of(reservation.getReturnedAt().getYear(), reservation.getReturnedAt().getMonth(),
+                    reservation.getReturnedAt().getDayOfMonth());
+            LocalTime endTime=LocalTime.of(reservation.getReturnedAt().getHour(), reservation.getReturnedAt().getMinute(), 0);
+
+            cell = row.createCell(0);
+            cell.setCellValue(reservation.getVehicle().getVehicleName());
+            cell = row.createCell(1);
+            cell.setCellValue(String.valueOf(startDate));
+            cell = row.createCell(2);
+            cell.setCellValue(String.valueOf(startTime));
+            cell = row.createCell(3);
+            cell.setCellValue(String.valueOf(endDate));
+            cell = row.createCell(4);
+            cell.setCellValue(String.valueOf(endTime));
+            cell = row.createCell(5);
+            cell.setCellValue(reservation.getTotalDrivingTime());
+            cell = row.createCell(6);
+            cell.setCellValue(reservation.getPassenger());
+            cell = row.createCell(7);
+            cell.setCellValue(reservation.getContent());
+            cell = row.createCell(8);
+            cell.setCellValue(reservation.getDistanceDriven());
+            cell = row.createCell(9);
+            cell.setCellValue(reservation.getParkingLoc());
+        }
+        return wb;
     }
 
     private List<String> saveImageFile(List<MultipartFile> images) {

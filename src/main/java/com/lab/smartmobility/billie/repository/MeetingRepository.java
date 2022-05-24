@@ -17,7 +17,5 @@ public interface MeetingRepository extends JpaRepository<Meeting, Long> {
 
     List<Meeting> findByDateBetween(LocalDate startDate, LocalDate endDate);
 
-    Meeting save(Meeting meeting);
-
     List<Meeting> findByDate(LocalDate date);
 }

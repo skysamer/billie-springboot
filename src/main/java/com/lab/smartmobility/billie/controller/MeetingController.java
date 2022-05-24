@@ -54,8 +54,14 @@ public class MeetingController {
 
     @PutMapping("/{meeting-num}")
     @ApiOperation(value = "개별 회의실 예약 정보 수정")
-    public Meeting modifyMeeting(@RequestBody ApplyMeetingForm applyMeetingForm, @PathVariable("meeting-num") Long meetingNum){
-        return meetingService.updateMeeting(meetingNum, applyMeetingForm);
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "수정 실패 or 수정 성공")
+    })
+    public HttpMessage modifyMeeting(@RequestBody ApplyMeetingForm applyMeetingForm, @PathVariable("meeting-num") Long meetingNum){
+        if(meetingService.updateMeeting(meetingNum, applyMeetingForm)==9999){
+            return new HttpMessage("fail", "수정 실패");
+        }
+        return new HttpMessage("success", "수정 성공");
     }
 
     @DeleteMapping("/{meeting-num}")

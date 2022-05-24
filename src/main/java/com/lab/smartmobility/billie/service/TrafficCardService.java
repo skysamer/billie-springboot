@@ -3,28 +3,33 @@ package com.lab.smartmobility.billie.service;
 import com.lab.smartmobility.billie.dto.ReturnTrafficCardDTO;
 import com.lab.smartmobility.billie.dto.TrafficCardApplyDTO;
 import com.lab.smartmobility.billie.dto.TrafficCardForm;
-import com.lab.smartmobility.billie.entity.Staff;
-import com.lab.smartmobility.billie.entity.TrafficCard;
-import com.lab.smartmobility.billie.entity.TrafficCardReservation;
-import com.lab.smartmobility.billie.entity.VehicleReservation;
+import com.lab.smartmobility.billie.entity.*;
 import com.lab.smartmobility.billie.repository.StaffRepository;
 import com.lab.smartmobility.billie.repository.TrafficCardRepository;
 import com.lab.smartmobility.billie.repository.TrafficCardReservationRepository;
+import com.lab.smartmobility.billie.repository.TrafficCardReservationRepositoryImpl;
+import com.lab.smartmobility.billie.util.BaseDateParser;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Objects;
 
 @Service
 @Transactional
@@ -34,6 +39,8 @@ public class TrafficCardService {
     private final TrafficCardReservationRepository reservationRepository;
     private final StaffRepository staffRepository;
     private final ModelMapper modelMapper;
+    private final TrafficCardReservationRepositoryImpl reservationRepositoryImpl;
+    private final BaseDateParser baseDateParser;
     private final Log log= LogFactory.getLog(getClass());
 
     /*보유 교통카드 목록 조회*/
@@ -124,10 +131,8 @@ public class TrafficCardService {
             List<TrafficCardReservation> reservationList=reservationRepository.findAllByReturnStatus(0);
             for(TrafficCardReservation reservation : reservationList){
                 if(((reservation.getRentedAt().isBefore(rentedAt) || reservation.getRentedAt().isEqual(rentedAt)) &&
-                        (reservation.getReturnedAt().isAfter(rentedAt) || reservation.getReturnedAt().isEqual(rentedAt)))
+                        (reservation.getReturnedAt().isAfter(rentedAt)))
                         && trafficCard.getCardNum().equals(reservation.getTrafficCard().getCardNum())){
-                    log.info(reservation.getRentedAt());
-                    log.info(reservation.getReturnedAt());
                     return 500;
                 }
             }
@@ -178,22 +183,23 @@ public class TrafficCardService {
         try {
             if(LocalDateTime.now().isAfter(rentedAt)){
                 return 400;
-            } else if(rentedAt.isAfter(reservationInfo.getRentedAt()) || rentedAt.isEqual(reservationInfo.getRentedAt())){
+            }else if(!trafficCardApplyDTO.getStaffNum().equals(reservationInfo.getStaff().getStaffNum())){
                 return 300;
+            }else if(LocalDateTime.now().isAfter(reservationInfo.getRentedAt())){
+                return 303;
             }
             List<TrafficCardReservation> reservationList=reservationRepository.findAllByReturnStatus(0);
+            reservationList.remove(reservationRepository.findByReservationNum(reservationNum));
             for(TrafficCardReservation reservation : reservationList){
                 if(((reservation.getRentedAt().isBefore(rentedAt) || reservation.getRentedAt().isEqual(rentedAt)) &&
-                        (reservation.getReturnedAt().isAfter(rentedAt) || reservation.getReturnedAt().isEqual(rentedAt)))
+                        (reservation.getReturnedAt().isAfter(rentedAt)))
                         && trafficCard.getCardNum().equals(reservation.getTrafficCard().getCardNum())){
                     return 500;
                 }
             }
 
-            Staff renderInfo=staffRepository.findByStaffNum(trafficCardApplyDTO.getStaffNum());
             modelMapper.map(trafficCardApplyDTO, reservationInfo);
             reservationInfo.setTrafficCard(trafficCard);
-            reservationInfo.setStaff(renderInfo);
             reservationInfo.setRentedAt(rentedAt);
             reservationInfo.setReturnedAt(returnedAt);
             reservationRepository.save(reservationInfo);
@@ -257,8 +263,15 @@ public class TrafficCardService {
     }
 
     /*교통카드 반납 목록 조회*/
-    public List<TrafficCardReservation> getCardReturnList(PageRequest pageRequest){
-        return reservationRepository.findAllByReturnStatusOrderByReturnedAtDesc(1, pageRequest);
+    public List<TrafficCardReservation> getCardReturnList(int disposalInfo, Long cardNum, String baseDate, PageRequest pageRequest){
+        TrafficCard trafficCard=cardRepository.findByCardNum(cardNum);
+        if(baseDate.equals("all")){
+            return reservationRepositoryImpl.findAll(trafficCard, disposalInfo, pageRequest);
+        }
+
+        LocalDateTime startDateTime=baseDateParser.getStartDateTime(baseDate);
+        LocalDateTime endDateTime=baseDateParser.getEndDateTime(baseDate);
+        return reservationRepositoryImpl.findAll(trafficCard, startDateTime, endDateTime, disposalInfo, pageRequest);
     }
 
     /*교통카드 반납 이력 상세 조회*/
@@ -267,7 +280,75 @@ public class TrafficCardService {
     }
 
     /*교통카드 반납 이력 전체 개수 조회*/
-    public int getReturnCount(){
-        return reservationRepository.countByReturnStatus(1);
+    public Long getReturnCount(int disposalInfo, Long cardNum, String baseDate){
+        TrafficCard trafficCard=cardRepository.findByCardNum(cardNum);
+        if(baseDate.equals("all")){
+            return reservationRepositoryImpl.countByReturnStatus(trafficCard, disposalInfo);
+        }
+
+        LocalDateTime startDateTime=baseDateParser.getStartDateTime(baseDate);
+        LocalDateTime endDateTime=baseDateParser.getEndDateTime(baseDate);
+        return reservationRepositoryImpl.countByReturnStatus(trafficCard, startDateTime, endDateTime, disposalInfo);
+    }
+
+    /*반납 이력 엑셀 다운로드*/
+    public Workbook excelDownload(int disposalInfo, Long cardNum, String baseDate){
+        TrafficCard trafficCard=cardRepository.findByCardNum(cardNum);
+        List<TrafficCardReservation> reservationList;
+        if(baseDate.equals("all")){
+            reservationList = new ArrayList<>(reservationRepositoryImpl.findAll(trafficCard, disposalInfo));
+        }
+
+        LocalDateTime startDateTime=baseDateParser.getStartDateTime(baseDate);
+        LocalDateTime endDateTime=baseDateParser.getEndDateTime(baseDate);
+        reservationList= new ArrayList<>(reservationRepositoryImpl.findAll(trafficCard, startDateTime, endDateTime, disposalInfo));
+
+        Workbook wb = new XSSFWorkbook();
+        Sheet sheet = wb.createSheet(baseDate);
+        Row row = null;
+        Cell cell = null;
+        int rowNum = 0;
+
+        row = sheet.createRow(rowNum++);
+        cell = row.createCell(0);
+        cell.setCellValue("카드번호");
+        cell = row.createCell(1);
+        cell.setCellValue("잔액");
+        cell = row.createCell(2);
+        cell.setCellValue("대여일");
+        cell = row.createCell(3);
+        cell.setCellValue("대여시작 시간");
+        cell = row.createCell(4);
+        cell.setCellValue("반납일");
+        cell = row.createCell(5);
+        cell.setCellValue("대여종료 시간");
+        cell = row.createCell(6);
+        cell.setCellValue("내용(사유)");
+
+        for (TrafficCardReservation reservation : reservationList) {
+            row = sheet.createRow(rowNum++);
+            LocalDate startDate=LocalDate.of(reservation.getRentedAt().getYear(), reservation.getRentedAt().getMonth(),
+                    reservation.getRentedAt().getDayOfMonth());
+            LocalTime startTime=LocalTime.of(reservation.getRentedAt().getHour(), reservation.getRentedAt().getMinute(), 0);
+            LocalDate endDate=LocalDate.of(reservation.getReturnedAt().getYear(), reservation.getReturnedAt().getMonth(),
+                    reservation.getReturnedAt().getDayOfMonth());
+            LocalTime endTime=LocalTime.of(reservation.getReturnedAt().getHour(), reservation.getReturnedAt().getMinute(), 0);
+
+            cell = row.createCell(0);
+            cell.setCellValue(reservation.getTrafficCard().getCardNum());
+            cell = row.createCell(1);
+            cell.setCellValue(reservation.getBalanceHistory());
+            cell = row.createCell(2);
+            cell.setCellValue(String.valueOf(startDate));
+            cell = row.createCell(3);
+            cell.setCellValue(String.valueOf(startTime));
+            cell = row.createCell(4);
+            cell.setCellValue(String.valueOf(endDate));
+            cell = row.createCell(5);
+            cell.setCellValue(String.valueOf(endTime));
+            cell = row.createCell(6);
+            cell.setCellValue(reservation.getContent());
+        }
+        return wb;
     }
 }

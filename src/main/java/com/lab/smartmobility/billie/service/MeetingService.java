@@ -6,6 +6,7 @@ import com.lab.smartmobility.billie.entity.Staff;
 import com.lab.smartmobility.billie.repository.MeetingRepository;
 import com.lab.smartmobility.billie.repository.StaffRepository;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.logging.Log;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import java.text.SimpleDateFormat;
@@ -21,6 +22,7 @@ public class MeetingService {
     private final MeetingRepository meetingRepository;
     private final ModelMapper modelMapper;
     private final StaffRepository staffRepository;
+    private final Log log;
 
     /*회의 등록*/
     public Meeting insertMeeting(ApplyMeetingForm applyMeetingForm){
@@ -38,10 +40,16 @@ public class MeetingService {
     }
 
     // 회의 내용 수정(키값 필요)
-    public Meeting updateMeeting(Long meetingNum, ApplyMeetingForm applyMeetingForm){
-        Meeting modifiedMeeting=meetingRepository.findByMeetingNum(meetingNum);
-        modelMapper.map(applyMeetingForm, modifiedMeeting);
-        return meetingRepository.save(modifiedMeeting);
+    public int updateMeeting(Long meetingNum, ApplyMeetingForm applyMeetingForm){
+        try{
+            Meeting modifiedMeeting=meetingRepository.findByMeetingNum(meetingNum);
+            modelMapper.map(applyMeetingForm, modifiedMeeting);
+            meetingRepository.save(modifiedMeeting);
+        }catch (Exception e){
+            log.error(e);
+            return 9999;
+        }
+        return 0;
     }
 
     // 이번주 회의 목록 조회(일요일 ~ 토요일)

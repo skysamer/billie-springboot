@@ -40,8 +40,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                         .antMatchers("/login", "/joinIn", "/findPassword", "/check-login", "/swagger-ui/index.html").permitAll()
                         .antMatchers("/meeting/**").hasAnyRole("USER", "MANAGER", "ADMIN")
                         .antMatchers("/equipment/**").hasAnyRole("USER", "MANAGER", "ADMIN")
-                        //.antMatchers("/vehicle/**").hasAnyRole("USER", "MANAGER", "ADMIN")
-                        //.antMatchers("/traffic-card/**").hasAnyRole("USER", "MANAGER", "ADMIN")
+                        .antMatchers("/vehicle/**").hasAnyRole("USER", "MANAGER", "ADMIN")
+                        .antMatchers("/traffic-card/**").hasAnyRole("USER", "MANAGER", "ADMIN")
                         //.antMatchers("/vacation/**").hasAnyRole("USER", "MANAGER", "ADMIN")
                         .and()
                         .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider),

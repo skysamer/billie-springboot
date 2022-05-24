@@ -12,11 +12,19 @@ import io.swagger.annotations.*;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
+import java.io.IOException;
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
@@ -87,7 +95,7 @@ public class VehicleController {
     @PostMapping("/apply-rental")
     @ApiOperation(value = "차량 이용 신청")
     @ApiResponses({
-            @ApiResponse(code = 200, message = "차량 대여 신청 실패 or 해당 차량이 이미 대여중입니다 or 현재 시각보다 과거로 예약할 수 없습니다 or 대여성공")
+            @ApiResponse(code = 200, message = "차량 대여 신청 실패 or 해당 날짜에 차량이 이미 대여중입니다 or 현재 시각보다 과거로 예약할 수 없습니다 or 대여성공")
     })
     public HttpMessage applyForRent(@Valid @RequestBody ApplyRentalVehicleDTO rentalVehicleDTO){
         int checkApplyRental=service.applyForRent(rentalVehicleDTO);
@@ -95,7 +103,7 @@ public class VehicleController {
         if(checkApplyRental==9999){
             return new HttpMessage("fail", "차량 대여 신청 실패");
         } else if(checkApplyRental==500){
-            return new HttpMessage("fail", "해당 차량이 이미 대여중입니다");
+            return new HttpMessage("fail", "해당 날짜에 차량이 이미 대여중입니다");
         } else if(checkApplyRental==400){
             return new HttpMessage("fail", "현재 시각보다 과거로 예약할 수 없습니다");
         }
@@ -118,7 +126,7 @@ public class VehicleController {
     @PutMapping("/modify/{rent-num}")
     @ApiOperation(value = "개별 차량 예약 수정")
     @ApiResponses({
-            @ApiResponse(code = 200, message = "현재 시각보다 과거로 예약할 수 없습니다 or 변경하려는 차량은 이미 대여중입니다 or 대여자 정보가 일치하지 않습니다 or 대여시작시간 이후에는 변경할 수 없습니다 or 예약 수정 실패 or 예약 수정 성공")
+            @ApiResponse(code = 200, message = "현재 시각보다 과거로 예약할 수 없습니다 or 해당 날짜에 차량이 이미 대여중입니다 or 대여자 정보가 일치하지 않습니다 or 대여시작시간 이후에는 변경할 수 없습니다 or 예약 수정 실패 or 예약 수정 성공")
     })
     public HttpMessage modify(@PathVariable("rent-num") Long rentNum, @RequestBody ApplyRentalVehicleDTO applyRentalVehicleDTO){
         int isUpdated=service.modifyVehicleReservation(rentNum, applyRentalVehicleDTO);
@@ -126,7 +134,7 @@ public class VehicleController {
         if(isUpdated==400){
             return new HttpMessage("fail", "현재 시각보다 과거로 예약할 수 없습니다");
         }else if(isUpdated==500){
-            return new HttpMessage("fail", "변경하려는 차량은 이미 대여중입니다");
+            return new HttpMessage("fail", "해당 날짜에 차량이 이미 대여중입니다");
         }else if(isUpdated==300){
             return new HttpMessage("fail", "대여자 정보가 일치하지 않습니다");
         }else if(isUpdated==303){
@@ -172,29 +180,47 @@ public class VehicleController {
         return new HttpMessage("success", "반납 이력 저장 완료");
     }
 
-    @GetMapping("/return-list")
-    @ApiOperation(value = "차량 반납 이력 전체 조회")
-    public List<VehicleReturnHistoryInfo> getReturnList(@RequestParam("page") Integer page, @RequestParam("size") Integer size){
+    @GetMapping("/return-list/{disposal-info}/{vehicle-num}/{base-date}")
+    @ApiOperation(value = "차량 반납 이력 전체 조회", notes = "전체 차량 조회의 경우 -1 // 폐기정보(0:미포함, 1:포함) // base-date : yyyy-MM")
+    public List<VehicleReservation> getReturnList(@PathVariable("disposal-info") int disposalInfo,
+            @PathVariable("vehicle-num") Long vehicleNum,
+            @PathVariable("base-date") String baseDate,
+            @RequestParam("page") Integer page, @RequestParam("size") Integer size){
         PageRequest pageRequest = PageRequest.of(page, size);
-        return service.getReturnList(pageRequest);
+        return service.getReturnList(disposalInfo, vehicleNum, baseDate, pageRequest);
     }
 
-    @GetMapping("/return-count")
-    @ApiOperation(value = "반납이력 전체 개수 조회")
-    public HttpMessage getReturnCount(){
-        return new HttpMessage("count", service.getReturnCount());
+    @GetMapping("/return-count/{disposal-info}/{vehicle-num}/{base-date}")
+    @ApiOperation(value = "반납이력 전체 개수 조회", notes = "전체 차량 조회의 경우 -1 // 폐기정보(0:미포함, 1:포함) // base-date : yyyy-MM")
+    public HttpMessage getReturnCount(@PathVariable("disposal-info") int disposalInfo,
+                                      @PathVariable("vehicle-num") Long vehicleNum,
+                                      @PathVariable("base-date") String baseDate){
+        return new HttpMessage("count", service.getReturnCount(disposalInfo, vehicleNum, baseDate));
     }
 
     @GetMapping("/return/{rent-num}")
     @ApiOperation(value = "차량 반납 이력 상세 조회", notes = "{count : 전체개수}")
-    public VehicleReturnHistoryInfo getReturn(@PathVariable("rent-num") Long rentNum){
+    public VehicleReservation getReturn(@PathVariable("rent-num") Long rentNum){
         return service.getReturn(rentNum);
     }
 
     @GetMapping("/return-image/{rent-num}")
-    @ApiOperation(value = "반납 이력 별 이미지 파일 조회", notes = "각각의 이미지 파일이 byte 배열로 변환되어 리턴", response = String.class)
+    @ApiOperation(value = "반납 이력 별 이미지 파일 조회", notes = "각각의 이미지 파일이 byte 배열로 변환되어 리턴")
     public List<byte[]> returnImage(@PathVariable("rent-num") Long rentNum){
         return service.getReturnImages(rentNum);
     }
 
+    @GetMapping("/excel/{disposal-info}/{vehicle-num}/{base-date}")
+    @ApiOperation(value = "차량 반납 이력 엑셀 다운로드", notes = "전체 차량 조회의 경우 -1 // 폐기정보(0:미포함, 1:포함) // base-date : yyyy-MM")
+    public void excelDownload(@PathVariable("disposal-info") int disposalInfo,
+                              @PathVariable("vehicle-num") Long vehicleNum,
+                              @PathVariable("base-date") String baseDate, HttpServletResponse response) throws IOException {
+        Workbook wb=service.excelDownload(disposalInfo, vehicleNum, baseDate);
+
+        response.setContentType("ms-vnd/excel");
+        response.setHeader("Content-Disposition", "attachment;filename="+baseDate+"_vehicle_history.xlsx");
+
+        wb.write(response.getOutputStream());
+        wb.close();
+    }
 }

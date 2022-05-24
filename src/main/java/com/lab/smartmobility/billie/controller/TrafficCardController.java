@@ -11,10 +11,14 @@ import io.swagger.annotations.*;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
+
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
+import java.io.IOException;
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
@@ -90,7 +94,7 @@ public class TrafficCardController {
     @PostMapping("/apply-rental")
     @ApiOperation(value = "교통카드 대여 신청")
     @ApiResponses({
-            @ApiResponse(code = 200, message = "대여신청 실패 or 이미 대여중인 카드입니다 or 이전 날짜로 대여할 수 없습니다 or 대여신청 성공")
+            @ApiResponse(code = 200, message = "대여신청 실패 or 해당 날짜에 이미 대여중인 카드입니다 or 이전 날짜로 대여할 수 없습니다 or 대여신청 성공")
     })
     public HttpMessage applyRental(@Valid @RequestBody TrafficCardApplyDTO trafficCardApplyDTO){
         int checkApplyRental=service.applyCardRental(trafficCardApplyDTO);
@@ -99,7 +103,7 @@ public class TrafficCardController {
             return new HttpMessage("fail", "대여신청 실패");
         }
         else if(checkApplyRental==500){
-            return new HttpMessage("fail", "이미 대여중인 카드입니다");
+            return new HttpMessage("fail", "해당 날짜에 이미 대여중인 카드입니다");
         }else if(checkApplyRental==400){
             return new HttpMessage("fail", "이전 날짜로 대여할 수 없습니다");
         }
@@ -122,7 +126,7 @@ public class TrafficCardController {
     @PutMapping("/modify/{reservation-num}")
     @ApiOperation(value = "교통카드 대여 정보 수정")
     @ApiResponses({
-            @ApiResponse(code = 200, message = "이미 대여중인 카드입니다 or 이전 날짜로 대여할 수 없습니다 or 대여정보 수정 실패 or 대여정보 수정 성공")
+            @ApiResponse(code = 200, message = "이미 대여중인 카드입니다 or 이전 날짜로 대여할 수 없습니다 or 대여자 정보가 일치하지 않습니다 or 대여시작시간 이후에는 수정할 수 없습니다 or 대여정보 수정 실패 or 대여정보 수정 성공")
     })
     public HttpMessage modifyCardReservationInfo(@PathVariable("reservation-num") Long reservationNum, @RequestBody TrafficCardApplyDTO trafficCardApplyDTO){
         int isUpdated=service.modifyCardReservation(reservationNum, trafficCardApplyDTO);
@@ -131,6 +135,10 @@ public class TrafficCardController {
             return new HttpMessage("fail", "이미 대여중인 카드입니다");
         }else if(isUpdated==400){
             return new HttpMessage("fail", "이전 날짜로 대여할 수 없습니다");
+        }else if(isUpdated==300){
+            return new HttpMessage("fail", "대여자 정보가 일치하지 않습니다");
+        }else if(isUpdated==303){
+            return new HttpMessage("fail", "대여시작시간 이후에는 수정할 수 없습니다");
         }else if(isUpdated==9999){
             return new HttpMessage("fail", "대여정보 수정 실패");
         }
@@ -170,11 +178,14 @@ public class TrafficCardController {
         return new HttpMessage("success", "반납 신청 완료");
     }
 
-    @GetMapping("/return-list")
-    @ApiOperation(value = "교통카드 반납 목록 조회")
-    public List<TrafficCardReservation> getCardReturnList(@RequestParam("page") Integer page, @RequestParam("size") Integer size){
+    @GetMapping("/return-list/{disposal-info}/{card-num}/{base-date}")
+    @ApiOperation(value = "교통카드 반납 목록 조회", notes = "전체 교통카드 조회의 경우 -1 // 폐기정보(0:미포함, 1:포함) // base-date : yyyy-MM")
+    public List<TrafficCardReservation> getCardReturnList(@PathVariable("disposal-info") int disposalInfo,
+            @PathVariable("card-num") Long cardNum,
+            @PathVariable("base-date") String baseDate,
+            @RequestParam("page") Integer page, @RequestParam("size") Integer size){
         PageRequest pageRequest = PageRequest.of(page, size);
-        return service.getCardReturnList(pageRequest);
+        return service.getCardReturnList(disposalInfo, cardNum, baseDate, pageRequest);
     }
 
     @GetMapping("/return/{reservation-num}")
@@ -183,9 +194,25 @@ public class TrafficCardController {
         return service.getCardReturn(reservationNum);
     }
 
-    @GetMapping("/return-count")
-    @ApiOperation(value = "교통카드 반납 이력 개수 조회")
-    public HttpMessage getReturnCount(){
-        return new HttpMessage("count", service.getReturnCount());
+    @GetMapping("/return-count/{disposal-info}/{card-num}/{base-date}")
+    @ApiOperation(value = "교통카드 반납 이력 개수 조회", notes = "전체 교통카드 조회의 경우 -1 // 폐기정보(0:미포함, 1:포함) // base-date : yyyy-MM")
+    public HttpMessage getReturnCount(@PathVariable("disposal-info") int disposalInfo,
+                                      @PathVariable("card-num") Long cardNum,
+                                      @PathVariable("base-date") String baseDate){
+        return new HttpMessage("count", service.getReturnCount(disposalInfo, cardNum, baseDate));
+    }
+
+    @GetMapping("/excel/{disposal-info}/{card-num}/{base-date}")
+    @ApiOperation(value = "교통카드 반납 이력 엑셀 다운로드", notes = "전체 교통카드 조회의 경우 -1 // 폐기정보(0:미포함, 1:포함) // base-date : yyyy-MM")
+    public void excelDownload(@PathVariable("disposal-info") int disposalInfo,
+                              @PathVariable("card-num") Long cardNum,
+                              @PathVariable("base-date") String baseDate, HttpServletResponse response) throws IOException {
+        Workbook wb=service.excelDownload(disposalInfo, cardNum, baseDate);
+
+        response.setContentType("ms-vnd/excel");
+        response.setHeader("Content-Disposition", "attachment;filename="+baseDate+"_traffic_card_history.xlsx");
+
+        wb.write(response.getOutputStream());
+        wb.close();
     }
 }

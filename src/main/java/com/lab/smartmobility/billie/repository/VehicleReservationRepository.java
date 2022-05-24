@@ -21,13 +21,9 @@ public interface VehicleReservationRepository extends JpaRepository<VehicleReser
     List<VehicleReservation> findAllByReturnStatusCode(int returnStatusCode);
     Set<VehicleReservation> findAllByVehicle(Vehicle vehicle);
     VehicleReservation findByRentNum(Long rentNum);
-    List<VehicleReservation> findAllByReturnStatusCodeOrderByRentNumDesc(int returnStatusCode, Pageable pageable);
     VehicleReservation findByRentNumAndReturnStatusCode(Long rentNum, int returnStatusCode);
     List<VehicleReservation> findAllByRentedAt(LocalDateTime today);
     int countByReturnStatusCode(int returnStatusCode);
     List<VehicleReservation> findByStaffAndReturnStatusCodeOrderByRentedAt(Staff staff, int returnStatusCode);
     void deleteByRentNum(Long rentNum);
-
-    //@Query(value = "SELECT v FROM VehicleReservation v WHERE  date_of_rental <= :today and expected_return_date >= :today and staff_num = :staffNum and return_status_code= :status")
-    //List<VehicleReservation> getMyCarReservationList(@Param("today") LocalDate today, @Param("staffNum") Long staffNum, @Param("status") int status);
 }

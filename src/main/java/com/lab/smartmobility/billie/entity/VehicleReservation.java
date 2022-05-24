@@ -47,6 +47,10 @@ public class VehicleReservation {
     @ApiModelProperty(value = "반납상태코드")
     private int returnStatusCode;
 
+    @Column(name = "total_driving_time")
+    @ApiModelProperty(value = "총 주행시간")
+    private String totalDrivingTime;
+
     @ManyToOne
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "vehicle_num")
