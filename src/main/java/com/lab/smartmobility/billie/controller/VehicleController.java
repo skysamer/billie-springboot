@@ -1,9 +1,8 @@
 package com.lab.smartmobility.billie.controller;
 
-import com.lab.smartmobility.billie.dto.ApplyRentalVehicleDTO;
-import com.lab.smartmobility.billie.dto.VehicleDTO;
-import com.lab.smartmobility.billie.dto.VehicleReturnDTO;
-import com.lab.smartmobility.billie.dto.VehicleReturnHistoryInfo;
+import com.lab.smartmobility.billie.dto.vehicle.ApplyRentalVehicleDTO;
+import com.lab.smartmobility.billie.dto.vehicle.VehicleDTO;
+import com.lab.smartmobility.billie.dto.vehicle.VehicleReturnDTO;
 import com.lab.smartmobility.billie.entity.HttpMessage;
 import com.lab.smartmobility.billie.entity.Vehicle;
 import com.lab.smartmobility.billie.entity.VehicleReservation;
@@ -12,11 +11,7 @@ import io.swagger.annotations.*;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;

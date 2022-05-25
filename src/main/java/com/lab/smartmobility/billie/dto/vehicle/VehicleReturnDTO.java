@@ -1,4 +1,4 @@
-package com.lab.smartmobility.billie.dto;
+package com.lab.smartmobility.billie.dto.vehicle;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;

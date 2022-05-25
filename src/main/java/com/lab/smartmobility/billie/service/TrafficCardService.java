@@ -1,13 +1,13 @@
 package com.lab.smartmobility.billie.service;
 
-import com.lab.smartmobility.billie.dto.ReturnTrafficCardDTO;
-import com.lab.smartmobility.billie.dto.TrafficCardApplyDTO;
-import com.lab.smartmobility.billie.dto.TrafficCardForm;
+import com.lab.smartmobility.billie.dto.traffic.ReturnTrafficCardDTO;
+import com.lab.smartmobility.billie.dto.traffic.TrafficCardApplyDTO;
+import com.lab.smartmobility.billie.dto.traffic.TrafficCardForm;
 import com.lab.smartmobility.billie.entity.*;
 import com.lab.smartmobility.billie.repository.StaffRepository;
-import com.lab.smartmobility.billie.repository.TrafficCardRepository;
-import com.lab.smartmobility.billie.repository.TrafficCardReservationRepository;
-import com.lab.smartmobility.billie.repository.TrafficCardReservationRepositoryImpl;
+import com.lab.smartmobility.billie.repository.traffic.TrafficCardRepository;
+import com.lab.smartmobility.billie.repository.traffic.TrafficCardReservationRepository;
+import com.lab.smartmobility.billie.repository.traffic.TrafficCardReservationRepositoryImpl;
 import com.lab.smartmobility.billie.util.BaseDateParser;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.logging.Log;
@@ -23,7 +23,6 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;

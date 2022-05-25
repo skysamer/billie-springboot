@@ -1,4 +1,4 @@
-package com.lab.smartmobility.billie.repository;
+package com.lab.smartmobility.billie.repository.traffic;
 
 import com.lab.smartmobility.billie.entity.TrafficCard;
 import com.lab.smartmobility.billie.entity.TrafficCardReservation;

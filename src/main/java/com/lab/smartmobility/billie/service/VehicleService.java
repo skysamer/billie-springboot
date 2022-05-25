@@ -1,8 +1,8 @@
 package com.lab.smartmobility.billie.service;
 
-import com.lab.smartmobility.billie.dto.ApplyRentalVehicleDTO;
-import com.lab.smartmobility.billie.dto.VehicleDTO;
-import com.lab.smartmobility.billie.dto.VehicleReturnDTO;
+import com.lab.smartmobility.billie.dto.vehicle.ApplyRentalVehicleDTO;
+import com.lab.smartmobility.billie.dto.vehicle.VehicleDTO;
+import com.lab.smartmobility.billie.dto.vehicle.VehicleReturnDTO;
 import com.lab.smartmobility.billie.entity.*;
 import com.lab.smartmobility.billie.repository.*;
 import com.lab.smartmobility.billie.util.BaseDateParser;
@@ -17,7 +17,6 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -200,6 +199,7 @@ public class VehicleService {
                 return 303;
             }
             List<VehicleReservation> reservationList=reservationRepository.findAllByReturnStatusCode(0);
+            reservationList.remove(reservationRepository.findByRentNum(rentNum));
             for(VehicleReservation reservation : reservationList){
                 if(((reservation.getRentedAt().isBefore(rentedAt) || reservation.getRentedAt().isEqual(rentedAt)) &&
                         (reservation.getReturnedAt().isAfter(rentedAt)))
@@ -356,11 +356,11 @@ public class VehicleService {
         List<VehicleReservation> reservationList;
         if(baseDate.equals("all")){
             reservationList = new ArrayList<>(reservationRepositoryImpl.findAll(vehicle, disposalInfo));
+        }else{
+            LocalDateTime startDateTime=baseDateParser.getStartDateTime(baseDate);
+            LocalDateTime endDateTime=baseDateParser.getEndDateTime(baseDate);
+            reservationList= new ArrayList<>(reservationRepositoryImpl.findAll(vehicle, startDateTime, endDateTime, disposalInfo));
         }
-
-        LocalDateTime startDateTime=baseDateParser.getStartDateTime(baseDate);
-        LocalDateTime endDateTime=baseDateParser.getEndDateTime(baseDate);
-        reservationList= new ArrayList<>(reservationRepositoryImpl.findAll(vehicle, startDateTime, endDateTime, disposalInfo));
 
         Workbook wb = new XSSFWorkbook();
         Sheet sheet = wb.createSheet(baseDate);

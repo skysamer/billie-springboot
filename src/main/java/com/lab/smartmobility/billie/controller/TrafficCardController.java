@@ -1,8 +1,8 @@
 package com.lab.smartmobility.billie.controller;
 
-import com.lab.smartmobility.billie.dto.ReturnTrafficCardDTO;
-import com.lab.smartmobility.billie.dto.TrafficCardApplyDTO;
-import com.lab.smartmobility.billie.dto.TrafficCardForm;
+import com.lab.smartmobility.billie.dto.traffic.ReturnTrafficCardDTO;
+import com.lab.smartmobility.billie.dto.traffic.TrafficCardApplyDTO;
+import com.lab.smartmobility.billie.dto.traffic.TrafficCardForm;
 import com.lab.smartmobility.billie.entity.HttpMessage;
 import com.lab.smartmobility.billie.entity.TrafficCard;
 import com.lab.smartmobility.billie.entity.TrafficCardReservation;

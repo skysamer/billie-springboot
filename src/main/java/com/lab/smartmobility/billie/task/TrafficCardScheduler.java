@@ -2,10 +2,8 @@ package com.lab.smartmobility.billie.task;
 
 import com.lab.smartmobility.billie.entity.TrafficCard;
 import com.lab.smartmobility.billie.entity.TrafficCardReservation;
-import com.lab.smartmobility.billie.entity.Vehicle;
-import com.lab.smartmobility.billie.entity.VehicleReservation;
-import com.lab.smartmobility.billie.repository.TrafficCardRepository;
-import com.lab.smartmobility.billie.repository.TrafficCardReservationRepository;
+import com.lab.smartmobility.billie.repository.traffic.TrafficCardRepository;
+import com.lab.smartmobility.billie.repository.traffic.TrafficCardReservationRepository;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -14,7 +12,6 @@ import org.springframework.stereotype.Component;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.ArrayList;
 import java.util.List;
 
 @Component
