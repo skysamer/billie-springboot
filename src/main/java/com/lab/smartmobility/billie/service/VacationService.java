@@ -103,9 +103,7 @@ public class VacationService {
         Notification notification=Notification.builder()
                 .type("vacation")
                 .createdAt(LocalDateTime.now())
-                .requester(requester.getName())
                 .readAt(0)
-                .staff(approval)
                 .build();
         notificationRepository.save(notification);
     }

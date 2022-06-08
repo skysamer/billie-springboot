@@ -8,6 +8,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import javax.persistence.*;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Collection;
 
 @Getter @Setter @ToString @Builder
@@ -55,6 +56,18 @@ public class Staff implements UserDetails {
     @ApiModelProperty(value = "추가근무개수")
     @Column(name = "overtime_count")
     private double overtimeCount;
+
+    @ApiModelProperty(value = "이메일인증토큰")
+    @Column(name = "email_token")
+    private String emailToken;
+
+    @ApiModelProperty(value = "이메일인증토큰")
+    @Column(name = "email_token_generated_at")
+    private LocalDateTime emailTokenGeneratedAt;
+
+    @ApiModelProperty(value = "이메일인증여부")
+    @Column(name = "is_verified")
+    private int isVerified;
 
     @Override
     @JsonIgnore

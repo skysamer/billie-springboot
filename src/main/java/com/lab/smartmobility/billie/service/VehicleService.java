@@ -5,7 +5,10 @@ import com.lab.smartmobility.billie.dto.vehicle.VehicleDTO;
 import com.lab.smartmobility.billie.dto.vehicle.VehicleReturnDTO;
 import com.lab.smartmobility.billie.entity.*;
 import com.lab.smartmobility.billie.repository.*;
-import com.lab.smartmobility.billie.util.BaseDateParser;
+import com.lab.smartmobility.billie.repository.vehicle.VehicleRepository;
+import com.lab.smartmobility.billie.repository.vehicle.VehicleReservationRepository;
+import com.lab.smartmobility.billie.repository.vehicle.VehicleReservationRepositoryImpl;
+import com.lab.smartmobility.billie.util.DateTimeUtil;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
@@ -40,7 +43,7 @@ public class VehicleService {
     private final StaffRepository staffRepository;
     private final ModelMapper modelMapper;
     private final VehicleReservationRepositoryImpl reservationRepositoryImpl;
-    private final BaseDateParser baseDateParser;
+    private final DateTimeUtil baseDateParser;
     private final Log log = LogFactory.getLog(getClass());
 
     /*보유 차량 및 대여 가능 여부 조회*/
@@ -238,15 +241,7 @@ public class VehicleService {
     /*나의 차량 예약 현황 조회*/
     public List<VehicleReservation> getMyReservation(Long staffNum){
         Staff staff = staffRepository.findByStaffNum(staffNum);
-        List<VehicleReservation> myReservationList = reservationRepository.findByStaffAndReturnStatusCodeOrderByRentedAt(staff, 0);
-
-        List<VehicleReservation> currentlyOnRental=new ArrayList<>();
-        for(VehicleReservation myReservation : myReservationList){
-            if(myReservation.getVehicle().getRentalStatus()==1){
-                currentlyOnRental.add(myReservation);
-            }
-        }
-        return currentlyOnRental;
+        return reservationRepository.findByStaffAndReturnStatusCodeOrderByRentedAt(staff, 0);
     }
 
     /*차량 반납 신청*/

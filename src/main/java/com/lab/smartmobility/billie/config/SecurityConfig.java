@@ -37,12 +37,55 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
                 .authorizeRequests((requests) ->
                 requests.antMatchers(HttpMethod.OPTIONS, "/**/*").permitAll()
-                        .antMatchers("/login", "/joinIn", "/findPassword", "/check-login", "/swagger-ui/index.html").permitAll()
+                        .antMatchers("/login", "/sign-up", "/findPassword", "/check-login", "/send-email-token", "/verify-email-token", "/swagger-ui/index.html").permitAll()
                         .antMatchers("/meeting/**").hasAnyRole("USER", "MANAGER", "ADMIN")
                         .antMatchers("/equipment/**").hasAnyRole("USER", "MANAGER", "ADMIN")
-                        .antMatchers("/vehicle/**").hasAnyRole("USER", "MANAGER", "ADMIN")
-                        .antMatchers("/traffic-card/**").hasAnyRole("USER", "MANAGER", "ADMIN")
-                        //.antMatchers("/vacation/**").hasAnyRole("USER", "MANAGER", "ADMIN")
+
+                        /*------------------------------------------------------------------------------------차량-----------------------------------------------------------------------------------*/
+                        .antMatchers( "/vehicle/{vehicle-num}", "/vehicle/discard/{vehicle-num}", "/vehicle/excel/{disposal-info}/{vehicle-num}/{base-date}").hasRole("ADMIN")
+                        .antMatchers( "/vehicle/modify", "/vehicle/register", "/vehicle/to-own", "/vehicle/return-count/{disposal-info}/{vehicle-num}/{base-date}").hasRole("ADMIN")
+                        .antMatchers( "/vehicle/return-image/{rent-num}", "/vehicle/return-list/{disposal-info}/{vehicle-num}/{base-date}", "/vehicle/return/{rent-num}").hasRole("ADMIN")
+
+                        .antMatchers("/vehicle/apply-rental", "/vehicle/insert-return", "/vehicle/modify/{rent-num}", "/vehicle/my/{staff-num}").hasAnyRole("USER", "MANAGER", "ADMIN")
+                        .antMatchers("/vehicle/reservation-list/{startDate}/{endDate}", "/vehicle/reservation/{rent-num}").hasAnyRole("USER", "MANAGER", "ADMIN")
+
+                        /*------------------------------------------------------------------------------------교통카드-----------------------------------------------------------------------------------*/
+                        .antMatchers("/traffic-card/{card-num}", "/traffic-card/discard/{card-num}", "traffic-card/excel/{disposal-info}/{card-num}/{base-date}").hasRole("ADMIN")
+                        .antMatchers("/traffic-card/modify", "/traffic-card/register", "/traffic-card/return-count/{disposal-info}/{card-num}/{base-date}").hasRole("ADMIN")
+                        .antMatchers("/traffic-card/return/{reservation-num}", "/traffic-card/return-list/{disposal-info}/{card-num}/{base-date}").hasRole("ADMIN")
+
+                        .antMatchers("/traffic-card/apply-rental", "/traffic-card/apply-return", "/traffic-card/card-list", "/traffic-card/card/{card-num}").hasAnyRole("USER", "MANAGER", "ADMIN")
+                        .antMatchers("/traffic-card/modify/{reservation-num}", "/traffic-card/my/{staff-num}", "/traffic-card/remove/{reservation-num}").hasAnyRole("USER", "MANAGER", "ADMIN")
+                        .antMatchers("/traffic-card/rental-list/{start-date}/{end-date}", "/traffic-card/reservation/{reservation-num}").hasAnyRole("USER", "MANAGER", "ADMIN")
+
+                        /*------------------------------------------------------------------------------------법인카드-----------------------------------------------------------------------------------*/
+                        .antMatchers("/corporation-card/{card-id}", "/corporation-card/admin/expense-history/{base-year}/{page}/{size}").hasRole("ADMIN")
+                        .antMatchers("/corporation-card/admin/return-history/{disposal-info}/{card-name}/{base-year}/{page}/{size}", "/corporation-card/approve/admin").hasRole("ADMIN")
+                        .antMatchers("/corporation-card/count/admin/expense-history/{base-year}", "/corporation-card/count/admin/return-history/{disposal-info}/{card-name}/{base-year}").hasRole("ADMIN")
+                        .antMatchers("/corporation-card/disposal/{card-id}", "/corporation-card/excel/expense-history/{base-year}").hasRole("ADMIN")
+                        .antMatchers("/corporation-card/remove/{card-id}", "/corporation-card/request-count-admin/{card-name}/{base-year}/{disposal-info}").hasRole("ADMIN")
+                        .antMatchers("/corporation-card/request-list-admin/{card-name}/{base-year}/{disposal-info}/{page}/{size}").hasRole("ADMIN")
+                        .antMatchers("/corporation-card/excel/return-history/{disposal-info}/{card-name}/{base-year}", "/corporation-card/insert", "/corporation-card/modify/{card-id}").hasRole("ADMIN")
+
+                        .antMatchers("/corporation-card/approve/manager", "/corporation-card/count/manager/expense-history/{manager-num}/{base-year}").hasRole("MANAGER")
+                        .antMatchers("/corporation-card/count/manager/return-history/{manager-num}/{disposal-info}/{card-name}/{base-year}").hasRole("MANAGER")
+                        .antMatchers("/corporation-card/request-count-manager/{manager-num}/{card-name}/{base-year}/{disposal-info}").hasRole("MANAGER")
+                        .antMatchers("/corporation-card/request-list-manager/{manager-num}/{card-name}/{base-year}/{disposal-info}/{page}/{size}").hasRole("MANAGER")
+                        .antMatchers("/corporation-card/**", "/corporation-card/manager/expense-history/{manager-num}/{base-year}/{page}/{size}").hasRole("MANAGER")
+                        .antMatchers("/corporation-card/manager/return-history/{manager-num}/{disposal-info}/{card-name}/{base-year}/{page}/{size}").hasRole("MANAGER")
+
+                        .antMatchers("/corporation-card/companion/card-use").hasAnyRole("MANAGER", "ADMIN")
+
+                        .antMatchers("/corporation-card/approved/get/{application-id}", "/corporation-card/approved/monthly/{start-date}/{end-date}").hasAnyRole("USER", "MANAGER", "ADMIN")
+                        .antMatchers("/corporation-card/approved/my/{staff-num}", "/corporation-card/count/my-expense-history/{staff-num}/{base-year}").hasAnyRole("USER", "MANAGER", "ADMIN")
+                        .antMatchers("/corporation-card/count/my-return-history/{staff-num}/{card-name}/{base-year}", "/corporation-card/expense-claim").hasAnyRole("USER", "MANAGER", "ADMIN")
+                        .antMatchers("/corporation-card/modify/application/{application-id}", "/corporation-card/my-application-count/{staff-num}/{card-name}/{base-year}").hasAnyRole("USER", "MANAGER", "ADMIN")
+                        .antMatchers("/corporation-card/expense-history/{expense-id}", "/corporation-card/list/{disposal-info}").hasAnyRole("USER", "MANAGER", "ADMIN")
+                        .antMatchers("/corporation-card/my-application-list/{staff-num}/{card-name}/{base-year}/{page}/{size}").hasAnyRole("USER", "MANAGER", "ADMIN")
+                        .antMatchers("/corporation-card/my-application/{staff-num}/{application-id}", "/corporation-card/return-history/{return-id}").hasAnyRole("USER", "MANAGER", "ADMIN")
+                        .antMatchers("/corporation-card/my-expense-history/{staff-num}/{base-year}/{page}/{size}").hasAnyRole("USER", "MANAGER", "ADMIN")
+                        .antMatchers("/corporation-card/my-return-history/{staff-num}/{card-name}/{base-year}/{page}/{size}").hasAnyRole("USER", "MANAGER", "ADMIN")
+                        .antMatchers("/corporation-card/remove/application/{application-id}", "/corporation-card/rent", "/corporation-card/return").hasAnyRole("USER", "MANAGER", "ADMIN")
                         .and()
                         .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider),
                                 UsernamePasswordAuthenticationFilter.class)

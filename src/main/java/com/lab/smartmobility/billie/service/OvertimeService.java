@@ -59,9 +59,7 @@ public class OvertimeService {
         Notification notification=Notification.builder()
                 .type("overtime")
                 .createdAt(LocalDateTime.now())
-                .requester(requester.getName())
                 .readAt(0)
-                .staff(receiver)
                 .build();
         sseEmitterSender.sendSseEmitter(receiver);
     }

@@ -1,4 +1,4 @@
-package com.lab.smartmobility.billie.entity;
+package com.lab.smartmobility.billie.entity.corporation;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -18,6 +18,10 @@ public class CorporationCard {
     @ApiModelProperty(value = "법인카드 고유 시퀀스")
     private Long cardId;
 
+    @ApiModelProperty(value = "카드명")
+    @Column(name = "card_name")
+    private String cardName;
+
     @ApiModelProperty(value = "카드사")
     private String company;
 
@@ -32,7 +36,11 @@ public class CorporationCard {
     @ApiModelProperty(value = "유효기간")
     private String validity;
 
-    @ApiModelProperty(value = "대여상태")
+    @ApiModelProperty(value = "대여상태", notes = "폐기상태는 99")
     @Column(name = "rental_status")
     private int rentalStatus;
+
+    @ApiModelProperty(value = "폐기사유")
+    @Column(name = "reason_for_disposal")
+    private String reasonForDisposal;
 }

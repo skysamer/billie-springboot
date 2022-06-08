@@ -29,15 +29,15 @@ public class MeetingController {
     @PostMapping("/insert")
     @ApiOperation(value = "회의실 예약 등록")
     @ApiResponses({
-            @ApiResponse(code = 200, message = "회의 등록 실패 or 회의 등록 완료")
+            @ApiResponse(code = 200, message = "The time has already been reserved // reservation complete")
     })
     public HttpMessage insertMeeting(@RequestBody ApplyMeetingForm applyMeetingForm){
-        Meeting newMeeting=meetingService.insertMeeting(applyMeetingForm);
+        int isInserted=meetingService.insertMeeting(applyMeetingForm);
 
-        if(newMeeting==null){
-            return new HttpMessage("fail", "회의 등록 실패");
+        if(isInserted==500){
+            return new HttpMessage("fail", "The time has already been reserved");
         }
-        return new HttpMessage("success", "회의 등록 완료");
+        return new HttpMessage("success", "reservation complete");
     }
 
     @GetMapping("/{meeting-num}")
@@ -55,13 +55,16 @@ public class MeetingController {
     @PutMapping("/{meeting-num}")
     @ApiOperation(value = "개별 회의실 예약 정보 수정")
     @ApiResponses({
-            @ApiResponse(code = 200, message = "수정 실패 or 수정 성공")
+            @ApiResponse(code = 200, message = "fail to modify // The time has already been reserved // reservation complete")
     })
     public HttpMessage modifyMeeting(@RequestBody ApplyMeetingForm applyMeetingForm, @PathVariable("meeting-num") Long meetingNum){
-        if(meetingService.updateMeeting(meetingNum, applyMeetingForm)==9999){
-            return new HttpMessage("fail", "수정 실패");
+        int isUpdated=meetingService.updateMeeting(meetingNum, applyMeetingForm);
+        if(isUpdated==9999){
+            return new HttpMessage("fail", "fail to modify");
+        }else if(isUpdated==500){
+            return new HttpMessage("fail", "The time has already been reserved");
         }
-        return new HttpMessage("success", "수정 성공");
+        return new HttpMessage("success", "reservation complete");
     }
 
     @DeleteMapping("/{meeting-num}")

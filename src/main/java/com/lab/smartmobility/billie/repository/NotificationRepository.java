@@ -11,9 +11,7 @@ import java.util.List;
 @Repository
 @Transactional
 public interface NotificationRepository extends JpaRepository<Notification, Long> {
-    List<Notification> findAllByStaffAndReadAt(Staff staff, int readAt);
-
-    boolean existsByStaffAndReadAt(Staff staff, int readAt);
-
+    List<Notification> findAllByReceiverAndReadAt(String receiver, int readAt);
+    //boolean existsByStaffAndReadAt(Staff staff, int readAt);
     Notification findByNotificationNum(Long notificationNum);
 }

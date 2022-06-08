@@ -8,7 +8,7 @@ import com.lab.smartmobility.billie.repository.StaffRepository;
 import com.lab.smartmobility.billie.repository.traffic.TrafficCardRepository;
 import com.lab.smartmobility.billie.repository.traffic.TrafficCardReservationRepository;
 import com.lab.smartmobility.billie.repository.traffic.TrafficCardReservationRepositoryImpl;
-import com.lab.smartmobility.billie.util.BaseDateParser;
+import com.lab.smartmobility.billie.util.DateTimeUtil;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -39,7 +39,7 @@ public class TrafficCardService {
     private final StaffRepository staffRepository;
     private final ModelMapper modelMapper;
     private final TrafficCardReservationRepositoryImpl reservationRepositoryImpl;
-    private final BaseDateParser baseDateParser;
+    private final DateTimeUtil baseDateParser;
     private final Log log= LogFactory.getLog(getClass());
 
     /*보유 교통카드 목록 조회*/
@@ -220,17 +220,9 @@ public class TrafficCardService {
     }
 
     /*금일 나의 교통카드*/
-    public List<TrafficCardReservation> getMyTodayCardReservation(LocalDate today, Long staffNum){
+    public List<TrafficCardReservation> getMyCardReservation(Long staffNum){
         Staff staff = staffRepository.findByStaffNum(staffNum);
-        List<TrafficCardReservation> myReservationList = reservationRepository.findByStaffAndReturnStatusOrderByRentedAt(staff, 0);
-
-        List<TrafficCardReservation> currentlyOnRental=new ArrayList<>();
-        for(TrafficCardReservation myReservation : myReservationList){
-            if(myReservation.getTrafficCard().getRentalStatus()==1){
-                currentlyOnRental.add(myReservation);
-            }
-        }
-        return currentlyOnRental;
+        return reservationRepository.findByStaffAndReturnStatusOrderByRentedAt(staff, 0);
     }
 
     /*교통카드 반납 신청*/
@@ -296,11 +288,11 @@ public class TrafficCardService {
         List<TrafficCardReservation> reservationList;
         if(baseDate.equals("all")){
             reservationList = new ArrayList<>(reservationRepositoryImpl.findAll(trafficCard, disposalInfo));
+        }else{
+            LocalDateTime startDateTime=baseDateParser.getStartDateTime(baseDate);
+            LocalDateTime endDateTime=baseDateParser.getEndDateTime(baseDate);
+            reservationList= new ArrayList<>(reservationRepositoryImpl.findAll(trafficCard, startDateTime, endDateTime, disposalInfo));
         }
-
-        LocalDateTime startDateTime=baseDateParser.getStartDateTime(baseDate);
-        LocalDateTime endDateTime=baseDateParser.getEndDateTime(baseDate);
-        reservationList= new ArrayList<>(reservationRepositoryImpl.findAll(trafficCard, startDateTime, endDateTime, disposalInfo));
 
         Workbook wb = new XSSFWorkbook();
         Sheet sheet = wb.createSheet(baseDate);

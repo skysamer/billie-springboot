@@ -1,14 +1,19 @@
 package com.lab.smartmobility.billie.controller;
 
 import com.lab.smartmobility.billie.config.JwtTokenProvider;
-import com.lab.smartmobility.billie.dto.DepartmentDTO;
-import com.lab.smartmobility.billie.dto.RankDTO;
+import com.lab.smartmobility.billie.dto.staff.DepartmentDTO;
+import com.lab.smartmobility.billie.dto.staff.RankDTO;
+import com.lab.smartmobility.billie.dto.staff.EmailForm;
+import com.lab.smartmobility.billie.dto.staff.EmailTokenForm;
+import com.lab.smartmobility.billie.dto.staff.SignUpForm;
 import com.lab.smartmobility.billie.entity.HttpMessage;
 import com.lab.smartmobility.billie.entity.Mail;
 import com.lab.smartmobility.billie.entity.Staff;
 import com.lab.smartmobility.billie.service.StaffService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -28,18 +33,47 @@ public class StaffController {
     private final JwtTokenProvider jwtTokenProvider;
     private final StaffService staffService;
 
-    @ApiOperation(value = "회원가입", notes = "테스트 시 회원가입에 필요한 정보만 담고 나머지 파라미터는 null로 처리")
-    @PostMapping(value = "/joinIn", produces = MediaType.APPLICATION_JSON_VALUE)
-    public HttpMessage joinIn(@RequestBody Staff staff) {
-        int checkJoin= staffService.joinIn(staff);
+    @ApiOperation(value = "이메일 인증 토큰 전송")
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "not equal staff info // send email token")
+    })
+    @PostMapping("/send-email-token")
+    public HttpMessage sendEmailToken(@RequestBody EmailForm emailForm){
+        if(staffService.sendEmailToken(emailForm.getEmail())==9999){
+            return new HttpMessage("fail", "not equal staff info");
+        }
+        return new HttpMessage("success", "send email token");
+    }
 
-        if(checkJoin == 0){
-            return new HttpMessage("fail", "인증된 직원이 아닙니다.");
+    @ApiOperation(value = "이메일 토큰 검증")
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "not equal email token // equal token // time out")
+    })
+    @PostMapping("/verify-email-token")
+    public HttpMessage verifyEmailToken(@RequestBody EmailTokenForm emailTokenForm){
+        int isVerified=staffService.verifyEmailToken(emailTokenForm);
+        if(isVerified==9999){
+            return new HttpMessage("fail", "not equal email token");
+        }else if(isVerified==500){
+            return new HttpMessage("fail", "time out");
         }
-        else if(checkJoin==400){
-            return new HttpMessage("exists", "이미 가입된 회원입니다.");
+        return new HttpMessage("success", "equal token");
+    }
+
+
+    @ApiOperation(value = "회원가입")
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "exists join info // success sign up // not verified")
+    })
+    @PostMapping(value = "/sign-up", produces = MediaType.APPLICATION_JSON_VALUE)
+    public HttpMessage joinIn(@RequestBody SignUpForm signUpForm) {
+        int checkJoin= staffService.joinIn(signUpForm);
+        if(checkJoin==9999){
+            return new HttpMessage("fail", "exists join info");
+        }else if(checkJoin==500){
+            return new HttpMessage("fail", "not verified");
         }
-        return new HttpMessage("success", "회원가입이 완료되었습니다.");
+        return new HttpMessage("success", "success sign up");
     }
 
     @ApiOperation(value = "로그인", notes = "성공 시 jwt 토큰을 X-AUTH-TOKEN 키에 매핑하고 헤더에 넣어 반환")

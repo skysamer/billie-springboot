@@ -90,7 +90,7 @@ public class VehicleController {
     @PostMapping("/apply-rental")
     @ApiOperation(value = "차량 이용 신청")
     @ApiResponses({
-            @ApiResponse(code = 200, message = "차량 대여 신청 실패 or 해당 날짜에 차량이 이미 대여중입니다 or 현재 시각보다 과거로 예약할 수 없습니다 or 대여성공")
+            @ApiResponse(code = 200, message = "차량 대여 신청 실패 or 해당 날짜에 차량이 이미 대여중입니다 or 현재 시각보다 과거로 예약할 수 없습니다 or 대여 성공")
     })
     public HttpMessage applyForRent(@Valid @RequestBody ApplyRentalVehicleDTO rentalVehicleDTO){
         int checkApplyRental=service.applyForRent(rentalVehicleDTO);
@@ -206,7 +206,7 @@ public class VehicleController {
     }
 
     @GetMapping("/excel/{disposal-info}/{vehicle-num}/{base-date}")
-    @ApiOperation(value = "차량 반납 이력 엑셀 다운로드", notes = "전체 차량 조회의 경우 -1 // 폐기정보(0:미포함, 1:포함) // base-date : yyyy-MM")
+    @ApiOperation(value = "차량 반납 이력 엑셀 다운로드", notes = "전체 차량 조회의 경우 -1 // 폐기정보(0:미포함, 1:포함) // base-date : yyyy-MM", response = byte.class)
     public void excelDownload(@PathVariable("disposal-info") int disposalInfo,
                               @PathVariable("vehicle-num") Long vehicleNum,
                               @PathVariable("base-date") String baseDate, HttpServletResponse response) throws IOException {

@@ -21,7 +21,7 @@ public class NotificationService {
     /*읽지 않은 알림 목록 조회*/
     public List<Notification> getMyNotificationList(Long staffNum) {
         Staff staff=staffRepository.findByStaffNum(staffNum);
-        return notificationRepository.findAllByStaffAndReadAt(staff, 0);
+        return notificationRepository.findAllByReceiverAndReadAt(staff.getName(), 0);
     }
 
     /*개별 알림 조회*/

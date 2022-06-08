@@ -1,4 +1,4 @@
-package com.lab.smartmobility.billie.repository;
+package com.lab.smartmobility.billie.repository.vehicle;
 
 import com.lab.smartmobility.billie.entity.Vehicle;
 import com.lab.smartmobility.billie.entity.VehicleReservation;

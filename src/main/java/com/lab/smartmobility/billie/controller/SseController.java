@@ -1,10 +1,7 @@
 package com.lab.smartmobility.billie.controller;
 
 import com.lab.smartmobility.billie.config.JwtTokenProvider;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
+import io.swagger.annotations.*;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -18,6 +15,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 @RestController
+@Api(tags = {"실시간 단방향 통신 api"})
 @RequiredArgsConstructor
 public class SseController {
     public static Map<String, SseEmitter> SSE_EMITTERS = new ConcurrentHashMap<>();

@@ -1,8 +1,10 @@
 package com.lab.smartmobility.billie.service;
 
 import com.lab.smartmobility.billie.config.CommonEncoder;
-import com.lab.smartmobility.billie.dto.DepartmentDTO;
-import com.lab.smartmobility.billie.dto.RankDTO;
+import com.lab.smartmobility.billie.dto.staff.DepartmentDTO;
+import com.lab.smartmobility.billie.dto.staff.RankDTO;
+import com.lab.smartmobility.billie.dto.staff.EmailTokenForm;
+import com.lab.smartmobility.billie.dto.staff.SignUpForm;
 import com.lab.smartmobility.billie.entity.Staff;
 import com.lab.smartmobility.billie.repository.StaffRepository;
 import com.lab.smartmobility.billie.util.CustomSimpleMailMessage;
@@ -15,14 +17,15 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Random;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
+@Transactional
 @Service
 public class StaffService implements UserDetailsService {
     private final Log log = LogFactory.getLog(getClass());
@@ -42,34 +45,63 @@ public class StaffService implements UserDetailsService {
         return staffRepository.findByEmail(username);
     }
 
+    /*이메일 토큰 전송*/
+    public int sendEmailToken(String email){
+        Staff staff=staffRepository.findByEmail(email);
+        if(staff==null){
+            return 9999;
+        }
+        staff.setEmailToken(UUID.randomUUID().toString());
+        staff.setEmailTokenGeneratedAt(LocalDateTime.now());
+        staffRepository.save(staff);
+
+        CustomSimpleMailMessage mailMessage = CustomSimpleMailMessage.builder()
+                .subject("[Billie] 이메일 인증 토큰입니다.")
+                .to(new String[]{staff.getEmail()})
+                .text("이메일 인증 토큰 : " + staff.getEmailToken())
+                .build();
+        javaMailSender.send(mailMessage);
+        return 0;
+    }
+
+    /*이메일 토큰 검증*/
+    public int verifyEmailToken(EmailTokenForm emailTokenForm){
+        Staff staff=staffRepository.findByEmail(emailTokenForm.getEmail());
+        if(!staff.getEmailToken().equals(emailTokenForm.getEmailToken())){
+            return 9999;
+        }else if(ChronoUnit.MINUTES.between(staff.getEmailTokenGeneratedAt(), LocalDateTime.now())>=10){
+            return 500;
+        }
+        staff.setIsVerified(1);
+        staffRepository.save(staff);
+        return 0;
+    }
+
     public boolean checkPassword(String email, String password) {
         Staff staff = staffRepository.findByEmail(email);
         return passwordEncoder.matches(password, staff.getPassword());
     }
 
     /*회원가입*/
-    public int joinIn(Staff staff) {
-        String insertPassword = staff.getPassword();
-        if (!staffRepository.existsByNameAndDepartmentAndBirthAndEmail(staff.getName(), staff.getDepartment(), staff.getBirth(), staff.getEmail())) {
-            return 0;
+    public int joinIn(SignUpForm signUpForm) {
+        Staff staff=staffRepository.findByEmail(signUpForm.getEmail());
+        if(staff.getPassword()!=null && staff.getRole()!=null){
+            return 9999;
+        }else if(staff.getIsVerified()==0){
+            return 500;
         }
 
-        Staff findStaff = staffRepository.findByEmail(staff.getEmail());
-        if (findStaff.getPassword() != null && findStaff.getRole() != null) {
-            return 400;
-        }
-
-        if (findStaff.getDepartment().equals("관리부") || (findStaff.getDepartment().equals("관리부") && findStaff.getRank().equals("부장"))) {
-            findStaff.setRole("ROLE_ADMIN");
-        } else if (findStaff.getRank().equals("책임연구원") || findStaff.getRank().equals("실장") || findStaff.getRank().equals("부장")) {
-            findStaff.setRole("ROLE_MANAGER");
+        if (staff.getDepartment().equals("관리부") || (staff.getDepartment().equals("관리부") && staff.getRank().equals("부장"))) {
+            staff.setRole("ROLE_ADMIN");
+        } else if (staff.getRank().equals("책임연구원") || staff.getRank().equals("실장") || staff.getRank().equals("부장")) {
+            staff.setRole("ROLE_MANAGER");
         }  else {
-            findStaff.setRole("ROLE_USER");
+            staff.setRole("ROLE_USER");
         }
 
-        findStaff.setPassword(passwordEncoder.encode(insertPassword));
-        staffRepository.save(findStaff);
-        return 1;
+        staff.setPassword(passwordEncoder.encode(signUpForm.getPassword()));
+        staffRepository.save(staff);
+        return 0;
     }
 
     /*비밀번호 찾기*/

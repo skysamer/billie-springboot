@@ -1,4 +1,4 @@
-package com.lab.smartmobility.billie.dto;
+package com.lab.smartmobility.billie.dto.staff;
 
 import io.swagger.annotations.ApiModel;
 import lombok.AllArgsConstructor;

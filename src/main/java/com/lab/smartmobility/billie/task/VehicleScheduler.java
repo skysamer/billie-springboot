@@ -2,8 +2,8 @@ package com.lab.smartmobility.billie.task;
 
 import com.lab.smartmobility.billie.entity.Vehicle;
 import com.lab.smartmobility.billie.entity.VehicleReservation;
-import com.lab.smartmobility.billie.repository.VehicleReservationRepository;
-import com.lab.smartmobility.billie.repository.VehicleRepository;
+import com.lab.smartmobility.billie.repository.vehicle.VehicleReservationRepository;
+import com.lab.smartmobility.billie.repository.vehicle.VehicleRepository;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;

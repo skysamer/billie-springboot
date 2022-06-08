@@ -159,11 +159,10 @@ public class TrafficCardController {
         return new HttpMessage("success", "대여 정보 삭제 완료");
     }
 
-    @GetMapping("/{staff-num}/{today}")
+    @GetMapping("/my/{staff-num}")
     @ApiOperation(value = "금일 나의 교통카드 예약 목록 조회")
-    public List<TrafficCardReservation> getMyTodayCardReservation(@PathVariable("staff-num") Long staffNum,
-                                                                  @ApiParam(value = "yyyy-MM-dd") @PathVariable("today") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate today){
-        return service.getMyTodayCardReservation(today, staffNum);
+    public List<TrafficCardReservation> getMyTodayCardReservation(@PathVariable("staff-num") Long staffNum){
+        return service.getMyCardReservation(staffNum);
     }
 
     @PostMapping("/apply-return")
