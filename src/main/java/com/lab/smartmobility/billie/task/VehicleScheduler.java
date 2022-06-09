@@ -31,7 +31,7 @@ public class VehicleScheduler {
         try{
             List<VehicleReservation> todayReservations = reservationRepository.findAllByRentedAt(now);
             if(todayReservations.size()==0){
-                log.info("현재 시각에 해당하는 예약 없음");
+                log.info("현재 시각에 해당하는 차량 예약 없음");
                 return;
             }
 

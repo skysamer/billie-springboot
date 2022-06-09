@@ -50,11 +50,11 @@ public class Application {
     @Column(name = "reason_for_rejection")
     private String reasonForRejection;
 
-    @ApiModelProperty(name = "개인경비청구여부")
+    @ApiModelProperty(value = "개인경비청구여부")
     @Column(name = "is_claimed_expense")
     private int isClaimedExpense;
 
-    @ApiModelProperty(name = "반납여부 (혹은 경비청구 여부)")
+    @ApiModelProperty(value = "반납여부 (혹은 경비청구 여부)")
     @Column(name = "is_returned")
     private int isReturned;
 

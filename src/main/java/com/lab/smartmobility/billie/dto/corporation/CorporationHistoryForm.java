@@ -41,7 +41,7 @@ public class CorporationHistoryForm {
     @ApiModelProperty(value = "내용(용도)")
     private String content;
 
-    @ApiModelProperty(name = "개인경비청구여부")
+    @ApiModelProperty(value = "개인경비청구여부")
     private int isClaimedExpense;
 
     @ApiModelProperty(value = "총 사용금액")

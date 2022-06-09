@@ -1,11 +1,7 @@
 package com.lab.smartmobility.billie.controller;
 
 import com.lab.smartmobility.billie.config.JwtTokenProvider;
-import com.lab.smartmobility.billie.dto.staff.DepartmentDTO;
-import com.lab.smartmobility.billie.dto.staff.RankDTO;
-import com.lab.smartmobility.billie.dto.staff.EmailForm;
-import com.lab.smartmobility.billie.dto.staff.EmailTokenForm;
-import com.lab.smartmobility.billie.dto.staff.SignUpForm;
+import com.lab.smartmobility.billie.dto.staff.*;
 import com.lab.smartmobility.billie.entity.HttpMessage;
 import com.lab.smartmobility.billie.entity.Mail;
 import com.lab.smartmobility.billie.entity.Staff;
@@ -78,21 +74,18 @@ public class StaffController {
 
     @ApiOperation(value = "로그인", notes = "성공 시 jwt 토큰을 X-AUTH-TOKEN 키에 매핑하고 헤더에 넣어 반환")
     @PostMapping(value = "/login", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Staff login(@RequestBody Staff staff, HttpServletResponse response) {
-        if(staffService.loadUserByUsername(staff.getEmail())==null){
+    public Staff login(@RequestBody LoginForm loginForm, HttpServletResponse response) {
+        if(staffService.loadUserByUsername(loginForm.getEmail())==null){
             return Staff.builder()
-                    .name("가입된 사용자가 아닙니다.")
-                    .build();
+                    .name("가입된 사용자가 아닙니다.").build();
         }
 
-        Staff findStaff= (Staff) staffService.loadUserByUsername(staff.getEmail());
-        String password=staff.getPassword();
-        log.info(password);
-        boolean checkPassword = staffService.checkPassword(findStaff.getEmail(), password);
+        Staff findStaff= (Staff) staffService.loadUserByUsername(loginForm.getEmail());
+
+        boolean checkPassword = staffService.checkPassword(findStaff.getEmail(), loginForm.getPassword());
         if(!checkPassword){
             return Staff.builder()
-                    .password("비밀번호가 일치하지 않습니다.")
-                    .build();
+                    .password("비밀번호가 일치하지 않습니다.").build();
         }
 
         String token=jwtTokenProvider.createTokenLogin(findStaff.getEmail(), findStaff.getRole());

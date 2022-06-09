@@ -1,6 +1,7 @@
 package com.lab.smartmobility.billie.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.*;
@@ -69,6 +70,10 @@ public class Staff implements UserDetails {
     @Column(name = "is_verified")
     private int isVerified;
 
+    public String getPasswordToCheckMatch(){
+        return password;
+    }
+
     @Override
     @JsonIgnore
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -76,6 +81,7 @@ public class Staff implements UserDetails {
     }
 
     @Override
+    @JsonIgnore
     public String getPassword() {
         return password;
     }

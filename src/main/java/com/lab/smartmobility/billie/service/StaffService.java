@@ -79,13 +79,13 @@ public class StaffService implements UserDetailsService {
 
     public boolean checkPassword(String email, String password) {
         Staff staff = staffRepository.findByEmail(email);
-        return passwordEncoder.matches(password, staff.getPassword());
+        return passwordEncoder.matches(password, staff.getPasswordToCheckMatch());
     }
 
     /*회원가입*/
     public int joinIn(SignUpForm signUpForm) {
         Staff staff=staffRepository.findByEmail(signUpForm.getEmail());
-        if(staff.getPassword()!=null && staff.getRole()!=null){
+        if(staff.getPasswordToCheckMatch()!=null && staff.getRole()!=null){
             return 9999;
         }else if(staff.getIsVerified()==0){
             return 500;

@@ -32,7 +32,7 @@ public class ExpenseClaimHistoryForm {
     @ApiModelProperty(value = "내용(용도)")
     private String content;
 
-    @ApiModelProperty(name = "개인경비청구여부")
+    @ApiModelProperty(value = "개인경비청구여부")
     private int isClaimedExpense;
 
     @ApiModelProperty(value = "입금은행")

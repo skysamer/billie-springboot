@@ -30,7 +30,7 @@ public class TrafficCardScheduler {
         try{
             List<TrafficCardReservation> todayReservations = reservationRepository.findAllByRentedAt(now);
             if(todayReservations.size()==0){
-                log.info("현재 시각에 해당하는 예약 없음");
+                log.info("현재 시각에 해당하는 교통카드 예약 없음");
                 return;
             }
 

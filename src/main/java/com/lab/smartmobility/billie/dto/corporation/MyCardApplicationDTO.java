@@ -41,6 +41,6 @@ public class MyCardApplicationDTO {
     @ApiModelProperty(value = "사용신청 직원 정보")
     private Staff staff;
 
-    @ApiModelProperty(name = "개인경비청구여부")
+    @ApiModelProperty(value = "개인경비청구여부")
     private int isClaimedExpense;
 }

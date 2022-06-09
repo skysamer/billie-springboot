@@ -43,7 +43,8 @@ public class CorporationCardService {
     /*신규 법인카드 등록*/
     public int createCard(CorporationCardForm corporationCardForm){
         try{
-            cardRepository.save(modelMapper.map(corporationCardForm, CorporationCard.class));
+            CorporationCard newCorporationCard=modelMapper.map(corporationCardForm, CorporationCard.class);
+            cardRepository.save(newCorporationCard);
         }catch (Exception e){
             log.error("fail : "+e);
             return 9999;
@@ -177,6 +178,17 @@ public class CorporationCardService {
         Application application=applicationRepository.findByApplicationId(applicationId);
         if(application.getApprovalStatus()!='w'){
             return new HttpMessage("fail", "this-application-is-approved");
+        }
+
+        applicationRepository.delete(application);
+        return new HttpMessage("success", "remove-application");
+    }
+
+    /*관리자의 신청삭제*/
+    public HttpMessage removeCardUseApplicationByAdmin(Long applicationId){
+        Application application=applicationRepository.findByApplicationId(applicationId);
+        if(application==null){
+            return new HttpMessage("fail", "not-exist-info");
         }
 
         applicationRepository.delete(application);
