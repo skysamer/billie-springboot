@@ -13,9 +13,6 @@ import org.springframework.stereotype.Repository;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
-
-import static com.lab.smartmobility.billie.entity.corporation.QApplication.application;
 
 @Repository
 @RequiredArgsConstructor
@@ -34,7 +31,7 @@ public class CorporationReturnRepositoryImpl {
     public CorporationHistoryForm getCorporationHistory(Long returnId){
         CorporationHistoryForm corporationHistoryForm = jpaQueryFactory
                 .select(Projections.bean(CorporationHistoryForm.class,
-                        application.staff.name,
+                        application.staff.name, application.staff.department,
                         application.startDate, application.startTime, application.endDate, application.endTime, application.content, application.isClaimedExpense,
                         application.corporationCard.cardName, application.corporationCard.company, application.corporationCard.cardNumber,
                         cardReturn.returnId, cardReturn.totalAmountUsed, cardReturn.note))
@@ -59,7 +56,7 @@ public class CorporationReturnRepositoryImpl {
     public ExpenseClaimHistoryForm getExpenseClaimHistory(Long expenseId){
         ExpenseClaimHistoryForm expenseClaimHistoryForm = jpaQueryFactory
                 .select(Projections.bean(ExpenseClaimHistoryForm.class,
-                        application.staff.name,
+                        application.staff.name, application.staff.department,
                         application.startDate, application.startTime, application.endDate, application.endTime, application.content, application.isClaimedExpense,
                         expenseClaim.expenseId, expenseClaim.depositBank, expenseClaim.depositAccountNumber, expenseClaim.totalAmountUsed, expenseClaim.note))
                 .from(application)
@@ -83,7 +80,7 @@ public class CorporationReturnRepositoryImpl {
     public List<CorporationHistoryForm> myReturnHistoryList(Long staffNum, String cardName, String baseYear, Pageable pageable){
         List<CorporationHistoryForm> corporationHistoryFormList = jpaQueryFactory
                 .select(Projections.bean(CorporationHistoryForm.class,
-                        application.staff.name,
+                        application.staff.name, application.staff.department,
                         application.startDate, application.startTime, application.endDate, application.endTime, application.content, application.isClaimedExpense,
                         application.corporationCard.cardName, application.corporationCard.company, application.corporationCard.cardNumber,
                         cardReturn.returnId, cardReturn.totalAmountUsed, cardReturn.note))
@@ -117,7 +114,7 @@ public class CorporationReturnRepositoryImpl {
     public int getMyReturnHistoryCount(Long staffNum, String cardName, String baseYear){
         return jpaQueryFactory
                 .select(Projections.bean(CorporationHistoryForm.class,
-                        application.staff.name,
+                        application.staff.name, application.staff.department,
                         application.startDate, application.startTime, application.endDate, application.endTime, application.content, application.isClaimedExpense,
                         application.corporationCard.cardName, application.corporationCard.company, application.corporationCard.cardNumber,
                         cardReturn.returnId, cardReturn.totalAmountUsed, cardReturn.note))
@@ -136,7 +133,7 @@ public class CorporationReturnRepositoryImpl {
     public List<ExpenseClaimHistoryForm> getMyExpenseClaimHistoryList(Long staffNum, String baseYear, Pageable pageable){
         List<ExpenseClaimHistoryForm> expenseClaimHistoryFormList = jpaQueryFactory
                 .select(Projections.bean(ExpenseClaimHistoryForm.class,
-                        application.staff.name,
+                        application.staff.name, application.staff.department,
                         application.startDate, application.startTime, application.endDate, application.endTime, application.content, application.isClaimedExpense,
                         expenseClaim.expenseId, expenseClaim.depositBank, expenseClaim.depositAccountNumber, expenseClaim.totalAmountUsed, expenseClaim.note))
                 .from(application)
@@ -168,7 +165,7 @@ public class CorporationReturnRepositoryImpl {
     public int getMyExpenseHistoryCount(Long staffNum, String baseYear){
         return jpaQueryFactory
                 .select(Projections.bean(ExpenseClaimHistoryForm.class,
-                        application.staff.name,
+                        application.staff.name, application.staff.department,
                         application.startDate, application.startTime, application.endDate, application.endTime, application.content, application.isClaimedExpense,
                         expenseClaim.expenseId, expenseClaim.depositBank, expenseClaim.depositAccountNumber, expenseClaim.totalAmountUsed, expenseClaim.note))
                 .from(application)
@@ -184,7 +181,7 @@ public class CorporationReturnRepositoryImpl {
     public List<CorporationHistoryForm> returnHistoryListByManager(String department, String role, int disposalInfo, String cardName, String baseYear, Pageable pageable){
         List<CorporationHistoryForm> corporationHistoryFormList = jpaQueryFactory
                 .select(Projections.bean(CorporationHistoryForm.class,
-                        application.staff.name,
+                        application.staff.name, application.staff.department,
                         application.startDate, application.startTime, application.endDate, application.endTime, application.content, application.isClaimedExpense,
                         application.corporationCard.cardName, application.corporationCard.company, application.corporationCard.cardNumber,
                         cardReturn.returnId, cardReturn.totalAmountUsed, cardReturn.note))
@@ -220,7 +217,7 @@ public class CorporationReturnRepositoryImpl {
     public int getReturnHistoryCountByManager(String department, String role, int disposalInfo, String cardName, String baseYear){
         return jpaQueryFactory
                 .select(Projections.bean(CorporationHistoryForm.class,
-                        application.staff.name,
+                        application.staff.name, application.staff.department,
                         application.startDate, application.startTime, application.endDate, application.endTime, application.content, application.isClaimedExpense,
                         application.corporationCard.cardName, application.corporationCard.company, application.corporationCard.cardNumber,
                         cardReturn.returnId, cardReturn.totalAmountUsed, cardReturn.note))
@@ -241,7 +238,7 @@ public class CorporationReturnRepositoryImpl {
     public List<ExpenseClaimHistoryForm> getExpenseClaimHistoryListByManager(String department, String role, String baseYear, Pageable pageable){
         List<ExpenseClaimHistoryForm> expenseClaimHistoryFormList = jpaQueryFactory
                 .select(Projections.bean(ExpenseClaimHistoryForm.class,
-                        application.staff.name,
+                        application.staff.name, application.staff.department,
                         application.startDate, application.startTime, application.endDate, application.endTime, application.content, application.isClaimedExpense,
                         expenseClaim.expenseId, expenseClaim.depositBank, expenseClaim.depositAccountNumber, expenseClaim.totalAmountUsed, expenseClaim.note))
                 .from(application)
@@ -274,7 +271,7 @@ public class CorporationReturnRepositoryImpl {
     public int getExpenseClaimHistoryCountByManager(String department, String role, String baseYear){
         return jpaQueryFactory
                 .select(Projections.bean(ExpenseClaimHistoryForm.class,
-                        application.staff.name,
+                        application.staff.name, application.staff.department,
                         application.startDate, application.startTime, application.endDate, application.endTime, application.content, application.isClaimedExpense,
                         expenseClaim.expenseId, expenseClaim.depositBank, expenseClaim.depositAccountNumber, expenseClaim.totalAmountUsed, expenseClaim.note))
                 .from(application)
@@ -291,7 +288,7 @@ public class CorporationReturnRepositoryImpl {
     public List<CorporationHistoryForm> getCardReturnHistoryListByAdmin(int disposalInfo, String cardName, String baseYear, Pageable pageable){
         List<CorporationHistoryForm> corporationHistoryFormList = jpaQueryFactory
                 .select(Projections.bean(CorporationHistoryForm.class,
-                        application.staff.name,
+                        application.staff.name, application.staff.department,
                         application.startDate, application.startTime, application.endDate, application.endTime, application.content, application.isClaimedExpense,
                         application.corporationCard.cardName, application.corporationCard.company, application.corporationCard.cardNumber,
                         cardReturn.returnId, cardReturn.totalAmountUsed, cardReturn.note))
@@ -326,7 +323,7 @@ public class CorporationReturnRepositoryImpl {
     public int getCardReturnHistoryCountByAdmin(int disposalInfo, String cardName, String baseYear){
         return jpaQueryFactory
                 .select(Projections.bean(CorporationHistoryForm.class,
-                        application.staff.name,
+                        application.staff.name, application.staff.department,
                         application.startDate, application.startTime, application.endDate, application.endTime, application.content, application.isClaimedExpense,
                         application.corporationCard.cardName, application.corporationCard.company, application.corporationCard.cardNumber,
                         cardReturn.returnId, cardReturn.totalAmountUsed, cardReturn.note))
@@ -346,7 +343,7 @@ public class CorporationReturnRepositoryImpl {
     public List<CorporationHistoryForm> excelCardReturnHistoryListByAdmin(int disposalInfo, String cardName, String baseYear){
         List<CorporationHistoryForm> corporationHistoryFormList = jpaQueryFactory
                 .select(Projections.bean(CorporationHistoryForm.class,
-                        application.staff.name,
+                        application.staff.name, application.staff.department,
                         application.startDate, application.startTime, application.endDate, application.endTime, application.content, application.isClaimedExpense,
                         application.corporationCard.cardName, application.corporationCard.company, application.corporationCard.cardNumber,
                         cardReturn.returnId, cardReturn.totalAmountUsed, cardReturn.note))
@@ -378,7 +375,7 @@ public class CorporationReturnRepositoryImpl {
     public List<ExpenseClaimHistoryForm> getExpenseClaimHistoryListByAdmin(String baseYear, Pageable pageable){
         List<ExpenseClaimHistoryForm> expenseClaimHistoryFormList = jpaQueryFactory
                 .select(Projections.bean(ExpenseClaimHistoryForm.class,
-                        application.staff.name,
+                        application.staff.name, application.staff.department,
                         application.startDate, application.startTime, application.endDate, application.endTime, application.content, application.isClaimedExpense,
                         expenseClaim.expenseId, expenseClaim.depositBank, expenseClaim.depositAccountNumber, expenseClaim.totalAmountUsed, expenseClaim.note))
                 .from(application)
@@ -410,7 +407,7 @@ public class CorporationReturnRepositoryImpl {
     public int getExpenseClaimHistoryCountByAdmin(String baseYear){
         return jpaQueryFactory
                 .select(Projections.bean(ExpenseClaimHistoryForm.class,
-                        application.staff.name,
+                        application.staff.name, application.staff.department,
                         application.startDate, application.startTime, application.endDate, application.endTime, application.content, application.isClaimedExpense,
                         expenseClaim.expenseId, expenseClaim.depositBank, expenseClaim.depositAccountNumber, expenseClaim.totalAmountUsed, expenseClaim.note))
                 .from(application)
@@ -426,7 +423,7 @@ public class CorporationReturnRepositoryImpl {
     public List<ExpenseClaimHistoryForm> excelExpenseClaimHistoryList(String baseYear){
         List<ExpenseClaimHistoryForm> expenseClaimHistoryFormList = jpaQueryFactory
                 .select(Projections.bean(ExpenseClaimHistoryForm.class,
-                        application.staff.name,
+                        application.staff.name, application.staff.department,
                         application.startDate, application.startTime, application.endDate, application.endTime, application.content, application.isClaimedExpense,
                         expenseClaim.expenseId, expenseClaim.depositBank, expenseClaim.depositAccountNumber, expenseClaim.totalAmountUsed, expenseClaim.note))
                 .from(application)

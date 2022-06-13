@@ -79,8 +79,7 @@ public class CorporationCardService {
     public int abrogate(Long cardId, DisposalForm disposalForm){
         try{
             CorporationCard card=cardRepository.findByCardId(cardId);
-            card.setRentalStatus(99);
-            card.setReasonForDisposal(disposalForm.getReasonForDisposal());
+            card.discard(99, disposalForm.getReasonForDisposal());
             cardRepository.save(card);
         }catch (Exception e){
             log.error("fail : "+e);
@@ -125,6 +124,7 @@ public class CorporationCardService {
                 .type("corporation")
                 .approveStatus(application.getApprovalStatus())
                 .build();
+
         try{
             sseEmitterSender.sendSseEmitter(approval);
             notificationRepository.save(notification);

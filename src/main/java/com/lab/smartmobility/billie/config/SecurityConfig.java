@@ -50,6 +50,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                         .antMatchers("/vehicle/apply-rental", "/vehicle/insert-return", "/vehicle/modify/{rent-num}", "/vehicle/my/{staff-num}").hasAnyRole("USER", "MANAGER", "ADMIN")
                         .antMatchers("/vehicle/reservation-list/{startDate}/{endDate}", "/vehicle/reservation/{rent-num}").hasAnyRole("USER", "MANAGER", "ADMIN")
                         .antMatchers(HttpMethod.GET, "/vehicle/{vehicle-num}", "/vehicle/to-own").hasAnyRole("USER", "MANAGER", "ADMIN")
+                        .antMatchers("/vehicle/admin/**").hasRole("ADMIN")
 
                         /*------------------------------------------------------------------------------------교통카드-----------------------------------------------------------------------------------*/
                         .antMatchers("/traffic-card/discard/{card-num}", "traffic-card/excel/{disposal-info}/{card-num}/{base-date}").hasRole("ADMIN")
@@ -60,6 +61,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                         .antMatchers("/traffic-card/modify/{reservation-num}", "/traffic-card/my/{staff-num}", "/traffic-card/remove/{reservation-num}").hasAnyRole("USER", "MANAGER", "ADMIN")
                         .antMatchers("/traffic-card/rental-list/{start-date}/{end-date}", "/traffic-card/reservation/{reservation-num}").hasAnyRole("USER", "MANAGER", "ADMIN")
                         .antMatchers(HttpMethod.DELETE, "/traffic-card/{card-num}").hasAnyRole("USER", "MANAGER", "ADMIN")
+                        .antMatchers("/traffic-card/admin/**").hasRole("ADMIN")
 
                         /*------------------------------------------------------------------------------------법인카드-----------------------------------------------------------------------------------*/
                         /*.antMatchers("/corporation-card/admin/expense-history/{base-year}/{page}/{size}").hasRole("ADMIN")
@@ -91,7 +93,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                         .antMatchers("/corporation-card/my-return-history/{staff-num}/{card-name}/{base-year}/{page}/{size}").hasAnyRole("USER", "MANAGER", "ADMIN")
                         .antMatchers("/corporation-card/remove/application/{application-id}", "/corporation-card/rent", "/corporation-card/return").hasAnyRole("USER", "MANAGER", "ADMIN")*/
 
-                        .antMatchers("/corporation-card/**").hasAnyRole("USER", "MANAGER", "ADMIN")
+                        //.antMatchers("/corporation-card/**").hasAnyRole("USER", "MANAGER", "ADMIN")
                         .and()
                         .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider),
                                 UsernamePasswordAuthenticationFilter.class)

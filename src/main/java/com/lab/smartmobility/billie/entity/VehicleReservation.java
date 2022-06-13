@@ -61,4 +61,11 @@ public class VehicleReservation {
     @JoinColumn(name = "staff_num", referencedColumnName = "staff_num")
     @ApiModelProperty(value = "대여자 정보")
     private Staff staff;
+
+    public void modifyRentInfo(Staff staff, Vehicle vehicle, LocalDateTime rentedAt, LocalDateTime returnedAt){
+        this.vehicle = vehicle;
+        this.staff = staff;
+        this.rentedAt = rentedAt;
+        this.returnedAt = returnedAt;
+    }
 }

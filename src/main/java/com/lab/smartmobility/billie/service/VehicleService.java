@@ -12,7 +12,6 @@ import com.lab.smartmobility.billie.util.DateTimeUtil;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -44,7 +43,7 @@ public class VehicleService {
     private final ModelMapper modelMapper;
     private final VehicleReservationRepositoryImpl reservationRepositoryImpl;
     private final DateTimeUtil baseDateParser;
-    private final Log log = LogFactory.getLog(getClass());
+    private final Log log;
 
     /*보유 차량 및 대여 가능 여부 조회*/
     public List<VehicleDTO> vehicleList(){
@@ -237,6 +236,54 @@ public class VehicleService {
             return 9999;
         }
     }
+
+    /*관리자의 차량 예약 삭제*/
+    public HttpMessage removeReservationByAdmin(Long rentNum){
+        VehicleReservation vehicleReservation = reservationRepository.findByRentNum(rentNum);
+        if(vehicleReservation.getReturnStatusCode()==1){
+            return new HttpMessage("fail", "refund-processing-is-in-progress");
+        }
+
+        reservationRepository.delete(vehicleReservation);
+        return new HttpMessage("success", "success-remove");
+    }
+
+    /*관리자의 차량 예약 수정*/
+    public HttpMessage modifyRentInfoByAdmin(Long rentNum, ApplyRentalVehicleDTO rentalVehicleDTO){
+        VehicleReservation vehicleReservation = reservationRepository.findByRentNum(rentNum);
+        if(vehicleReservation.getReturnStatusCode()==1){
+            return new HttpMessage("fail", "refund-processing-is-in-progress");
+        }
+
+        Staff staff = staffRepository.findByStaffNum(rentalVehicleDTO.getStaffNum());
+        Vehicle vehicle=vehicleRepository.findByVehicleNum(vehicleRepository.findByVehicleName(rentalVehicleDTO.getVehicleName()).getVehicleNum());
+        LocalDateTime rentedAt=LocalDateTime.of(rentalVehicleDTO.getDateOfRental().getYear(),
+                rentalVehicleDTO.getDateOfRental().getMonth(),
+                rentalVehicleDTO.getDateOfRental().getDayOfMonth(),
+                rentalVehicleDTO.getTimeOfRental().getHour(),
+                rentalVehicleDTO.getTimeOfRental().getMinute(), 0);
+        LocalDateTime returnedAt=LocalDateTime.of(rentalVehicleDTO.getExpectedReturnDate().getYear(),
+                rentalVehicleDTO.getExpectedReturnDate().getMonth(),
+                rentalVehicleDTO.getExpectedReturnDate().getDayOfMonth(),
+                rentalVehicleDTO.getExpectedReturnTime().getHour(),
+                rentalVehicleDTO.getExpectedReturnTime().getMinute(), 0);
+
+        List<VehicleReservation> reservationList=reservationRepository.findAllByReturnStatusCode(0);
+        reservationList.remove(reservationRepository.findByRentNum(rentNum));
+        for(VehicleReservation reservation : reservationList){
+            if(((reservation.getRentedAt().isBefore(rentedAt) || reservation.getRentedAt().isEqual(rentedAt)) &&
+                    (reservation.getReturnedAt().isAfter(rentedAt)))
+                    && vehicle.getVehicleNum().equals(reservation.getVehicle().getVehicleNum())){
+                return new HttpMessage("fail", "already-reservation");
+            }
+        }
+
+        modelMapper.map(rentalVehicleDTO, vehicleReservation);
+        vehicleReservation.modifyRentInfo(staff, vehicle, rentedAt, returnedAt);
+        reservationRepository.save(vehicleReservation);
+        return new HttpMessage("success", "success-modify");
+    }
+
 
     /*나의 차량 예약 현황 조회*/
     public List<VehicleReservation> getMyReservation(Long staffNum){

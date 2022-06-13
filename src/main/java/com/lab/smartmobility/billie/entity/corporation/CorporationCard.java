@@ -43,4 +43,9 @@ public class CorporationCard {
     @ApiModelProperty(value = "폐기사유")
     @Column(name = "reason_for_disposal")
     private String reasonForDisposal;
+
+    public void discard(int isDiscarded, String reason){
+        this.rentalStatus=isDiscarded;
+        this.reasonForDisposal=reason;
+    }
 }

@@ -43,4 +43,10 @@ public class TrafficCardReservation {
     @ManyToOne
     @JoinColumn(name = "staff_num")
     private Staff staff;
+
+    public void updateReservationInfo(TrafficCard trafficCard, LocalDateTime rentedAt, LocalDateTime returnedAt){
+        this.trafficCard = trafficCard;
+        this.rentedAt = rentedAt;
+        this.returnedAt = returnedAt;
+    }
 }

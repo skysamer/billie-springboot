@@ -487,13 +487,12 @@ public class CorporationCardController {
     public void excelDownload(@PathVariable("disposal-info") int disposalInfo,
                               @PathVariable("card-name") String cardName,
                               @PathVariable("base-year") String baseYear, HttpServletResponse response) throws IOException {
-        Workbook wb=service.excelDownloadReturnHistory(disposalInfo, cardName, baseYear);
-
         response.setContentType("ms-vnd/excel");
         response.setHeader("Content-Disposition", "attachment;filename="+baseYear+"_corporation_history.xlsx");
 
-        wb.write(response.getOutputStream());
-        wb.close();
+        Workbook workbook=service.excelDownloadReturnHistory(disposalInfo, cardName, baseYear);
+        workbook.write(response.getOutputStream());
+        workbook.close();
     }
 
     @ApiOperation(value = "관리자 경비청구 이력 목록 조회")

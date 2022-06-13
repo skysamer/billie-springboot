@@ -159,6 +159,30 @@ public class TrafficCardController {
         return new HttpMessage("success", "대여 정보 삭제 완료");
     }
 
+    @ApiOperation(value = "관리자의 대여 신청 삭제")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "reservation-num", value = "교통카드 예약 시퀀스")
+    })
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "refund-processing-is-in-progress // success-remove")
+    })
+    @DeleteMapping("/admin/remove/{reservation-num}")
+    public HttpMessage removeReservationByAdmin(@PathVariable("reservation-num") Long reservationNum){
+        return service.removeReservationByAdmin(reservationNum);
+    }
+
+    @ApiOperation(value = "관리자의 대여 신청 정보 수정 ")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "reservation-num", value = "교통카드 예약 시퀀스")
+    })
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "refund-processing-is-in-progress // this-time-already-reservation // success-modify")
+    })
+    @PutMapping("/admin/modify/{reservation-num}")
+    public HttpMessage modifyReservationInfoByAdmin(@PathVariable("reservation-num") Long reservationNum, @RequestBody TrafficCardApplyDTO trafficCardApplyDTO){
+        return service.modifyReservationInfoByAdmin(reservationNum, trafficCardApplyDTO);
+    }
+
     @GetMapping("/my/{staff-num}")
     @ApiOperation(value = "금일 나의 교통카드 예약 목록 조회")
     public List<TrafficCardReservation> getMyTodayCardReservation(@PathVariable("staff-num") Long staffNum){

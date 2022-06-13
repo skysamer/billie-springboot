@@ -219,6 +219,49 @@ public class TrafficCardService {
         return 9999;
     }
 
+    /*관리자의 대여 신청 삭제*/
+    public HttpMessage removeReservationByAdmin(Long reservationNum){
+        TrafficCardReservation trafficCardReservation = reservationRepository.findByReservationNum(reservationNum);
+        if(trafficCardReservation.getReturnStatus()==1){
+            return new HttpMessage("fail", "refund-processing-is-in-progress");
+        }
+
+        reservationRepository.delete(trafficCardReservation);
+        return new HttpMessage("success", "success-remove");
+    }
+
+    /*관리자의 대여 신청 내역 수정*/
+    public HttpMessage modifyReservationInfoByAdmin(Long reservationNum, TrafficCardApplyDTO trafficCardApplyDTO){
+        TrafficCardReservation trafficCardReservation = reservationRepository.findByReservationNum(reservationNum);
+        if(trafficCardReservation.getReturnStatus()==1){
+            return new HttpMessage("fail", "refund-processing-is-in-progress");
+        }
+
+        TrafficCard trafficCard=cardRepository.findByCardNum(trafficCardApplyDTO.getCardNum());
+        LocalDateTime rentedAt=LocalDateTime.of(trafficCardApplyDTO.getDateOfRental().getYear(),
+                trafficCardApplyDTO.getDateOfRental().getMonth(), trafficCardApplyDTO.getDateOfRental().getDayOfMonth(),
+                trafficCardApplyDTO.getTimeOfRental().getHour(),
+                trafficCardApplyDTO.getTimeOfRental().getMinute(), 0);
+        LocalDateTime returnedAt=LocalDateTime.of(trafficCardApplyDTO.getExpectedReturnDate().getYear(),
+                trafficCardApplyDTO.getExpectedReturnDate().getMonth(), trafficCardApplyDTO.getExpectedReturnDate().getDayOfMonth(),
+                trafficCardApplyDTO.getExpectedReturnTime().getHour(),
+                trafficCardApplyDTO.getExpectedReturnTime().getMinute(), 0);
+        List<TrafficCardReservation> reservationList=reservationRepository.findAllByReturnStatus(0);
+        reservationList.remove(reservationRepository.findByReservationNum(reservationNum));
+        for(TrafficCardReservation reservation : reservationList){
+            if(((reservation.getRentedAt().isBefore(rentedAt) || reservation.getRentedAt().isEqual(rentedAt)) &&
+                    (reservation.getReturnedAt().isAfter(rentedAt)))
+                    && trafficCard.getCardNum().equals(reservation.getTrafficCard().getCardNum())){
+                return new HttpMessage("fail", "already-reservation");
+            }
+        }
+
+        modelMapper.map(trafficCardApplyDTO, trafficCardReservation);
+        trafficCardReservation.updateReservationInfo(trafficCard, rentedAt, returnedAt);
+        reservationRepository.save(trafficCardReservation);
+        return new HttpMessage("success", "success-modify");
+    }
+
     /*금일 나의 교통카드*/
     public List<TrafficCardReservation> getMyCardReservation(Long staffNum){
         Staff staff = staffRepository.findByStaffNum(staffNum);

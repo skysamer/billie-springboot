@@ -156,6 +156,30 @@ public class VehicleController {
         return new HttpMessage("success", "삭제 성공");
     }
 
+    @ApiOperation(value = "관리자의 차량 예약 삭제")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "rent-num", value = "차량 예약 시퀀스")
+    })
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "success-remove // refund-processing-is-in-progress")
+    })
+    @DeleteMapping("/admin/remove/{rent-num}")
+    public HttpMessage removeRentByAdmin(@PathVariable("rent-num") Long rentNum){
+        return service.removeReservationByAdmin(rentNum);
+    }
+
+    @ApiOperation(value = "관리자의 차량예약 수정")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "rent-num", value = "차량 예약 시퀀스")
+    })
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "success-remove // refund-processing-is-in-progress // already-reservation")
+    })
+    @PutMapping("/admin/modify/{rent-num}")
+    public HttpMessage modifyRentInfoByAdmin(@PathVariable("rent-num") Long rentNum, @RequestBody ApplyRentalVehicleDTO applyRentalVehicleDTO){
+        return service.modifyRentInfoByAdmin(rentNum, applyRentalVehicleDTO);
+    }
+
     @GetMapping("/my/{staff-num}")
     @ApiOperation(value = "나의 차량 예약 현황 조회", notes = "대여이력이 없을경우, 공백의 list 반환")
     public List<VehicleReservation> getMyReservationList(@PathVariable("staff-num") Long staffNum){

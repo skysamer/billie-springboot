@@ -17,6 +17,9 @@ public class ExpenseClaimHistoryForm {
     @ApiModelProperty(value = "사용자")
     private String name;
 
+    @ApiModelProperty(value = "부서")
+    private String department;
+
     @ApiModelProperty(value = "시작일 (yyyy-MM-dd)")
     private LocalDate startDate;
 
