@@ -1,7 +1,6 @@
 package com.lab.smartmobility.billie.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.*;
@@ -70,8 +69,38 @@ public class Staff implements UserDetails {
     @Column(name = "is_verified")
     private int isVerified;
 
+    @ApiModelProperty(value = "최종학위")
+    private String degree;
+
+    @ApiModelProperty(value = "최종졸업학교")
+    @Column(name = "graduation_school")
+    private String graduationSchool;
+
+    @ApiModelProperty(value = "전공")
+    private String major;
+
+    @ApiModelProperty(value = "졸업연도")
+    @Column(name = "graduation_year")
+    private String graduationYear;
+
+    @ApiModelProperty(value = "연구자번호")
+    @Column(name = "researcher_number")
+    private String researcherNumber;
+
+    @ApiModelProperty(value = "퇴사여부 (0:퇴사x, 1:퇴사o)")
+    @Column(name = "is_resigned")
+    private int isResigned;
+
+    @ApiModelProperty(value = "영문이름")
+    @Column(name = "english_name")
+    private String englishName;
+
     public String getPasswordToCheckMatch(){
         return password;
+    }
+
+    public void resign(int isResigned){
+        this.isResigned = isResigned;
     }
 
     @Override

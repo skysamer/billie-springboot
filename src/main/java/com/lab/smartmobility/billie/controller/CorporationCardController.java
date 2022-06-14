@@ -258,8 +258,8 @@ public class CorporationCardController {
             @ApiImplicitParam(name = "disposal-info", value = "폐기정보 (0:미포함, 1:포함)")
     })
     public TotalCount getListOfApprovalsRequestByManager(@PathVariable("card-name") String cardName,
-                                                                @PathVariable("base-year") String baseYear,
-                                                                @PathVariable("disposal-info") int disposalInfo){
+                                                         @PathVariable("base-year") String baseYear,
+                                                         @PathVariable("disposal-info") int disposalInfo){
         return service.getCountOfApprovalsRequestByAdmin(cardName, baseYear, disposalInfo);
     }
 

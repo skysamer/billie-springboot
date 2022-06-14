@@ -85,7 +85,7 @@ public class StaffController {
         boolean checkPassword = staffService.checkPassword(findStaff.getEmail(), loginForm.getPassword());
         if(!checkPassword){
             return Staff.builder()
-                    .password("비밀번호가 일치하지 않습니다.").build();
+                    .name("비밀번호가 일치하지 않습니다.").build();
         }
 
         String token=jwtTokenProvider.createTokenLogin(findStaff.getEmail(), findStaff.getRole());
@@ -117,7 +117,7 @@ public class StaffController {
             staffInfo.put("isAuth", false);
             return staffInfo;
         }
-        String email= jwtTokenProvider.getUserPk(token);
+        String email = jwtTokenProvider.getUserPk(token);
         return staffService.checkLogin(email);
     }
 

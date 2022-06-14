@@ -11,9 +11,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Objects;
 
 import static com.lab.smartmobility.billie.entity.corporation.QApplication.application;
+import static com.lab.smartmobility.billie.entity.corporation.QCorporationCard.corporationCard;
 import static com.lab.smartmobility.billie.entity.QStaff.staff;
 
 @Repository
@@ -53,7 +53,10 @@ public class ApplicationRepositoryImpl {
                                                          String cardName, String baseYear, int disposalInfo, Pageable pageable){
         return jpaQueryFactory
                 .selectFrom(application)
+                .leftJoin(corporationCard)
+                .on(application.corporationCard.cardId.eq(corporationCard.cardId))
                 .where(staff.department.eq(department).and(staff.role.eq(role))
+                        .and(application.isReturned.eq(0))
                         .and(baseYearEq(baseYear))
                         .and(cardNameEq(cardName))
                         .and(cardCompanyEq(cardName))
@@ -70,7 +73,10 @@ public class ApplicationRepositoryImpl {
                                              String cardName, String baseYear, int disposalInfo){
         return jpaQueryFactory
                 .selectFrom(application)
+                .leftJoin(corporationCard)
+                .on(application.corporationCard.cardId.eq(corporationCard.cardId))
                 .where(staff.department.eq(department).and(staff.role.eq(role))
+                        .and(application.isReturned.eq(0))
                         .and(baseYearEq(baseYear))
                         .and(cardNameEq(cardName))
                         .and(cardCompanyEq(cardName))
@@ -82,10 +88,13 @@ public class ApplicationRepositoryImpl {
     public List<Application> getApplicationListAdmin(String cardName, String baseYear, int disposalInfo, Pageable pageable){
         return jpaQueryFactory
                 .selectFrom(application)
-                .where(Objects.requireNonNull(baseYearEq(baseYear))
+                .leftJoin(corporationCard)
+                .on(application.corporationCard.cardId.eq(corporationCard.cardId))
+                .where(application.isReturned.eq(0)
                         .and(cardNameEq(cardName))
                         .and(cardCompanyEq(cardName))
                         .and(disposalInfoEq(disposalInfo))
+                        .and(baseYearEq(baseYear))
                 )
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
@@ -97,7 +106,10 @@ public class ApplicationRepositoryImpl {
     public long getApplicationCountAdmin(String cardName, String baseYear, int disposalInfo){
         return jpaQueryFactory
                 .selectFrom(application)
-                .where(Objects.requireNonNull(baseYearEq(baseYear))
+                .leftJoin(corporationCard)
+                .on(application.corporationCard.cardId.eq(corporationCard.cardId))
+                .where(application.isReturned.eq(0)
+                        .and(baseYearEq(baseYear))
                         .and(cardNameEq(cardName))
                         .and(cardCompanyEq(cardName))
                         .and(disposalInfoEq(disposalInfo))
@@ -136,6 +148,6 @@ public class ApplicationRepositoryImpl {
     }
 
     private BooleanExpression disposalInfoEq(int disposalInfo) {
-        return disposalInfo == 1 ? null : application.corporationCard.rentalStatus.ne(99);
+        return disposalInfo == 1 ? null : corporationCard.rentalStatus.ne(99).or(corporationCard.cardId.isNull());
     }
 }
