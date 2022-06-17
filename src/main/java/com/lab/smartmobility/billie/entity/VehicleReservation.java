@@ -68,4 +68,10 @@ public class VehicleReservation {
         this.rentedAt = rentedAt;
         this.returnedAt = returnedAt;
     }
+
+    public void modifyRentInfoByAdmin(Vehicle vehicle, LocalDateTime rentedAt, LocalDateTime returnedAt){
+        this.vehicle = vehicle;
+        this.rentedAt = rentedAt;
+        this.returnedAt = returnedAt;
+    }
 }

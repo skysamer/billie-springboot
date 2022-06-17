@@ -4,6 +4,7 @@ import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -65,5 +66,10 @@ public class DateTimeUtil {
         int end=cal.getActualMaximum(Calendar.DATE);
 
         return LocalDate.of(year, month, end);
+    }
+
+    public LocalDateTime combineDateAndTime(LocalDate date, LocalTime time){
+        return LocalDateTime.of(date.getYear(), date.getMonth(), date.getDayOfMonth(),
+                time.getHour(), time.getMinute(), 0);
     }
 }

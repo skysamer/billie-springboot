@@ -7,6 +7,7 @@ import com.lab.smartmobility.billie.entity.corporation.*;
 import com.lab.smartmobility.billie.repository.NotificationRepository;
 import com.lab.smartmobility.billie.repository.StaffRepository;
 import com.lab.smartmobility.billie.repository.corporation.*;
+import com.lab.smartmobility.billie.util.DateTimeUtil;
 import com.lab.smartmobility.billie.util.SseEmitterSender;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.logging.Log;
@@ -19,7 +20,11 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -36,6 +41,7 @@ public class CorporationCardService {
     private final ExpenseClaimRepository expenseClaimRepository;
     private final ExpenseCaseRepository expenseCaseRepository;
     private final CorporationReturnRepositoryImpl returnRepository;
+    private final DateTimeUtil dateTimeUtil;
     private final SseEmitterSender sseEmitterSender;
     private final ModelMapper modelMapper;
     private final Log log;
@@ -111,11 +117,11 @@ public class CorporationCardService {
 
         Application application=modelMapper.map(applyCorporationCardForm, Application.class);
         Staff requester=staffRepository.findByStaffNum(applyCorporationCardForm.getStaffNum());
-        application.setStaff(requester);
+        application.assignRequester(requester);
 
-        Staff approval=staffRepository.findByDepartmentAndRole(requester.getDepartment(), "ROLE_MANAGER");
-        if(requester.getDepartment().equals("관리부") || requester.getRole().equals("ROLE_MANAGER")){
-            approval=staffRepository.findByStaffNum(37L); // 부장님은 4
+        Staff approval= assignApproval(requester);
+        if(requester.getRole().equals("ROLE_MANAGER") || requester.getRole().equals("ROLE_ADMIN")){
+            application.updateApprovalStatus('t');
         }
 
         Notification notification=Notification.builder()
@@ -124,7 +130,6 @@ public class CorporationCardService {
                 .type("corporation")
                 .approveStatus(application.getApprovalStatus())
                 .build();
-
         try{
             sseEmitterSender.sendSseEmitter(approval);
             notificationRepository.save(notification);
@@ -134,6 +139,42 @@ public class CorporationCardService {
             return new HttpMessage("fail", "fail-application");
         }
         return new HttpMessage("success", "success-application");
+    }
+
+    /*후불 경비청구 신청*/
+    public HttpMessage applyPostExpenseClaim(ApplyCorporationCardForm applyCorporationCardForm){
+        Application application=modelMapper.map(applyCorporationCardForm, Application.class);
+        Staff requester=staffRepository.findByStaffNum(applyCorporationCardForm.getStaffNum());
+        application.insertRequesterAndPostExpense(requester, 99);
+
+        Staff approval= assignApproval(requester);
+        if(requester.getRole().equals("ROLE_MANAGER") || requester.getRole().equals("ROLE_ADMIN")){
+            application.updateApprovalStatus('t');
+        }
+
+        Notification notification=Notification.builder()
+                .requester(requester.getName())
+                .receiver(approval.getName())
+                .type("corporation")
+                .approveStatus(application.getApprovalStatus())
+                .build();
+        try{
+            sseEmitterSender.sendSseEmitter(approval);
+            notificationRepository.save(notification);
+            applicationRepository.save(application);
+        }catch (Exception e){
+            log.error("fail : "+e);
+            return new HttpMessage("fail", "fail-application");
+        }
+        return new HttpMessage("success", "success-application");
+    }
+
+    /*승인권자 할당*/
+    private Staff assignApproval(Staff requester){
+        if(requester.getDepartment().equals("관리부") || requester.getRole().equals("ROLE_MANAGER")){
+            return staffRepository.findByStaffNum(37L); // 부장님은 4
+        }
+        return staffRepository.findByDepartmentAndRole(requester.getDepartment(), "ROLE_MANAGER");
     }
 
     /*나의 사용신청 목록 조회*/
@@ -195,6 +236,18 @@ public class CorporationCardService {
         return new HttpMessage("success", "remove-application");
     }
 
+    /*관리자의 신청 수정*/
+    public HttpMessage modifyCardUseApplicationByAdmin(Long applicationId, ApplyCorporationCardForm applyCorporationCardForm){
+        Application application=applicationRepository.findByApplicationId(applicationId);
+        if(application==null){
+            return new HttpMessage("fail", "not-exist-info");
+        }
+
+        modelMapper.map(applyCorporationCardForm, application);
+        applicationRepository.save(application);
+        return new HttpMessage("success", "modify-application");
+    }
+
     /*부서장의 요청 관리 목록 조회*/
     public List<Application> getListOfApprovalsRequestByManager(Long managerNum, String cardName, String baseYear, int disposalInfo, Pageable pageable){
         Staff manager=staffRepository.findByStaffNum(managerNum);
@@ -251,25 +304,39 @@ public class CorporationCardService {
 
     /*관리자의 최종 사용 승인*/
     public HttpMessage approveCardUseByAdmin(List<ApprovalCardUseForm> approvalCardUseForms){
-        try{
-            for(ApprovalCardUseForm approvalCardUseForm : approvalCardUseForms){
-                Application application=applicationRepository.findByApplicationId(approvalCardUseForm.getApplicationId());
-                application.setApprovalStatus('f');
-
-                if(approvalCardUseForm.getCardName().equals("개인경비 청구")){
-                    application.setIsClaimedExpense(1);
-                    applicationRepository.save(application);
-                    return new HttpMessage("success", "success-final-approve");
-                }
-                CorporationCard corporationCard=cardRepository.findByCardNameAndCompany(approvalCardUseForm.getCardName(), approvalCardUseForm.getCompany());
-                application.setCorporationCard(corporationCard);
-                applicationRepository.save(application);
+        for(ApprovalCardUseForm approvalCardUseForm : approvalCardUseForms){
+            Application toBeApproveApplication = applicationRepository.findByApplicationId(approvalCardUseForm.getApplicationId());
+            CorporationCard card = cardRepository.findByCardNameAndCompany(approvalCardUseForm.getCardName(), approvalCardUseForm.getCompany());
+            if(card==null){
+                toBeApproveApplication.approveExpenseByAdmin(1, 'f');
+                applicationRepository.save(toBeApproveApplication);
+                continue;
             }
-        }catch (Exception e){
-            log.error(e);
-            return new HttpMessage("fail", "fail-final-approve");
+
+            List<Application> existingApplicationList = applicationRepository.findAllByCorporationCardAndIsReturned(card, 0);
+
+            LocalDateTime toBeStart = dateTimeUtil.combineDateAndTime(toBeApproveApplication.getStartDate(), toBeApproveApplication.getStartTime());
+            LocalDateTime toBeEnd = dateTimeUtil.combineDateAndTime(toBeApproveApplication.getEndDate(), toBeApproveApplication.getEndTime());
+            for(Application existingApplication : existingApplicationList){
+                LocalDateTime existStart = dateTimeUtil.combineDateAndTime(existingApplication.getStartDate(), existingApplication.getStartTime());
+                LocalDateTime existEnd = dateTimeUtil.combineDateAndTime(existingApplication.getEndDate(), existingApplication.getEndTime());
+
+                if( ((existStart.isBefore(toBeStart) || existStart.isEqual(toBeStart)) && ((existEnd.isAfter(toBeStart)))
+                        && existingApplication.getCorporationCard().equals(card)) ){
+                    return new HttpMessage("fail", "this-card-is-already-rented");
+                }
+
+            }
+
+            toBeApproveApplication.approveCorporationByAdmin(card, 'f');
+            applicationRepository.save(toBeApproveApplication);
         }
         return new HttpMessage("success", "success-final-approve");
+    }
+
+    /*기존 신청 내역에 지급카드가 존재하는지 검사*/
+    private boolean isCardAlreadyDistributed(List<ApprovalCardUseForm> approvalCardUseForms, List<Long> idList){
+        return true;
     }
 
     /*승인된 법인카드 신청 내역 월별 조회*/
@@ -285,7 +352,7 @@ public class CorporationCardService {
     /*내가 사용중인 법인카드 내역 조회*/
     public List<Application> getMyCorporationCard(Long staffNum){
         Staff my=staffRepository.findByStaffNum(staffNum);
-        return applicationRepository.findAllByStaffAndApprovalStatus(my, 'f');
+        return applicationRepository.findAllByStaff(my);
     }
 
     /*법인카드 반납*/

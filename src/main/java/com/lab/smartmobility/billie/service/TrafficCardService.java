@@ -39,7 +39,7 @@ public class TrafficCardService {
     private final StaffRepository staffRepository;
     private final ModelMapper modelMapper;
     private final TrafficCardReservationRepositoryImpl reservationRepositoryImpl;
-    private final DateTimeUtil baseDateParser;
+    private final DateTimeUtil dateTimeUtil;
     private final Log log= LogFactory.getLog(getClass());
 
     /*보유 교통카드 목록 조회*/
@@ -113,16 +113,8 @@ public class TrafficCardService {
             TrafficCard trafficCard=cardRepository.findByCardNum(trafficCardApplyDTO.getCardNum());
             log.info(trafficCard.toString());
             Staff renderInfo=staffRepository.findByStaffNum(trafficCardApplyDTO.getStaffNum());
-            LocalDateTime rentedAt=LocalDateTime.of(trafficCardApplyDTO.getDateOfRental().getYear(),
-                    trafficCardApplyDTO.getDateOfRental().getMonth(),
-                    trafficCardApplyDTO.getDateOfRental().getDayOfMonth(),
-                    trafficCardApplyDTO.getTimeOfRental().getHour(),
-                    trafficCardApplyDTO.getTimeOfRental().getMinute(), 0);
-            LocalDateTime returnedAt=LocalDateTime.of(trafficCardApplyDTO.getExpectedReturnDate().getYear(),
-                    trafficCardApplyDTO.getExpectedReturnDate().getMonth(),
-                    trafficCardApplyDTO.getExpectedReturnDate().getDayOfMonth(),
-                    trafficCardApplyDTO.getExpectedReturnTime().getHour(),
-                    trafficCardApplyDTO.getExpectedReturnTime().getMinute(), 0);
+            LocalDateTime rentedAt = dateTimeUtil.combineDateAndTime(trafficCardApplyDTO.getDateOfRental(), trafficCardApplyDTO.getTimeOfRental());
+            LocalDateTime returnedAt = dateTimeUtil.combineDateAndTime(trafficCardApplyDTO.getExpectedReturnDate(), trafficCardApplyDTO.getExpectedReturnTime());
 
             if(LocalDateTime.now().isAfter(rentedAt)){
                 return 400;
@@ -169,16 +161,10 @@ public class TrafficCardService {
     /*교통카드 대여 정보 수정*/
     public int modifyCardReservation(Long reservationNum, TrafficCardApplyDTO trafficCardApplyDTO){
         TrafficCardReservation reservationInfo = reservationRepository.findByReservationNum(reservationNum);
-        TrafficCard trafficCard=cardRepository.findByCardNum(trafficCardApplyDTO.getCardNum());
-        LocalDateTime rentedAt=LocalDateTime.of(trafficCardApplyDTO.getDateOfRental().getYear(),
-                trafficCardApplyDTO.getDateOfRental().getMonth(), trafficCardApplyDTO.getDateOfRental().getDayOfMonth(),
-                trafficCardApplyDTO.getTimeOfRental().getHour(),
-                trafficCardApplyDTO.getTimeOfRental().getMinute(), 0);
-        LocalDateTime returnedAt=LocalDateTime.of(trafficCardApplyDTO.getExpectedReturnDate().getYear(),
-                trafficCardApplyDTO.getExpectedReturnDate().getMonth(), trafficCardApplyDTO.getExpectedReturnDate().getDayOfMonth(),
-                trafficCardApplyDTO.getExpectedReturnTime().getHour(),
-                trafficCardApplyDTO.getExpectedReturnTime().getMinute(), 0);
+        TrafficCard trafficCard = cardRepository.findByCardNum(trafficCardApplyDTO.getCardNum());
 
+        LocalDateTime rentedAt = dateTimeUtil.combineDateAndTime(trafficCardApplyDTO.getDateOfRental(), trafficCardApplyDTO.getTimeOfRental());
+        LocalDateTime returnedAt = dateTimeUtil.combineDateAndTime(trafficCardApplyDTO.getExpectedReturnDate(), trafficCardApplyDTO.getExpectedReturnTime());
         try {
             if(LocalDateTime.now().isAfter(rentedAt)){
                 return 400;
@@ -198,9 +184,7 @@ public class TrafficCardService {
             }
 
             modelMapper.map(trafficCardApplyDTO, reservationInfo);
-            reservationInfo.setTrafficCard(trafficCard);
-            reservationInfo.setRentedAt(rentedAt);
-            reservationInfo.setReturnedAt(returnedAt);
+            reservationInfo.updateReservationInfo(trafficCard, rentedAt, returnedAt);
             reservationRepository.save(reservationInfo);
         }catch (Exception e){
             e.printStackTrace();
@@ -238,14 +222,10 @@ public class TrafficCardService {
         }
 
         TrafficCard trafficCard=cardRepository.findByCardNum(trafficCardApplyDTO.getCardNum());
-        LocalDateTime rentedAt=LocalDateTime.of(trafficCardApplyDTO.getDateOfRental().getYear(),
-                trafficCardApplyDTO.getDateOfRental().getMonth(), trafficCardApplyDTO.getDateOfRental().getDayOfMonth(),
-                trafficCardApplyDTO.getTimeOfRental().getHour(),
-                trafficCardApplyDTO.getTimeOfRental().getMinute(), 0);
-        LocalDateTime returnedAt=LocalDateTime.of(trafficCardApplyDTO.getExpectedReturnDate().getYear(),
-                trafficCardApplyDTO.getExpectedReturnDate().getMonth(), trafficCardApplyDTO.getExpectedReturnDate().getDayOfMonth(),
-                trafficCardApplyDTO.getExpectedReturnTime().getHour(),
-                trafficCardApplyDTO.getExpectedReturnTime().getMinute(), 0);
+
+        LocalDateTime rentedAt = dateTimeUtil.combineDateAndTime(trafficCardApplyDTO.getDateOfRental(), trafficCardApplyDTO.getTimeOfRental());
+        LocalDateTime returnedAt = dateTimeUtil.combineDateAndTime(trafficCardApplyDTO.getExpectedReturnDate(), trafficCardApplyDTO.getExpectedReturnTime());
+
         List<TrafficCardReservation> reservationList=reservationRepository.findAllByReturnStatus(0);
         reservationList.remove(reservationRepository.findByReservationNum(reservationNum));
         for(TrafficCardReservation reservation : reservationList){
@@ -303,8 +283,8 @@ public class TrafficCardService {
             return reservationRepositoryImpl.findAll(trafficCard, disposalInfo, pageRequest);
         }
 
-        LocalDateTime startDateTime=baseDateParser.getStartDateTime(baseDate);
-        LocalDateTime endDateTime=baseDateParser.getEndDateTime(baseDate);
+        LocalDateTime startDateTime= dateTimeUtil.getStartDateTime(baseDate);
+        LocalDateTime endDateTime= dateTimeUtil.getEndDateTime(baseDate);
         return reservationRepositoryImpl.findAll(trafficCard, startDateTime, endDateTime, disposalInfo, pageRequest);
     }
 
@@ -320,8 +300,8 @@ public class TrafficCardService {
             return reservationRepositoryImpl.countByReturnStatus(trafficCard, disposalInfo);
         }
 
-        LocalDateTime startDateTime=baseDateParser.getStartDateTime(baseDate);
-        LocalDateTime endDateTime=baseDateParser.getEndDateTime(baseDate);
+        LocalDateTime startDateTime= dateTimeUtil.getStartDateTime(baseDate);
+        LocalDateTime endDateTime= dateTimeUtil.getEndDateTime(baseDate);
         return reservationRepositoryImpl.countByReturnStatus(trafficCard, startDateTime, endDateTime, disposalInfo);
     }
 
@@ -332,8 +312,8 @@ public class TrafficCardService {
         if(baseDate.equals("all")){
             reservationList = new ArrayList<>(reservationRepositoryImpl.findAll(trafficCard, disposalInfo));
         }else{
-            LocalDateTime startDateTime=baseDateParser.getStartDateTime(baseDate);
-            LocalDateTime endDateTime=baseDateParser.getEndDateTime(baseDate);
+            LocalDateTime startDateTime= dateTimeUtil.getStartDateTime(baseDate);
+            LocalDateTime endDateTime= dateTimeUtil.getEndDateTime(baseDate);
             reservationList= new ArrayList<>(reservationRepositoryImpl.findAll(trafficCard, startDateTime, endDateTime, disposalInfo));
         }
 
@@ -385,4 +365,5 @@ public class TrafficCardService {
         }
         return wb;
     }
+
 }

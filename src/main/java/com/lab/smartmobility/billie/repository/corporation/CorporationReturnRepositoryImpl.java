@@ -33,7 +33,7 @@ public class CorporationReturnRepositoryImpl {
                 .select(Projections.bean(CorporationHistoryForm.class,
                         application.staff.name, application.staff.department,
                         application.startDate, application.startTime, application.endDate, application.endTime, application.content, application.isClaimedExpense,
-                        application.corporationCard.cardName, application.corporationCard.company, application.corporationCard.cardNumber,
+                        application.corporationCard.cardName, application.corporationCard.company, application.corporationCard.cardNumber, application.corporationCard.rentalStatus,
                         cardReturn.returnId, cardReturn.totalAmountUsed, cardReturn.note))
                 .from(application)
                 .where(cardReturn.returnId.eq(returnId))
@@ -82,7 +82,7 @@ public class CorporationReturnRepositoryImpl {
                 .select(Projections.bean(CorporationHistoryForm.class,
                         application.staff.name, application.staff.department,
                         application.startDate, application.startTime, application.endDate, application.endTime, application.content, application.isClaimedExpense,
-                        application.corporationCard.cardName, application.corporationCard.company, application.corporationCard.cardNumber,
+                        application.corporationCard.cardName, application.corporationCard.company, application.corporationCard.cardNumber, application.corporationCard.rentalStatus,
                         cardReturn.returnId, cardReturn.totalAmountUsed, cardReturn.note))
                 .from(application)
                 .where(
@@ -116,7 +116,7 @@ public class CorporationReturnRepositoryImpl {
                 .select(Projections.bean(CorporationHistoryForm.class,
                         application.staff.name, application.staff.department,
                         application.startDate, application.startTime, application.endDate, application.endTime, application.content, application.isClaimedExpense,
-                        application.corporationCard.cardName, application.corporationCard.company, application.corporationCard.cardNumber,
+                        application.corporationCard.cardName, application.corporationCard.company, application.corporationCard.cardNumber, application.corporationCard.rentalStatus,
                         cardReturn.returnId, cardReturn.totalAmountUsed, cardReturn.note))
                 .from(application)
                 .where(
@@ -183,7 +183,7 @@ public class CorporationReturnRepositoryImpl {
                 .select(Projections.bean(CorporationHistoryForm.class,
                         application.staff.name, application.staff.department,
                         application.startDate, application.startTime, application.endDate, application.endTime, application.content, application.isClaimedExpense,
-                        application.corporationCard.cardName, application.corporationCard.company, application.corporationCard.cardNumber,
+                        application.corporationCard.cardName, application.corporationCard.company, application.corporationCard.cardNumber, application.corporationCard.rentalStatus,
                         cardReturn.returnId, cardReturn.totalAmountUsed, cardReturn.note))
                 .from(application)
                 .where(
@@ -219,7 +219,7 @@ public class CorporationReturnRepositoryImpl {
                 .select(Projections.bean(CorporationHistoryForm.class,
                         application.staff.name, application.staff.department,
                         application.startDate, application.startTime, application.endDate, application.endTime, application.content, application.isClaimedExpense,
-                        application.corporationCard.cardName, application.corporationCard.company, application.corporationCard.cardNumber,
+                        application.corporationCard.cardName, application.corporationCard.company, application.corporationCard.cardNumber, application.corporationCard.rentalStatus,
                         cardReturn.returnId, cardReturn.totalAmountUsed, cardReturn.note))
                 .from(application)
                 .where(
@@ -290,7 +290,7 @@ public class CorporationReturnRepositoryImpl {
                 .select(Projections.bean(CorporationHistoryForm.class,
                         application.staff.name, application.staff.department,
                         application.startDate, application.startTime, application.endDate, application.endTime, application.content, application.isClaimedExpense,
-                        application.corporationCard.cardName, application.corporationCard.company, application.corporationCard.cardNumber,
+                        application.corporationCard.cardName, application.corporationCard.company, application.corporationCard.cardNumber, application.corporationCard.rentalStatus,
                         cardReturn.returnId, cardReturn.totalAmountUsed, cardReturn.note))
                 .from(application)
                 .where(
@@ -325,7 +325,7 @@ public class CorporationReturnRepositoryImpl {
                 .select(Projections.bean(CorporationHistoryForm.class,
                         application.staff.name, application.staff.department,
                         application.startDate, application.startTime, application.endDate, application.endTime, application.content, application.isClaimedExpense,
-                        application.corporationCard.cardName, application.corporationCard.company, application.corporationCard.cardNumber,
+                        application.corporationCard.cardName, application.corporationCard.company, application.corporationCard.cardNumber, application.corporationCard.rentalStatus,
                         cardReturn.returnId, cardReturn.totalAmountUsed, cardReturn.note))
                 .from(application)
                 .where(

@@ -42,7 +42,7 @@ public class VehicleService {
     private final StaffRepository staffRepository;
     private final ModelMapper modelMapper;
     private final VehicleReservationRepositoryImpl reservationRepositoryImpl;
-    private final DateTimeUtil baseDateParser;
+    private final DateTimeUtil dateTimeUtil;
     private final Log log;
 
     /*보유 차량 및 대여 가능 여부 조회*/
@@ -129,20 +129,13 @@ public class VehicleService {
         try {
             Staff renderInfo=staffRepository.findByStaffNum(rentalVehicleDTO.getStaffNum());
             Vehicle vehicle=vehicleRepository.findByVehicleNum(vehicleRepository.findByVehicleName(rentalVehicleDTO.getVehicleName()).getVehicleNum());
-            LocalDateTime rentedAt=LocalDateTime.of(rentalVehicleDTO.getDateOfRental().getYear(),
-                    rentalVehicleDTO.getDateOfRental().getMonth(),
-                    rentalVehicleDTO.getDateOfRental().getDayOfMonth(),
-                    rentalVehicleDTO.getTimeOfRental().getHour(),
-                    rentalVehicleDTO.getTimeOfRental().getMinute(), 0);
-            LocalDateTime returnedAt=LocalDateTime.of(rentalVehicleDTO.getExpectedReturnDate().getYear(),
-                    rentalVehicleDTO.getExpectedReturnDate().getMonth(),
-                    rentalVehicleDTO.getExpectedReturnDate().getDayOfMonth(),
-                    rentalVehicleDTO.getExpectedReturnTime().getHour(),
-                    rentalVehicleDTO.getExpectedReturnTime().getMinute(), 0);
 
+            LocalDateTime rentedAt = dateTimeUtil.combineDateAndTime(rentalVehicleDTO.getDateOfRental(), rentalVehicleDTO.getTimeOfRental());
+            LocalDateTime returnedAt = dateTimeUtil.combineDateAndTime(rentalVehicleDTO.getExpectedReturnDate(), rentalVehicleDTO.getExpectedReturnTime());
             if(LocalDateTime.now().isAfter(rentedAt)){
                 return 400;
             }
+
             List<VehicleReservation> reservationList=reservationRepository.findAllByReturnStatusCode(0);
             for(VehicleReservation reservation : reservationList){
                 if(((reservation.getRentedAt().isBefore(rentedAt) || reservation.getRentedAt().isEqual(rentedAt)) &&
@@ -255,31 +248,22 @@ public class VehicleService {
             return new HttpMessage("fail", "refund-processing-is-in-progress");
         }
 
-        Staff staff = staffRepository.findByStaffNum(rentalVehicleDTO.getStaffNum());
         Vehicle vehicle=vehicleRepository.findByVehicleNum(vehicleRepository.findByVehicleName(rentalVehicleDTO.getVehicleName()).getVehicleNum());
-        LocalDateTime rentedAt=LocalDateTime.of(rentalVehicleDTO.getDateOfRental().getYear(),
-                rentalVehicleDTO.getDateOfRental().getMonth(),
-                rentalVehicleDTO.getDateOfRental().getDayOfMonth(),
-                rentalVehicleDTO.getTimeOfRental().getHour(),
-                rentalVehicleDTO.getTimeOfRental().getMinute(), 0);
-        LocalDateTime returnedAt=LocalDateTime.of(rentalVehicleDTO.getExpectedReturnDate().getYear(),
-                rentalVehicleDTO.getExpectedReturnDate().getMonth(),
-                rentalVehicleDTO.getExpectedReturnDate().getDayOfMonth(),
-                rentalVehicleDTO.getExpectedReturnTime().getHour(),
-                rentalVehicleDTO.getExpectedReturnTime().getMinute(), 0);
+        LocalDateTime rentedAt = dateTimeUtil.combineDateAndTime(rentalVehicleDTO.getDateOfRental(), rentalVehicleDTO.getTimeOfRental());
+        LocalDateTime returnedAt = dateTimeUtil.combineDateAndTime(rentalVehicleDTO.getExpectedReturnDate(), rentalVehicleDTO.getExpectedReturnTime());
 
         List<VehicleReservation> reservationList=reservationRepository.findAllByReturnStatusCode(0);
         reservationList.remove(reservationRepository.findByRentNum(rentNum));
         for(VehicleReservation reservation : reservationList){
-            if(((reservation.getRentedAt().isBefore(rentedAt) || reservation.getRentedAt().isEqual(rentedAt)) &&
+            if( ((reservation.getRentedAt().isBefore(rentedAt) || reservation.getRentedAt().isEqual(rentedAt)) &&
                     (reservation.getReturnedAt().isAfter(rentedAt)))
-                    && vehicle.getVehicleNum().equals(reservation.getVehicle().getVehicleNum())){
+                    && vehicle.getVehicleNum().equals(reservation.getVehicle().getVehicleNum()) ){
                 return new HttpMessage("fail", "already-reservation");
             }
         }
 
         modelMapper.map(rentalVehicleDTO, vehicleReservation);
-        vehicleReservation.modifyRentInfo(staff, vehicle, rentedAt, returnedAt);
+        vehicleReservation.modifyRentInfoByAdmin(vehicle, rentedAt, returnedAt);
         reservationRepository.save(vehicleReservation);
         return new HttpMessage("success", "success-modify");
     }
@@ -343,8 +327,8 @@ public class VehicleService {
             return reservationRepositoryImpl.findAll(vehicle, disposalInfo, pageRequest);
         }
 
-        LocalDateTime startDateTime=baseDateParser.getStartDateTime(baseDate);
-        LocalDateTime endDateTime=baseDateParser.getEndDateTime(baseDate);
+        LocalDateTime startDateTime= dateTimeUtil.getStartDateTime(baseDate);
+        LocalDateTime endDateTime= dateTimeUtil.getEndDateTime(baseDate);
         return reservationRepositoryImpl.findAll(vehicle, startDateTime, endDateTime, disposalInfo, pageRequest);
     }
 
@@ -354,8 +338,8 @@ public class VehicleService {
         if(baseDate.equals("all")){
             return reservationRepositoryImpl.countByReturnStatus(vehicle, disposalInfo);
         }
-        LocalDateTime startDateTime=baseDateParser.getStartDateTime(baseDate);
-        LocalDateTime endDateTime=baseDateParser.getEndDateTime(baseDate);
+        LocalDateTime startDateTime= dateTimeUtil.getStartDateTime(baseDate);
+        LocalDateTime endDateTime= dateTimeUtil.getEndDateTime(baseDate);
 
         return reservationRepositoryImpl.countByReturnStatus(vehicle, startDateTime, endDateTime, disposalInfo);
     }
@@ -386,7 +370,7 @@ public class VehicleService {
                 imageFiles.add(imageByteArray);
             }catch (IOException e){
                 e.printStackTrace();
-                return null;
+                return new ArrayList<>();
             }
         }
         return imageFiles;
@@ -399,8 +383,8 @@ public class VehicleService {
         if(baseDate.equals("all")){
             reservationList = new ArrayList<>(reservationRepositoryImpl.findAll(vehicle, disposalInfo));
         }else{
-            LocalDateTime startDateTime=baseDateParser.getStartDateTime(baseDate);
-            LocalDateTime endDateTime=baseDateParser.getEndDateTime(baseDate);
+            LocalDateTime startDateTime= dateTimeUtil.getStartDateTime(baseDate);
+            LocalDateTime endDateTime= dateTimeUtil.getEndDateTime(baseDate);
             reservationList= new ArrayList<>(reservationRepositoryImpl.findAll(vehicle, startDateTime, endDateTime, disposalInfo));
         }
 

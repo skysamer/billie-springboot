@@ -102,6 +102,15 @@ public class CorporationCardController {
         return service.applyCardReservation(applyCorporationCardForm);
     }
 
+    @ApiOperation(value = "후불 경비청구 신청")
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "fail-application // success-application")
+    })
+    @PostMapping("/post-expense")
+    public HttpMessage postExpenseClaim(@Valid @RequestBody ApplyCorporationCardForm applyCorporationCardForm) {
+        return service.applyPostExpenseClaim(applyCorporationCardForm);
+    }
+
     @ApiOperation(value = "나의 법인카드 사용 신청 내역 조회")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "staff-num", value = "직원 고유번호"),
@@ -179,6 +188,19 @@ public class CorporationCardController {
     })
     public HttpMessage removeApplicationInfoByAdmin(@PathVariable("application-id") Long applicationId){
         return service.removeCardUseApplicationByAdmin(applicationId);
+    }
+
+    @ApiOperation(value = "관리자의 법인카드 사용 신청 내역 수정")
+    @PutMapping("/admin/modify/application/{application-id}")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "application-id", value = "카드 신청 고유 시퀀스"),
+    })
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "modify-application // not-exist-info")
+    })
+    public HttpMessage modifyApplicationInfoByAdmin(@PathVariable("application-id") Long applicationId,
+                                                    @Valid @RequestBody ApplyCorporationCardForm applyCorporationCardForm){
+        return service.modifyCardUseApplicationByAdmin(applicationId, applyCorporationCardForm);
     }
 
     @ApiOperation(value = "부서장의 카드 사용승인 요청 목록 조회", notes = "부서장 권한만 이용 가능")
@@ -265,7 +287,7 @@ public class CorporationCardController {
 
     @ApiOperation(value = "관리부 최종 카드 사용 일괄 승인")
     @ApiResponses({
-            @ApiResponse(code = 200, message = "fail-final-approve // success-final-approve")
+            @ApiResponse(code = 200, message = "this-card-is-already-used // success-final-approve")
     })
     @PutMapping("/approve/admin")
     public HttpMessage approveCardUseByAdmin(@RequestBody List<ApprovalCardUseForm> approvalCardUseFormList){
@@ -292,22 +314,28 @@ public class CorporationCardController {
         return service.getApprovedApplication(applicationId);
     }
 
-    @ApiOperation(value = "내가 사용중인 법인카드 내역 조회 (경비청구 포함)")
+    @ApiOperation(value = "내가 사용중인 법인카드 목록 및 승인대기목록 조회 (경비청구 포함)")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "staff-num", value = "직원 고유번호")
+            @ApiImplicitParam(name = "staff-num", value =  "직원 고유번호")
     })
-    @GetMapping("/approved/my/{staff-num}")
+    @GetMapping("/approve/my/{staff-num}")
     public List<Application> getMyCorporationCard(@PathVariable("staff-num") Long staffNum){
         return service.getMyCorporationCard(staffNum);
     }
 
     @ApiOperation(value = "법인카드 반납 신청")
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "not-approved-application // fail-card-return // success-card-return")
+    })
     @PostMapping("/return")
     public HttpMessage ApplyReturnCard(@RequestBody CorporationReturnForm corporationReturnForm){
         return service.returnCorporationCard(corporationReturnForm);
     }
 
     @ApiOperation(value = "개인 경비청구 신청")
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "not-approved-application // fail-expense-claim // success-expense-claim")
+    })
     @PostMapping("/expense-claim")
     public HttpMessage ApplyReturnCard(@RequestBody ExpenseClaimForm expenseClaimForm){
         return service.chargeForExpenses(expenseClaimForm);

@@ -4,11 +4,11 @@ import com.lab.smartmobility.billie.dto.staff.StaffInfoForm;
 import com.lab.smartmobility.billie.entity.HttpMessage;
 import com.lab.smartmobility.billie.entity.Staff;
 import com.lab.smartmobility.billie.repository.StaffRepository;
+import com.lab.smartmobility.billie.repository.StaffRepositoryImpl;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -16,18 +16,12 @@ import java.util.List;
 @Transactional
 public class MyPageService {
     private final StaffRepository staffRepository;
+    private final StaffRepositoryImpl staffRepositoryImpl;
     private final ModelMapper modelMapper;
 
     /*전체 직원정보 조회*/
     public List<StaffInfoForm> getStaffInfoList(){
-        List<Staff> staffList = staffRepository.findAll();
-        List<StaffInfoForm> staffInfoFormList = new ArrayList<>();
-
-        for(Staff staff :  staffList){
-            StaffInfoForm staffInfoForm = modelMapper.map(staff, StaffInfoForm.class);
-            staffInfoFormList.add(staffInfoForm);
-        }
-        return staffInfoFormList;
+        return staffRepositoryImpl.getStaffInfoList();
     }
 
     /*직원 정보 상세조회*/

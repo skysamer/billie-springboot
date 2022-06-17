@@ -50,7 +50,7 @@ public class Application {
     @Column(name = "reason_for_rejection")
     private String reasonForRejection;
 
-    @ApiModelProperty(value = "개인경비청구여부")
+    @ApiModelProperty(value = "개인경비청구여부 (99: 후불경비청구)")
     @Column(name = "is_claimed_expense")
     private int isClaimedExpense;
 
@@ -65,4 +65,27 @@ public class Application {
     @ManyToOne
     @JoinColumn(name = "staff_num")
     private Staff staff;
+
+    public void insertRequesterAndPostExpense(Staff staff, int isClaimedExpense){
+        this.staff = staff;
+        this.isClaimedExpense = isClaimedExpense;
+    }
+
+    public void updateApprovalStatus(char approvalStatus){
+        this.approvalStatus = approvalStatus;
+    }
+
+    public void assignRequester(Staff requester){
+        this.staff = requester;
+    }
+
+    public void approveExpenseByAdmin(int isClaimedExpense, char approvalStatus){
+        this.isClaimedExpense = isClaimedExpense;
+        this.approvalStatus = approvalStatus;
+    }
+
+    public void approveCorporationByAdmin(CorporationCard card, char approvalStatus){
+        this.corporationCard = card;
+        this.approvalStatus = approvalStatus;
+    }
 }
