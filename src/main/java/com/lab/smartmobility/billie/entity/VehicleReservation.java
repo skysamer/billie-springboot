@@ -7,6 +7,7 @@ import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Getter @Setter @ToString
@@ -73,5 +74,11 @@ public class VehicleReservation {
         this.vehicle = vehicle;
         this.rentedAt = rentedAt;
         this.returnedAt = returnedAt;
+    }
+
+    public void update(int returnStatusCode, LocalDateTime returnedAt, String totalDrivingTime){
+        this.returnStatusCode = returnStatusCode;
+        this.returnedAt = returnedAt;
+        this.totalDrivingTime = totalDrivingTime;
     }
 }

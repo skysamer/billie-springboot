@@ -21,10 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -41,6 +38,7 @@ public class CorporationCardService {
     private final ExpenseClaimRepository expenseClaimRepository;
     private final ExpenseCaseRepository expenseCaseRepository;
     private final CorporationReturnRepositoryImpl returnRepository;
+
     private final DateTimeUtil dateTimeUtil;
     private final SseEmitterSender sseEmitterSender;
     private final ModelMapper modelMapper;
@@ -120,7 +118,7 @@ public class CorporationCardService {
         application.assignRequester(requester);
 
         Staff approval= assignApproval(requester);
-        if(requester.getRole().equals("ROLE_MANAGER") || requester.getRole().equals("ROLE_ADMIN")){
+        if(requester.getRole().equals("ROLE_ADMIN")){
             application.updateApprovalStatus('t');
         }
 
@@ -148,7 +146,7 @@ public class CorporationCardService {
         application.insertRequesterAndPostExpense(requester, 99);
 
         Staff approval= assignApproval(requester);
-        if(requester.getRole().equals("ROLE_MANAGER") || requester.getRole().equals("ROLE_ADMIN")){
+        if(requester.getRole().equals("ROLE_ADMIN")){
             application.updateApprovalStatus('t');
         }
 
@@ -267,7 +265,7 @@ public class CorporationCardService {
         try{
             for(ApprovalCardUseForm approvalCardUseForm : approvalCardUseForms){
                 Application application=applicationRepository.findByApplicationId(approvalCardUseForm.getApplicationId());
-                application.setApprovalStatus('t');
+                application.approveByManager('t');
                 applicationRepository.save(application);
             }
         }catch (Exception e){
@@ -282,8 +280,8 @@ public class CorporationCardService {
         try{
             for(CompanionCardUseForm companionCardUseForm : companionCardUseForms){
                 Application application=applicationRepository.findByApplicationId(companionCardUseForm.getApplicationId());
-                application.setApprovalStatus('c');
-                application.setReasonForRejection(companionCardUseForm.getReason());
+                application.reject('c', companionCardUseForm.getReason());
+                applicationRepository.save(application);
             }
         }catch (Exception e){
             log.error(e);
@@ -314,20 +312,18 @@ public class CorporationCardService {
             }
 
             List<Application> existingApplicationList = applicationRepository.findAllByCorporationCardAndIsReturned(card, 0);
-
             LocalDateTime toBeStart = dateTimeUtil.combineDateAndTime(toBeApproveApplication.getStartDate(), toBeApproveApplication.getStartTime());
-            LocalDateTime toBeEnd = dateTimeUtil.combineDateAndTime(toBeApproveApplication.getEndDate(), toBeApproveApplication.getEndTime());
+
             for(Application existingApplication : existingApplicationList){
                 LocalDateTime existStart = dateTimeUtil.combineDateAndTime(existingApplication.getStartDate(), existingApplication.getStartTime());
                 LocalDateTime existEnd = dateTimeUtil.combineDateAndTime(existingApplication.getEndDate(), existingApplication.getEndTime());
 
                 if( ((existStart.isBefore(toBeStart) || existStart.isEqual(toBeStart)) && ((existEnd.isAfter(toBeStart)))
                         && existingApplication.getCorporationCard().equals(card)) ){
-                    return new HttpMessage("fail", "this-card-is-already-rented");
+                    throw new RuntimeException();
                 }
 
             }
-
             toBeApproveApplication.approveCorporationByAdmin(card, 'f');
             applicationRepository.save(toBeApproveApplication);
         }
@@ -352,7 +348,7 @@ public class CorporationCardService {
     /*내가 사용중인 법인카드 내역 조회*/
     public List<Application> getMyCorporationCard(Long staffNum){
         Staff my=staffRepository.findByStaffNum(staffNum);
-        return applicationRepository.findAllByStaff(my);
+        return applicationRepository.findAllByStaffAndIsReturned(my, 0);
     }
 
     /*법인카드 반납*/
@@ -363,9 +359,7 @@ public class CorporationCardService {
         }
 
         try{
-            application.setEndDate(corporationReturnForm.getEndDate());
-            application.setEndTime(corporationReturnForm.getEndTime());
-            application.setIsReturned(1);
+            application.returnUpdate(corporationReturnForm.getEndDate(), corporationReturnForm.getEndTime(), 1);
             applicationRepository.save(application);
 
             CorporationCardReturn corporationCardReturn=modelMapper.map(corporationReturnForm, CorporationCardReturn.class);
@@ -379,7 +373,7 @@ public class CorporationCardService {
             }
 
             CorporationCard returnedCard=application.getCorporationCard();
-            returnedCard.setRentalStatus(0);
+            returnedCard.returnCard(0);
             cardRepository.save(returnedCard);
         }catch (Exception e){
             log.error(e);
@@ -396,9 +390,7 @@ public class CorporationCardService {
         }
 
         try{
-            application.setEndDate(expenseClaimForm.getEndDate());
-            application.setEndTime(expenseClaimForm.getEndTime());
-            application.setIsReturned(1);
+            application.returnUpdate(expenseClaimForm.getEndDate(), expenseClaimForm.getEndTime(), 1);
             applicationRepository.save(application);
 
             ExpenseClaim expenseClaim=modelMapper.map(expenseClaimForm, ExpenseClaim.class);

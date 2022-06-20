@@ -13,23 +13,10 @@ import java.util.List;
 @Repository
 public interface VehicleRepository extends JpaRepository<Vehicle, Long> {
     Vehicle findByVehicleNum(Long vehicleNum);
-
-    @Modifying
-    @Query(value = "UPDATE Vehicle set rental_status = :rentalStatus where vehicle_name = :vehicleName")
-    void changeRentalStatus(@Param("rentalStatus") int rentalStatus, @Param("vehicleName") String vehicleName) throws Exception;
-
-    @Modifying
-    @Query(value = "UPDATE Vehicle set rental_status = :rentalStatus")
-    void changeRentalStatus(@Param("rentalStatus") int rentalStatus);
-
-    @Modifying
-    @Query(value = "UPDATE Vehicle set parking_loc = :parkingLoc where vehicle_name = :vehicleName")
-    void changeParkingLoc(@Param("parkingLoc") String parkingLoc, @Param("vehicleName") String vehicleName) throws Exception;
-
-    @Modifying
-    @Query(value = "UPDATE Vehicle set distance_driven = :distanceDriven where vehicle_name = :vehicleName")
-    void changeDistanceDriven(@Param("distanceDriven") int distanceDriven, @Param("vehicleName") String vehicleName) throws Exception;
-
     VehicleMapping findByVehicleName(String vehicleName);
     void deleteByVehicleNum(Long vehicleNum);
+
+    @Modifying(clearAutomatically = true)
+    @Query(value = "UPDATE Vehicle set rental_status = :rentalStatus where vehicle_name = :vehicleName")
+    void changeRentalStatus(@Param("rentalStatus") int rentalStatus, @Param("vehicleName") String vehicleName) throws Exception;
 }

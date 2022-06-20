@@ -88,4 +88,19 @@ public class Application {
         this.corporationCard = card;
         this.approvalStatus = approvalStatus;
     }
+
+    public void approveByManager(char approvalStatus){
+        this.approvalStatus = approvalStatus;
+    }
+
+    public void reject(char approvalStatus, String reasonForRejection){
+        this.approvalStatus = approvalStatus;
+        this.reasonForRejection = reasonForRejection;
+    }
+
+    public void returnUpdate(LocalDate endDate, LocalTime endTime, int isReturned){
+        this.endDate = endDate;
+        this.endTime = endTime;
+        this.isReturned = isReturned;
+    }
 }

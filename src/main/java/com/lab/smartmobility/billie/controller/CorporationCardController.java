@@ -291,7 +291,11 @@ public class CorporationCardController {
     })
     @PutMapping("/approve/admin")
     public HttpMessage approveCardUseByAdmin(@RequestBody List<ApprovalCardUseForm> approvalCardUseFormList){
-        return service.approveCardUseByAdmin(approvalCardUseFormList);
+        try{
+            return service.approveCardUseByAdmin(approvalCardUseFormList);
+        }catch (Exception e){
+            return new HttpMessage("fail", "this-card-is-already-rented");
+        }
     }
 
     @ApiOperation(value = "승인된 카드 신청 내역 월별 조회")

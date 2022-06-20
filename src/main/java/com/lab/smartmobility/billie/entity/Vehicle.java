@@ -45,4 +45,15 @@ public class Vehicle {
     @Column(name = "discard_reason")
     @ApiModelProperty(value = "폐기 사유")
     private String discardReason;
+
+    public void update(int rentalStatus, String parkingLoc, int distanceDriven){
+        this.rentalStatus = rentalStatus;
+        this.parkingLoc = parkingLoc;
+        this.distanceDriven = distanceDriven;
+    }
+
+    public void discard(int rentalStatus, String discardReason){
+        this.rentalStatus = rentalStatus;
+        this.discardReason = discardReason;
+    }
 }

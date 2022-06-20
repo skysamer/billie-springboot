@@ -118,8 +118,7 @@ public class VehicleService {
             return 500;
         }
 
-        vehicle.setRentalStatus(99);
-        vehicle.setDiscardReason(reason.get("reason"));
+        vehicle.discard(99, reason.get("reason"));
         vehicleRepository.save(vehicle);
         return 0;
     }
@@ -177,14 +176,9 @@ public class VehicleService {
     public int modifyVehicleReservation(Long rentNum, ApplyRentalVehicleDTO applyRentalVehicleDTO){
         VehicleReservation reservationInfo=reservationRepository.findByRentNum(rentNum);
         Vehicle vehicle=vehicleRepository.findByVehicleNum(vehicleRepository.findByVehicleName(applyRentalVehicleDTO.getVehicleName()).getVehicleNum());
-        LocalDateTime rentedAt=LocalDateTime.of(applyRentalVehicleDTO.getDateOfRental().getYear(),
-                applyRentalVehicleDTO.getDateOfRental().getMonth(), applyRentalVehicleDTO.getDateOfRental().getDayOfMonth(),
-                applyRentalVehicleDTO.getTimeOfRental().getHour(),
-                applyRentalVehicleDTO.getTimeOfRental().getMinute(), 0);
-        LocalDateTime returnedAt=LocalDateTime.of(applyRentalVehicleDTO.getExpectedReturnDate().getYear(),
-                applyRentalVehicleDTO.getExpectedReturnDate().getMonth(), applyRentalVehicleDTO.getExpectedReturnDate().getDayOfMonth(),
-                applyRentalVehicleDTO.getExpectedReturnTime().getHour(),
-                applyRentalVehicleDTO.getExpectedReturnTime().getMinute(), 0);
+
+        LocalDateTime rentedAt = dateTimeUtil.combineDateAndTime(applyRentalVehicleDTO.getDateOfRental(), applyRentalVehicleDTO.getTimeOfRental());
+        LocalDateTime returnedAt = dateTimeUtil.combineDateAndTime(applyRentalVehicleDTO.getExpectedReturnDate(), applyRentalVehicleDTO.getExpectedReturnTime());
         try{
             if(LocalDateTime.now().isAfter(rentedAt)){
                 return 400;
@@ -299,24 +293,19 @@ public class VehicleService {
     }
 
     private void changeVehicleInfo(VehicleReturnDTO vehicleReturnDTO) throws Exception{
-        vehicleRepository.changeRentalStatus(0, vehicleReturnDTO.getVehicleName());
-        vehicleRepository.changeParkingLoc(vehicleReturnDTO.getParkingLoc(), vehicleReturnDTO.getVehicleName());
-        vehicleRepository.changeDistanceDriven(vehicleReturnDTO.getDistanceDriven(), vehicleReturnDTO.getVehicleName());
+        Vehicle vehicle = vehicleRepository.findByVehicleNum(vehicleRepository.findByVehicleName(vehicleReturnDTO.getVehicleName()).getVehicleNum());
+        vehicle.update(0, vehicleReturnDTO.getParkingLoc(), vehicleReturnDTO.getDistanceDriven());
+        vehicleRepository.save(vehicle);
     }
 
     private void updateReturnInfo(VehicleReturnDTO vehicleReturnDTO) throws Exception{
         VehicleReservation updatedReturnInfo=reservationRepository.findByRentNum(vehicleReturnDTO.getRentNum());
-        LocalDateTime returnedAt=LocalDateTime.of(vehicleReturnDTO.getDateOfReturn().getYear(),
-                vehicleReturnDTO.getDateOfReturn().getMonth(), vehicleReturnDTO.getDateOfReturn().getDayOfMonth(),
-                vehicleReturnDTO.getTimeOfReturn().getHour(),
-                vehicleReturnDTO.getTimeOfReturn().getMinute(), vehicleReturnDTO.getTimeOfReturn().getSecond());
+        LocalDateTime returnedAt = dateTimeUtil.combineDateAndTime(vehicleReturnDTO.getDateOfReturn(), vehicleReturnDTO.getTimeOfReturn());
         Duration duration = Duration.between(updatedReturnInfo.getReturnedAt(), returnedAt);
         String totalDrivingTime=String.valueOf(duration).replace("PT", "").replace("H", "시간").replace("M", "분");
 
         modelMapper.map(vehicleReturnDTO, updatedReturnInfo);
-        updatedReturnInfo.setReturnStatusCode(1);
-        updatedReturnInfo.setReturnedAt(returnedAt);
-        updatedReturnInfo.setTotalDrivingTime(totalDrivingTime);
+        updatedReturnInfo.update(1, returnedAt, totalDrivingTime);
         reservationRepository.save(updatedReturnInfo);
     }
 

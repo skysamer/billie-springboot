@@ -48,4 +48,8 @@ public class CorporationCard {
         this.rentalStatus=isDiscarded;
         this.reasonForDisposal=reason;
     }
+
+    public void returnCard(int rentalStatus){
+        this.rentalStatus = rentalStatus;
+    }
 }

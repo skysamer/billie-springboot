@@ -15,5 +15,6 @@ public interface ApplicationRepository extends JpaRepository<Application, Long> 
     List<Application> findAllByStartDateAndStartTimeAndCorporationCardNotNull(LocalDate startDate, LocalTime startTime);
     List<Application> findAllByApprovalStatusAndStartDateBetween(char approvalStatus, LocalDate startDate, LocalDate endDate);
     List<Application> findAllByStaff(Staff staff);
+    List<Application> findAllByStaffAndIsReturned(Staff staff, int isReturned);
     List<Application> findAllByCorporationCardAndIsReturned(CorporationCard card, int isReturned);
 }
