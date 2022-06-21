@@ -91,11 +91,11 @@ public class StaffService implements UserDetailsService {
             return 500;
         }
 
-        if (staff.getDepartment().equals("관리부") || (staff.getDepartment().equals("관리부") && staff.getRank().equals("부장"))) {
+        if (staff.getDepartment().equals("관리부") || staff.getStaffNum().equals(4L) || staff.getRank().equals("대표")) {
             staff.setRole("ROLE_ADMIN");
-        } else if (staff.getRank().equals("책임연구원") || staff.getRank().equals("실장") || staff.getRank().equals("부장")) {
+        }else if (staff.getRank().equals("책임연구원") || staff.getRank().equals("실장") || staff.getRank().equals("부장")) {
             staff.setRole("ROLE_MANAGER");
-        }  else {
+        }else {
             staff.setRole("ROLE_USER");
         }
 

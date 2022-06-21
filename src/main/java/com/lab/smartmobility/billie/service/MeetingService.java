@@ -64,9 +64,9 @@ public class MeetingService {
             List<Meeting> currentMonthList=meetingRepository.findByDateBetween(startDate, endDate);
             currentMonthList.remove(meetingRepository.findByMeetingNum(meetingNum));
             for(Meeting currentMonth : currentMonthList){
-                if(currentMonth.getDate().isEqual(applyMeetingForm.getDate()) &&
+                if( currentMonth.getDate().isEqual(applyMeetingForm.getDate()) &&
                         (currentMonth.getStartTime().equals(applyMeetingForm.getStartTime()) || currentMonth.getStartTime().isBefore(applyMeetingForm.getStartTime())) &&
-                        currentMonth.getEndTime().isAfter(applyMeetingForm.getStartTime())){
+                        currentMonth.getEndTime().isAfter(applyMeetingForm.getStartTime()) ){
                     return 500;
                 }
             }

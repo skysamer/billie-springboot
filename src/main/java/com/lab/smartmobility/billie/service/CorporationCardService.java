@@ -170,7 +170,7 @@ public class CorporationCardService {
     /*승인권자 할당*/
     private Staff assignApproval(Staff requester){
         if(requester.getDepartment().equals("관리부") || requester.getRole().equals("ROLE_MANAGER")){
-            return staffRepository.findByStaffNum(37L); // 부장님은 4
+            return staffRepository.findByStaffNum(4L); // 부장님은 4
         }
         return staffRepository.findByDepartmentAndRole(requester.getDepartment(), "ROLE_MANAGER");
     }
