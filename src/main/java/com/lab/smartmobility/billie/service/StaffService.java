@@ -45,6 +45,14 @@ public class StaffService implements UserDetailsService {
         return staffRepository.findByEmail(username);
     }
 
+    /*자동 로그인*/
+    public Staff autoLogin(String username) {
+        if (!staffRepository.existsByEmail(username)) {
+            return null;
+        }
+        return staffRepository.findByEmail(username);
+    }
+
     /*이메일 토큰 전송*/
     public int sendEmailToken(String email){
         Staff staff=staffRepository.findByEmail(email);

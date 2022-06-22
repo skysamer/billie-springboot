@@ -93,8 +93,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                         .antMatchers("/corporation-card/my-return-history/{staff-num}/{card-name}/{base-year}/{page}/{size}").hasAnyRole("USER", "MANAGER", "ADMIN")
                         .antMatchers("/corporation-card/remove/application/{application-id}", "/corporation-card/rent", "/corporation-card/return").hasAnyRole("USER", "MANAGER", "ADMIN")
 
+                        /*------------------------------------------------------------------------------------마이 페이지-----------------------------------------------------------------------------------*/
                         .antMatchers("/my-page/user/**").hasAnyRole("USER", "MANAGER", "ADMIN")
                         .antMatchers("/my-page/admin/**").hasRole("ADMIN")
+
                         .and()
                         .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider),
                                 UsernamePasswordAuthenticationFilter.class)

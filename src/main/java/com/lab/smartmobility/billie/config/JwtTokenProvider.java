@@ -39,16 +39,32 @@ public class JwtTokenProvider {
     }
 
     public String createTokenLogin(String email, String role) {
-        Claims claims = Jwts.claims().setSubject(email); // JWT payload 에 저장되는 정보단위
-        claims.put("role", role); // 정보는 key / value 쌍으로 저장된다.
+        Claims claims = Jwts.claims().setSubject(email);
+        claims.put("role", role);
         Date now = new Date();
 
         long tokenValidTime = 24 * 60 * 60 * 1000L;
 
         Key key= Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8));
         return Jwts.builder()
-                .setClaims(claims) // 정보 저장
-                .setIssuedAt(now) // 토큰 발행 시간 정보
+                .setClaims(claims)
+                .setIssuedAt(now)
+                .setExpiration(new Date(now.getTime() + tokenValidTime))
+                .signWith(key, SignatureAlgorithm.HS256)
+                .compact();
+    }
+
+    public String createLongTermTokenLogin(String email, String role) {
+        Claims claims = Jwts.claims().setSubject(email);
+        claims.put("role", role);
+        Date now = new Date();
+
+        long tokenValidTime = (((24 * 60 * 60 * 1000L) * 30) * 12) * 3;
+
+        Key key= Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8));
+        return Jwts.builder()
+                .setClaims(claims)
+                .setIssuedAt(now)
                 .setExpiration(new Date(now.getTime() + tokenValidTime))
                 .signWith(key, SignatureAlgorithm.HS256)
                 .compact();

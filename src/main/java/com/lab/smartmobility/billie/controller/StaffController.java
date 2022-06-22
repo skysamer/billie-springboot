@@ -93,6 +93,27 @@ public class StaffController {
         return findStaff;
     }
 
+    @ApiOperation(value = "자동로그인", notes = "성공 시 jwt 토큰을 X-AUTH-TOKEN 키에 매핑하고 헤더에 넣어 반환")
+    @PostMapping(value = "/auto-login", produces = MediaType.APPLICATION_JSON_VALUE)
+    public Staff autoLogin(@RequestBody LoginForm loginForm, HttpServletResponse response) {
+        if(staffService.autoLogin(loginForm.getEmail())==null){
+            return Staff.builder()
+                    .name("가입된 사용자가 아닙니다.").build();
+        }
+
+        Staff findStaff= (Staff) staffService.loadUserByUsername(loginForm.getEmail());
+
+        boolean checkPassword = staffService.checkPassword(findStaff.getEmail(), loginForm.getPassword());
+        if(!checkPassword){
+            return Staff.builder()
+                    .name("비밀번호가 일치하지 않습니다.").build();
+        }
+
+        String token=jwtTokenProvider.createLongTermTokenLogin(findStaff.getEmail(), findStaff.getRole());
+        response.setHeader("X-AUTH-TOKEN", token);
+        return findStaff;
+    }
+
     @ApiOperation(value = "비밀번호 찾기")
     @PostMapping(value = "/findPassword", produces = MediaType.APPLICATION_JSON_VALUE)
     public HttpMessage findPassword(@RequestBody Mail mail){

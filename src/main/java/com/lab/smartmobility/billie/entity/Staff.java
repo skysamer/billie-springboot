@@ -28,6 +28,7 @@ public class Staff implements UserDetails {
     private String rank;
 
     @ApiModelProperty(value = "이메일")
+    @Column(unique = true)
     private String email;
 
     @ApiModelProperty(value = "전화번호")

@@ -63,13 +63,6 @@ public class VehicleReservation {
     @ApiModelProperty(value = "대여자 정보")
     private Staff staff;
 
-    public void modifyRentInfo(Staff staff, Vehicle vehicle, LocalDateTime rentedAt, LocalDateTime returnedAt){
-        this.vehicle = vehicle;
-        this.staff = staff;
-        this.rentedAt = rentedAt;
-        this.returnedAt = returnedAt;
-    }
-
     public void modifyRentInfoByAdmin(Vehicle vehicle, LocalDateTime rentedAt, LocalDateTime returnedAt){
         this.vehicle = vehicle;
         this.rentedAt = rentedAt;
@@ -80,5 +73,18 @@ public class VehicleReservation {
         this.returnStatusCode = returnStatusCode;
         this.returnedAt = returnedAt;
         this.totalDrivingTime = totalDrivingTime;
+    }
+
+    public void insert(Vehicle vehicle, Staff staff, LocalDateTime rentedAt, LocalDateTime returnedAt){
+        this.vehicle = vehicle;
+        this.staff = staff;
+        this.rentedAt = rentedAt;
+        this.returnedAt = returnedAt;
+    }
+
+    public void modifyInfo(Vehicle vehicle, LocalDateTime rentedAt, LocalDateTime returnedAt){
+        this.vehicle = vehicle;
+        this.rentedAt = rentedAt;
+        this.returnedAt = returnedAt;
     }
 }

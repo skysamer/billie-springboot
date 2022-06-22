@@ -95,20 +95,12 @@ public class VehicleService {
     public int removeVehicleInfo(Long vehicleNum){
         try {
             Vehicle vehicle=vehicleRepository.findByVehicleNum(vehicleNum);
-            Set<VehicleReservation> reservationSet = reservationRepository.findAllByVehicle(vehicle);
-
-            for(VehicleReservation reservation : reservationSet){
-                List<ImageVehicle> imageVehicleList=imageRepository.findAllByVehicleReservation(reservation);
-                for(ImageVehicle imageVehicle : imageVehicleList){
-                    imageRepository.delete(imageVehicle);
-                }
-            }
             vehicleRepository.deleteByVehicleNum(vehicleNum);
-            return 0;
         }catch (Exception e){
             e.printStackTrace();
             return 9999;
         }
+        return 0;
     }
 
     /*차량 폐기*/
@@ -146,10 +138,7 @@ public class VehicleService {
 
             VehicleReservation applicationRentalVehicle=new VehicleReservation();
             modelMapper.map(rentalVehicleDTO, applicationRentalVehicle);
-            applicationRentalVehicle.setVehicle(vehicle);
-            applicationRentalVehicle.setStaff(renderInfo);
-            applicationRentalVehicle.setRentedAt(rentedAt);
-            applicationRentalVehicle.setReturnedAt(returnedAt);
+            applicationRentalVehicle.insert(vehicle, renderInfo, rentedAt, returnedAt);
             reservationRepository.save(applicationRentalVehicle);
         }catch (Exception e){
             e.printStackTrace();
@@ -172,7 +161,7 @@ public class VehicleService {
         return reservationRepository.findByRentNum(rentNum);
     }
 
-    /*차량 예약 수정*/
+    /*차량 예약 정보 수정*/
     public int modifyVehicleReservation(Long rentNum, ApplyRentalVehicleDTO applyRentalVehicleDTO){
         VehicleReservation reservationInfo=reservationRepository.findByRentNum(rentNum);
         Vehicle vehicle=vehicleRepository.findByVehicleNum(vehicleRepository.findByVehicleName(applyRentalVehicleDTO.getVehicleName()).getVehicleNum());
@@ -198,9 +187,7 @@ public class VehicleService {
             }
 
             modelMapper.map(applyRentalVehicleDTO, reservationInfo);
-            reservationInfo.setVehicle(vehicle);
-            reservationInfo.setRentedAt(rentedAt);
-            reservationInfo.setReturnedAt(returnedAt);
+            reservationInfo.modifyInfo(vehicle, rentedAt, returnedAt);
             reservationRepository.save(reservationInfo);
         }catch (Exception e){
             e.printStackTrace();
@@ -292,6 +279,44 @@ public class VehicleService {
         return 0;
     }
 
+    private List<String> saveImageFile(List<MultipartFile> images) {
+        List<String> imageInformation=new ArrayList<>();
+
+        //String uploadFolder="C:\\vehicle";  //로컬 윈도우용
+        String uploadFolder="/home/billie/vehicle";
+
+        String uploadFolderPath=getFolder();
+        File uploadPath=new File(uploadFolder, uploadFolderPath);
+        log.info(uploadPath);
+        if(!uploadPath.exists()) {
+            boolean mkdirCheck=uploadPath.mkdirs();
+            log.info(mkdirCheck);
+        }
+        imageInformation.add(uploadPath.toString());
+
+        for(MultipartFile image : images){
+            UUID uuid=UUID.randomUUID();
+            String imageName=uuid+"_"+image.getOriginalFilename();
+            log.info(imageName);
+            imageInformation.add(imageName);
+
+            try{
+                File saveFile=new File(uploadPath, imageName);
+                image.transferTo(saveFile);
+            }catch (Exception e){
+                e.printStackTrace();
+                return null;
+            }
+        }
+        return imageInformation;
+    }
+
+    private String getFolder() {
+        LocalDate now=LocalDate.now();
+        String str=String.valueOf(now);
+        return str.replace("-", File.separator);
+    }
+
     private void changeVehicleInfo(VehicleReturnDTO vehicleReturnDTO) throws Exception{
         Vehicle vehicle = vehicleRepository.findByVehicleNum(vehicleRepository.findByVehicleName(vehicleReturnDTO.getVehicleName()).getVehicleNum());
         vehicle.update(0, vehicleReturnDTO.getParkingLoc(), vehicleReturnDTO.getDistanceDriven());
@@ -368,13 +393,13 @@ public class VehicleService {
     /*반납 이력 엑셀 다운로드*/
     public Workbook excelDownload(int disposalInfo, Long vehicleNum, String baseDate){
         Vehicle vehicle=vehicleRepository.findByVehicleNum(vehicleNum);
-        List<VehicleReservation> reservationList;
+        List<VehicleReservation> returnHistoryList;
         if(baseDate.equals("all")){
-            reservationList = new ArrayList<>(reservationRepositoryImpl.findAll(vehicle, disposalInfo));
+            returnHistoryList = new ArrayList<>(reservationRepositoryImpl.findAll(vehicle, disposalInfo));
         }else{
             LocalDateTime startDateTime= dateTimeUtil.getStartDateTime(baseDate);
             LocalDateTime endDateTime= dateTimeUtil.getEndDateTime(baseDate);
-            reservationList= new ArrayList<>(reservationRepositoryImpl.findAll(vehicle, startDateTime, endDateTime, disposalInfo));
+            returnHistoryList= new ArrayList<>(reservationRepositoryImpl.findAll(vehicle, startDateTime, endDateTime, disposalInfo));
         }
 
         Workbook wb = new XSSFWorkbook();
@@ -383,7 +408,6 @@ public class VehicleService {
         Cell cell = null;
         int rowNum = 0;
 
-        // Header
         row = sheet.createRow(rowNum++);
         cell = row.createCell(0);
         cell.setCellValue("차량");
@@ -406,9 +430,7 @@ public class VehicleService {
         cell = row.createCell(9);
         cell.setCellValue("주차위치");
 
-
-        // Body
-        for (VehicleReservation reservation : reservationList) {
+        for (VehicleReservation reservation : returnHistoryList) {
             row = sheet.createRow(rowNum++);
             LocalDate startDate=LocalDate.of(reservation.getRentedAt().getYear(), reservation.getRentedAt().getMonth(),
                     reservation.getRentedAt().getDayOfMonth());
@@ -441,41 +463,4 @@ public class VehicleService {
         return wb;
     }
 
-    private List<String> saveImageFile(List<MultipartFile> images) {
-        List<String> imageInformation=new ArrayList<>();
-
-        //String uploadFolder="C:\\vehicle";  //로컬 윈도우용
-        String uploadFolder="/home/billie/vehicle";
-
-        String uploadFolderPath=getFolder();
-        File uploadPath=new File(uploadFolder, uploadFolderPath);
-        log.info(uploadPath);
-        if(!uploadPath.exists()) {
-            boolean mkdirCheck=uploadPath.mkdirs();
-            log.info(mkdirCheck);
-        }
-        imageInformation.add(uploadPath.toString());
-
-        for(MultipartFile image : images){
-            UUID uuid=UUID.randomUUID();
-            String imageName=uuid+"_"+image.getOriginalFilename();
-            log.info(imageName);
-            imageInformation.add(imageName);
-
-            try{
-                File saveFile=new File(uploadPath, imageName);
-                image.transferTo(saveFile);
-            }catch (Exception e){
-                e.printStackTrace();
-                return null;
-            }
-        }
-        return imageInformation;
-    }
-
-    private String getFolder() {
-        LocalDate now=LocalDate.now();
-        String str=String.valueOf(now);
-        return str.replace("-", File.separator);
-    }
 }
