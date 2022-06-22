@@ -55,7 +55,7 @@
   - 토큰이 유효할경우, 토큰에서 사용자정보를 추출하여 SecurityContextHolder 객체에 인증정보를 저장합니다.
   
 ### 4.2. Spring Scheduler를 활용한 대여상태 변경 기능
-- **jwt 토큰 생성** :pushpin: [코드 확인](https://github.com/skysamer/billie-springboot/blob/master/src/main/java/com/lab/smartmobility/billie/task/VehicleScheduler.java)
+- **대여상태 변경 기능** :pushpin: [코드 확인](https://github.com/skysamer/billie-springboot/blob/master/src/main/java/com/lab/smartmobility/billie/task/VehicleScheduler.java)
   
   - 차량 및 교통카드는 매 30분 단위로 예약할 수 있습니다.
   - 따라서 30분 단위로 동작하는 스케줄러를 등록하여 30분마다 해당시각에 예약정보가 존재하는 경우, 차량 및 교통카드의 대여상태를 변경하는 기능을 추가했습니다.
