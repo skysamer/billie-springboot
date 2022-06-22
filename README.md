@@ -41,7 +41,7 @@
 <div markdown="1">
 
 ### 4.1. Spring Security와 JWT를 활용한 로그인 및 회원가입
-- **jwt 토큰 생성** :pushpin: [코드 확인]([https://github.com/Integerous/goQuality/blob/b587bbff4dce02e3bec4f4787151a9b6fa326319/frontend/src/components/PostInput.vue#L67](https://github.com/skysamer/billie-springboot/blob/master/src/main/java/com/lab/smartmobility/billie/config/JwtTokenProvider.java))
+- **jwt 토큰 생성** :pushpin: [코드 확인](https://github.com/skysamer/billie-springboot/blob/master/src/main/java/com/lab/smartmobility/billie/config/JwtTokenProvider.java)
   - 로그인 시 DB정보가 일치할 경우 이메일 및 권한정보와 설정파일에 저장된 secretKey로 jwt 토큰을 생성합니다.
   - secretKey는 애플리케이션 구동 시, Base64방식으로 인코딩하여 초기화합니다.
   - 생성된 토큰을 헤더에 넣어 응답값과 같이 전송합니다.
