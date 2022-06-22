@@ -66,7 +66,7 @@
 - 사실 이렇게 모든 url에 대하여 cors를 허용하는 것은 좋지 않은 설계라 생각하고 변경할 예정입니다.
 
 <details>
-<summary><b>기존 코드</b></summary>
+<summary><b>코드</b></summary>
 <div markdown="1">
 
 ~~~java
@@ -82,6 +82,41 @@ public class WebMvcConfig implements WebMvcConfigurer {
                 .allowCredentials(true);
     }
 }
+  
+~~~
+
+</div>
+</details>
+
+### 5.2. preflight request 이슈
+- 웹 브라우저에서는 실제로 요청하려는 경로와 같은 URL에 대해 서버에 OPTIONS 메서드로 사전 요청을 보내고 요청을 할 수 있는 권한이 있는지 확인합니다.
+- 그러나 Spring Security에서 preflight request로 요청한 option 메서드 요청을 리다이렉트 처리한다는 것을 알았습니다.
+- 따라서 프론트엔드에서 get요청은 정상작동하는데 post요청이 오작동하였습니다.
+- 결론적으로 시큐리티 설정파일에서 option메서드를 허용하여 문제를 해결했습니다.
+
+<details>
+<summary><b>코드</b></summary>
+<div markdown="1">
+
+~~~java
+  
+@Override
+    protected void configure(HttpSecurity http) throws Exception {
+        http
+                .httpBasic().disable()
+                .cors().disable()
+                .csrf().disable()
+                .formLogin().disable()
+                .sessionManagement()
+                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .and()
+
+                .authorizeRequests((requests) ->
+                requests.antMatchers(HttpMethod.OPTIONS, "/**/*").permitAll()
+                        .antMatchers("/login", "/sign-up", "/findPassword", "/check-login", "/send-email-token", "/verify-email-token", "/swagger-ui/index.html").permitAll()
+  .and()
+  .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider),
+                   UsernamePasswordAuthenticationFilter.class)
   
 ~~~
 
