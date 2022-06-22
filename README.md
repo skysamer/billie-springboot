@@ -32,7 +32,7 @@
 ## 4. 핵심 기능
 1차 런칭에서의 핵심기능은 예약기능입니다. 
 
-회사업무 및 출장 등에서 필요한 **차량, **법인카드 및 **교통카드와 **회의실을 
+회사업무 및 출장 등에서 필요한 **차량**, **법인카드**, **교통카드** 및 **회의실**을 
 
 간편하게 웹 어플리케이션에서 차량 및 교통카드 등을 예약하고 반납할 수 있는 플랫폼을 개발했습니다.
 
@@ -42,14 +42,17 @@
 
 ### 4.1. Spring Security와 JWT를 활용한 로그인 및 회원가입
 - **jwt 토큰 생성** :pushpin: [코드 확인](https://github.com/skysamer/billie-springboot/blob/master/src/main/java/com/lab/smartmobility/billie/config/JwtTokenProvider.java)
+  
   - 로그인 시 DB정보가 일치할 경우 이메일 및 권한정보와 설정파일에 저장된 secretKey로 jwt 토큰을 생성합니다.
   - secretKey는 애플리케이션 구동 시, Base64방식으로 인코딩하여 초기화합니다.
   - 생성된 토큰을 헤더에 넣어 응답값과 같이 전송합니다.
   
  
-- **URL 정규식 체크** :pushpin: [코드 확인](https://github.com/Integerous/goQuality/blob/b587bbff4dce02e3bec4f4787151a9b6fa326319/frontend/src/components/PostInput.vue#L67)
-  - Vue.js로 렌더링된 화면단에서, 사용자가 등록을 시도한 URL의 모양새를 정규식으로 확인합니다.
-  - URL의 모양새가 아닌 경우, 에러 메세지를 띄웁니다.
+- **URL 정규식 체크** :pushpin: [코드 확인](https://github.com/skysamer/billie-springboot/blob/master/src/main/java/com/lab/smartmobility/billie/config/JwtAuthenticationFilter.java)
+  
+  - jwt 토큰을 검증하는 커스텀 filter를 적용합니다.
+  - 로그인이 필요한 api를 요청할 경우, GenericFilterBean을 상속받은 jwtFilter클래스에서 토큰을 검증합니다.
+  - 토큰이 유효할경우, 토큰에서 사용자정보를 추출하여 SecurityContextHolder 객체에 인증정보를 저장합니다.
 
 </div>
 </details>
@@ -58,98 +61,33 @@
 
 ## 5. 핵심 트러블 슈팅
 ### 5.1. 프론트엔드와 통신 시 Cors 오류
-- 저는 이 서비스가 페이스북이나 인스타그램 처럼 가볍게, 자주 사용되길 바라는 마음으로 개발했습니다.  
-때문에 페이징 처리도 무한 스크롤을 적용했습니다.
-
-- 하지만 [무한스크롤, 페이징 혹은 “더보기” 버튼? 어떤 걸 써야할까](https://cyberx.tistory.com/82) 라는 글을 읽고 무한 스크롤의 단점들을 알게 되었고,  
-다양한 기준(카테고리, 사용자, 등록일, 인기도)의 게시물 필터 기능을 넣어서 이를 보완하고자 했습니다.
-
-- 그런데 게시물이 필터링 된 상태에서 무한 스크롤이 동작하면,  
-필터링 된 게시물들만 DB에 요청해야 하기 때문에 아래의 **기존 코드** 처럼 각 필터별로 다른 Query를 날려야 했습니다.
+- 모바일 앱이 아닌 웹 프론트엔드와의 첫 협업이었기에 여러가지 어려움이 있었는데 그 중 하나가 Cors 이슈였습니다.
+- 처음에는 @CrossOrigin 어노테이션을 활용하여 제어했으나, 이후에는 WebMvcConfigurer 인터페이스를 상속받은 config파일을 생성하여 Cors 이슈를 해결했습니다.
+- 사실 이렇게 모든 url에 대하여 cors를 허용하는 것은 좋지 않은 설계라 생각하고 변경할 예정입니다.
 
 <details>
 <summary><b>기존 코드</b></summary>
 <div markdown="1">
 
 ~~~java
-/**
- * 게시물 Top10 (기준: 댓글 수 + 좋아요 수)
- * @return 인기순 상위 10개 게시물
- */
-public Page<PostResponseDto> listTopTen() {
-
-    PageRequest pageRequest = PageRequest.of(0, 10, Sort.Direction.DESC, "rankPoint", "likeCnt");
-    return postRepository.findAll(pageRequest).map(PostResponseDto::new);
-}
-
-/**
- * 게시물 필터 (Tag Name)
- * @param tagName 게시물 박스에서 클릭한 태그 이름
- * @param pageable 페이징 처리를 위한 객체
- * @return 해당 태그가 포함된 게시물 목록
- */
-public Page<PostResponseDto> listFilteredByTagName(String tagName, Pageable pageable) {
-
-    return postRepository.findAllByTagName(tagName, pageable).map(PostResponseDto::new);
-}
-
-// ... 게시물 필터 (Member) 생략 
-
-/**
- * 게시물 필터 (Date)
- * @param createdDate 게시물 박스에서 클릭한 날짜
- * @return 해당 날짜에 등록된 게시물 목록
- */
-public List<PostResponseDto> listFilteredByDate(String createdDate) {
-
-    // 등록일 00시부터 24시까지
-    LocalDateTime start = LocalDateTime.of(LocalDate.parse(createdDate), LocalTime.MIN);
-    LocalDateTime end = LocalDateTime.of(LocalDate.parse(createdDate), LocalTime.MAX);
-
-    return postRepository
-                    .findAllByCreatedAtBetween(start, end)
-                    .stream()
-                    .map(PostResponseDto::new)
-                    .collect(Collectors.toList());
+  
+@Configuration
+public class WebMvcConfig implements WebMvcConfigurer {
+    @Override
+    public void addCorsMappings(CorsRegistry registry) {
+        registry.addMapping("/**")
+                .allowedOriginPatterns("*")
+                .allowedMethods("*")
+                .exposedHeaders("*")
+                .allowCredentials(true);
     }
-~~~
-
-</div>
-</details>
-
-- 이 때 카테고리(tag)로 게시물을 필터링 하는 경우,  
-각 게시물은 최대 3개까지의 카테고리(tag)를 가질 수 있어 해당 카테고리를 포함하는 모든 게시물을 질의해야 했기 때문에  
-- 아래 **개선된 코드**와 같이 QueryDSL을 사용하여 다소 복잡한 Query를 작성하면서도 페이징 처리를 할 수 있었습니다.
-
-<details>
-<summary><b>개선된 코드</b></summary>
-<div markdown="1">
-
-~~~java
-/**
- * 게시물 필터 (Tag Name)
- */
-@Override
-public Page<Post> findAllByTagName(String tagName, Pageable pageable) {
-
-    QueryResults<Post> results = queryFactory
-            .selectFrom(post)
-            .innerJoin(postTag)
-                .on(post.idx.eq(postTag.post.idx))
-            .innerJoin(tag)
-                .on(tag.idx.eq(postTag.tag.idx))
-            .where(tag.name.eq(tagName))
-            .orderBy(post.idx.desc())
-                .limit(pageable.getPageSize())
-                .offset(pageable.getOffset())
-            .fetchResults();
-
-    return new PageImpl<>(results.getResults(), pageable, results.getTotal());
 }
+  
 ~~~
 
 </div>
 </details>
+
 
 </br>
 
