@@ -48,28 +48,44 @@
   - 생성된 토큰을 헤더에 넣어 응답값과 같이 전송합니다.
   
  
-- **URL 정규식 체크** :pushpin: [코드 확인](https://github.com/skysamer/billie-springboot/blob/master/src/main/java/com/lab/smartmobility/billie/config/JwtAuthenticationFilter.java)
+- **jwt 토큰 검증** :pushpin: [코드 확인](https://github.com/skysamer/billie-springboot/blob/master/src/main/java/com/lab/smartmobility/billie/config/JwtAuthenticationFilter.java)
   
   - jwt 토큰을 검증하는 커스텀 filter를 적용합니다.
   - 로그인이 필요한 api를 요청할 경우, GenericFilterBean을 상속받은 jwtFilter클래스에서 토큰을 검증합니다.
   - 토큰이 유효할경우, 토큰에서 사용자정보를 추출하여 SecurityContextHolder 객체에 인증정보를 저장합니다.
+  
   
 ### 4.2. Spring Scheduler를 활용한 대여상태 변경 기능
 - **대여상태 변경 기능** :pushpin: [코드 확인](https://github.com/skysamer/billie-springboot/blob/master/src/main/java/com/lab/smartmobility/billie/task/VehicleScheduler.java)
   
   - 차량 및 교통카드는 매 30분 단위로 예약할 수 있습니다.
   - 따라서 30분 단위로 동작하는 스케줄러를 등록하여 30분마다 해당시각에 예약정보가 존재하는 경우, 차량 및 교통카드의 대여상태를 변경하는 기능을 추가했습니다.
+  
+  
+### 4.3. 승인기능
+- **부서장과 관리자의 법인카드 사용 승인 기능** :pushpin: [코드 확인](https://github.com/skysamer/billie-springboot/blob/master/src/main/java/com/lab/smartmobility/billie/service/CorporationCardService.java)
+  - 법인카드는 일반직원이 함부로 사용할 수 없습니다. 반드시 부서장 및 관리부의 승인을 받아야합니다.
+  - 법인카드 사용을 신청할 경우, 자신이 속한 부서의 부서장에게 승인요청 및 실시간 알림이 전송됩니다.
+  - 부서장이 사용을 승인할 경우 다시 관리부에게 승인 요청이 전송되고, 관리부가 최종적으로 승인하면 승인 플로우가 종료되고 예약 일정에 노출됩니다.
+  - 부서장이 신청하면 바로 관리부에게 승인요청이 전송됩니다. 
+
+
+### 4.4. 실시간 알림기능
+- **승인 요청 시, 실시간 알림 기능** :pushpin: [코드 확인](https://github.com/skysamer/billie-springboot/blob/master/src/main/java/com/lab/smartmobility/billie/util/SseEmitterSender.java)
+  - 실시간 알림의 경우, 프론트엔드에서 일방적으로 수신하면 되었기에 일반적인 웹소켓보다는 실시간 단방향 통신인 SSE(server-sent-event) 기능을 활용했습니다.
+  - 우선 로그인 시, 반환받은 토큰을 사용하여 서버 sse를 구독합니다.
+  - 유저의 pk값을 활용하여 SseEmitter 객체를 저장합니다.
+  - 이후 실시간 알림전송이 필요한 로직에서 SseEmitter.send() 메서드를 활용하여 실시간 알림 메시지를 전송합니다.
 
 </div>
 </details>
 
 </br>
 
-## 5. 핵심 트러블 슈팅
+## 5. 트러블 슈팅
 ### 5.1. 프론트엔드와 통신 시 Cors 오류
 - 모바일 앱이 아닌 웹 프론트엔드와의 첫 협업이었기에 여러가지 어려움이 있었는데 그 중 하나가 Cors 이슈였습니다.
 - 처음에는 @CrossOrigin 어노테이션을 활용하여 제어했으나, 이후에는 WebMvcConfigurer 인터페이스를 상속받은 config파일을 생성하여 Cors 이슈를 해결했습니다.
-- 사실 이렇게 모든 url에 대하여 cors를 허용하는 것은 좋지 않은 설계라 생각하고 변경할 예정입니다.
 
 <details>
 <summary><b>코드</b></summary>
@@ -132,16 +148,9 @@ public class WebMvcConfig implements WebMvcConfigurer {
 
 </br>
 
-## 6. 그 외 트러블 슈팅
-<details>
-<summary> 랭킹 동점자 처리 문제</summary>
-<div markdown="1">
-  
-  - PageRequest의 Sort부분에서 properties를 "rankPoint"를 주고 "likeCnt"를 줘서 댓글수보다 좋아요수가 우선순위 갖도록 설정.
-  - 좋아요 수도 똑같다면..........
-        
-</div>
-</details> 
+## 6. 리팩토링
+### 6.1. 프론트엔드와 통신 시 Cors 오류
+
     
 </br>
 
