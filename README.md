@@ -26,7 +26,7 @@
 </br>
 
 ## 3. ERD 설계
-<img width="934" alt="erd 수정" src="https://user-images.githubusercontent.com/73572543/174931878-7d99052e-15be-4436-8b20-57f71874c22d.png">
+<img width="700" alt="erd 수정" src="https://user-images.githubusercontent.com/73572543/174931878-7d99052e-15be-4436-8b20-57f71874c22d.png">
 
 
 ## 4. 핵심 기능
