@@ -104,7 +104,7 @@
   - 이미지 정보들을 테이블에 따로 저장하여 차량 예약 테이블과 연관관계를 맺어줬습니다.
   
 - **이미지 조회 기능** :pushpin: [코드 확인](https://github.com/skysamer/billie-springboot/blob/master/src/main/java/com/lab/smartmobility/billie/service/VehicleService.java)
-  - 저장된 이미지 파일은 FileInputStream 객체로 불러와 byte 형태로 변환한 다음, 바이트 데이터 자체를 프론트로 전송해주었습니다.
+  - 저장된 이미지 파일은 FileInputStream 객체로 불러와 byte 형태로 변환한 다음, 바이트 배열을 프론트로 전송해주었습니다.
   
 ### 4.7 구글 SMTP 이메일 전송
 - **비밀번호 초기화 기능** :pushpin: [코드 확인](https://github.com/skysamer/billie-springboot/blob/master/src/main/java/com/lab/smartmobility/billie/service/StaffService.java)
