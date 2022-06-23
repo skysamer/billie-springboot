@@ -59,7 +59,7 @@ public class JwtTokenProvider {
         claims.put("role", role);
         Date now = new Date();
 
-        long tokenValidTime = (((24 * 60 * 60 * 1000L) * 30) * 12) * 3;
+        long tokenValidTime = ((24 * 60 * 60 * 1000L) * 30) * 3;
 
         Key key= Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8));
         return Jwts.builder()
