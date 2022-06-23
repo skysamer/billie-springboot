@@ -1,4 +1,4 @@
-# :pushpin: 사내 전사관리 시스템 'Billie' (ReadMe 수정중......)
+# :pushpin: 사내 전사관리 시스템 'Billie' (ReadMe 1차 작성)
 > 사내 전사관리 시스템 REST API 개발
 > http://www.billie.work  
 > [공식 api 설계 문서](http://59.6.99.141:8080/billie/swagger-ui/index.html#/)
@@ -82,6 +82,25 @@
   - 법인카드의 반납이력 목록의 경우, 날짜(연/월), 해당 카드, 폐기된 카드 정보 포함 여부 등을 동적으로 조건절에 추가하여 데이터를 뿌려야 했습니다.
   - 이에 QueryDSL과 BooleanExpression을 반환하는 메서드를 생성하여 동적으로 쿼리에 조건절을 추가하도록 했습니다.
   - Projections 객체를 활용하여 데이터를 반납이력 폼에 맞게 추출했습니다.
+  
+### 4.6. 이미지 업로드
+- **차량 반납 시 이미지 업로드 기능** :pushpin: [코드 확인](https://github.com/skysamer/billie-springboot/blob/master/src/main/java/com/lab/smartmobility/billie/service/VehicleService.java)
+  - 차량 반납 시, 차량의 상태를 확인하기 위해 차량사진을 찍어 업로드할 수 있는 기능이 필요했습니다.
+  - MultipartFile 타입으로 이미지 파일을 전송받아 웹서버 지정된 경로에 이미지 파일을 연/월/일 별로 저장했습니다.
+  - 이미지 정보들을 테이블에 따로 저장하여 차량 예약 테이블과 연관관계를 맺어줬습니다.
+  
+- **이미지 조회 기능** :pushpin: [코드 확인](https://github.com/skysamer/billie-springboot/blob/master/src/main/java/com/lab/smartmobility/billie/service/VehicleService.java)
+  - 저장된 이미지 파일은 FileInputStream 객체로 불러와 byte 형태로 변환한 다음, 바이트 데이터 자체를 프론트로 전송해주었습니다.
+  
+### 4.7 구글 SMTP 이메일 전송
+- **비밀번호 초기화 기능** :pushpin: [코드 확인](https://github.com/skysamer/billie-springboot/blob/master/src/main/java/com/lab/smartmobility/billie/service/StaffService.java)
+  - 비밀번호를 잊어버렸을 경우, 랜덤하게 10자리 문자열을 생성하여 비밀번호를 초기화 해주고 javaMailSender로 임의의 문자열을 전송하는 기능을 구현했습니다.
+  
+- **이메일 인증** :pushpin: [코드 확인](https://github.com/skysamer/billie-springboot/blob/master/src/main/java/com/lab/smartmobility/billie/service/StaffService.java)
+  - 저희 웹 애플리케이션은 사내 직원만 이용할 수 있게끔 만들어야 했습니다.
+  - 관리부에서 직원을 등록할 수 있는 폼을 만든 다음, 거기에 각 직원의 이메일 정보를 입력하도록 했습니다.
+  - 이때 입력된 이메일로 UUID로 만든 임의의 문자열 토큰을 전송하여 직원 확인 및 이메일을 인증하는 로직을 구현했습니다.
+  - 이때 생성시간을 저장하여 10분 이내로 인증하지 않으면 인증에 실패하도록 했습니다.
 
 </div>
 </details>
@@ -244,7 +263,7 @@ public class DateTimeUtil {
   
 ### 6.3. 주석제거 및 네이밍 컨벤션의 통일성
 - 주석은 소스코드에 영향을 미치지 않는다는 점이 오히려 코드 전체에 악영향을 미칠수 있다는 것을 깨닫고 최대한 제거하려 했습니다
-- 메서드위에 있는 큰 주석은 남기되, 메서드 안에 존재하는 자잘한 주석은 최대한 제거하고 네이밍컨벤션을 더욱 신경써서 코드  그자체가 설계문서로 작용할 수 있도록 했습니다.
+- 메서드위에 있는 큰 주석은 남기되, 메서드 안에 존재하는 자잘한 주석은 최대한 제거하고 네이밍컨벤션을 더욱 신경써서 코드 자체가 설계문서로 활용될 수 있도록 했습니다.
     
 </br>
 
