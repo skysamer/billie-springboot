@@ -76,6 +76,12 @@
   - 우선 로그인 시, 반환받은 토큰을 사용하여 서버 sse를 구독합니다.
   - 유저의 pk값을 활용하여 SseEmitter 객체를 저장합니다.
   - 이후 실시간 알림전송이 필요한 로직에서 SseEmitter.send() 메서드를 활용하여 실시간 알림 메시지를 전송합니다.
+  
+### 4.5. 동적 조건 검색
+- **QueryDSL을 활용한 동적 조건 검색 기능** :pushpin: [코드 확인](https://github.com/skysamer/billie-springboot/blob/master/src/main/java/com/lab/smartmobility/billie/repository/corporation/CorporationReturnRepositoryImpl.java)
+  - 법인카드의 반납이력 목록의 경우, 날짜(연/월), 해당 카드, 폐기된 카드 정보 포함 여부 등을 동적으로 조건절에 추가하여 데이터를 뿌려야 했습니다.
+  - 이에 QueryDSL과 BooleanExpression을 반환하는 메서드를 생성하여 동적으로 쿼리에 조건절을 추가하도록 했습니다.
+  - Projections 객체를 활용하여 데이터를 반납이력 폼에 맞게 추출했습니다.
 
 </div>
 </details>
@@ -149,8 +155,88 @@ public class WebMvcConfig implements WebMvcConfigurer {
 </br>
 
 ## 6. 리팩토링
-### 6.1. 프론트엔드와 통신 시 Cors 오류
+### 6.1. 날짜와 시간을 다루는 로직의 개별 클래스화
+- 특정 매체를 예약하고 반납하는 기능이 핵심 기능이었기에 시간과 날짜를 다루는 로직이 매우 많았습니다.
+- 원래는 각 도메인 별 서비스 단에 이러한 날짜 제어 로직을 전부 집어 넣었지만 이러한 설계방식이 단일책임원칙(SRP)을 위배한다는 사실을 깨달았습니다.
+- 따라서 날짜 제어를 다루는 dateTimeUtil 클래스를 추가하고 각 메서드 별로 분기하여 필요한 날짜 제어 로직을 추가했습니다.
 
+<details>
+<summary><b>코드</b></summary>
+<div markdown="1">
+
+~~~java
+  
+@Component
+public class DateTimeUtil {
+    private final Calendar cal=Calendar.getInstance();
+
+    public LocalDateTime getStartDateTime(String baseDate){
+        int year=Integer.parseInt(baseDate.substring(0, baseDate.indexOf("-")));
+        int month=Integer.parseInt(baseDate.substring(baseDate.indexOf("-")+1));
+        cal.set(Calendar.YEAR, year);
+        cal.set(Calendar.MONTH,month);
+        cal.set(year, month-1, 1);
+
+        return LocalDateTime.of(year, month, 1, 0, 0, 0);
+    }
+
+    public LocalDateTime getEndDateTime(String baseDate){
+        int year=Integer.parseInt(baseDate.substring(0, baseDate.indexOf("-")));
+        int month=Integer.parseInt(baseDate.substring(baseDate.indexOf("-")+1));
+        cal.set(Calendar.YEAR, year);
+        cal.set(Calendar.MONTH,month);
+        cal.set(year, month-1, 1);
+        int end=cal.getActualMaximum(Calendar.DATE);
+
+        return LocalDateTime.of(year, month, end, 23, 59, 59);
+    }
+
+    public List<LocalDate> getStartDateAndEndDate(LocalDate baseDate){
+        int year=baseDate.getYear();
+        int month=baseDate.getMonthValue();
+        cal.set(Calendar.YEAR, year);
+        cal.set(Calendar.MONTH,month);
+        cal.set(year, month-1, 1);
+        int end=cal.getActualMaximum(Calendar.DATE);
+        LocalDate startDate=LocalDate.of(year, month, 1);
+        LocalDate endDate=LocalDate.of(year, month, end);
+
+        return new ArrayList<>(List.of(startDate, endDate));
+    }
+
+    public LocalDate getStartDate(String baseDate){
+        int year=Integer.parseInt(baseDate.substring(0, baseDate.indexOf("-")));
+        int month=Integer.parseInt(baseDate.substring(baseDate.indexOf("-")+1));
+        cal.set(Calendar.YEAR, year);
+        cal.set(Calendar.MONTH,month);
+        cal.set(year, month-1, 1);
+
+        return LocalDate.of(year, month, 1);
+    }
+
+    public LocalDate getEndDate(String baseDate){
+        int year=Integer.parseInt(baseDate.substring(0, baseDate.indexOf("-")));
+        int month=Integer.parseInt(baseDate.substring(baseDate.indexOf("-")+1));
+        cal.set(Calendar.YEAR, year);
+        cal.set(Calendar.MONTH,month);
+        cal.set(year, month-1, 1);
+        int end=cal.getActualMaximum(Calendar.DATE);
+
+        return LocalDate.of(year, month, end);
+    }
+
+    public LocalDateTime combineDateAndTime(LocalDate date, LocalTime time){
+        return LocalDateTime.of(date.getYear(), date.getMonth(), date.getDayOfMonth(),
+                time.getHour(), time.getMinute(), 0);
+    }
+}
+
+~~~
+
+</div>
+</details>
+
+### 6.2. 날짜와 시간을 다루는 로직의 개별 클래스화
     
 </br>
 
