@@ -4,8 +4,11 @@
 > [공식 api 설계 문서](http://59.6.99.141:8080/billie/swagger-ui/index.html#/)
 
 </br>
-> 빠른예약탭소개
-<img width="300" alt="erd 수정" src="https://user-images.githubusercontent.com/73572543/175220074-a3e6636b-fa37-43e5-8203-e27d94f1aedf.gif">
+# :pushpin: 빠른예약탭소개
+<img width="500" alt="erd 수정" src="https://user-images.githubusercontent.com/73572543/175220074-a3e6636b-fa37-43e5-8203-e27d94f1aedf.gif">
+
+# :pushpin: 
+<img width="500" alt="erd 수정" src="https://user-images.githubusercontent.com/73572543/175220210-4d2e889a-2dac-42dd-8cfa-236a759d3ed7.gif">
 
 </br>
 
