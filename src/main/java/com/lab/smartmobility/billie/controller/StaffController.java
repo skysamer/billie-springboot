@@ -6,6 +6,9 @@ import com.lab.smartmobility.billie.entity.HttpMessage;
 import com.lab.smartmobility.billie.entity.Mail;
 import com.lab.smartmobility.billie.entity.Staff;
 import com.lab.smartmobility.billie.service.StaffService;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jws;
+import io.jsonwebtoken.Jwts;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
@@ -13,11 +16,13 @@ import io.swagger.annotations.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.List;
 
@@ -28,6 +33,9 @@ public class StaffController {
     private final Log log = LogFactory.getLog(getClass());
     private final JwtTokenProvider jwtTokenProvider;
     private final StaffService staffService;
+
+    @Value("${spring.jwt.secret-key}")
+    private String secretKey;
 
     @ApiOperation(value = "이메일 인증 토큰 전송")
     @ApiResponses({
@@ -73,8 +81,8 @@ public class StaffController {
     }
 
     @ApiOperation(value = "로그인", notes = "성공 시 jwt 토큰을 X-AUTH-TOKEN 키에 매핑하고 헤더에 넣어 반환")
-    @PostMapping(value = "/login", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Staff login(@RequestBody LoginForm loginForm, HttpServletResponse response) {
+    @PostMapping(value = "/login/{is-auto}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public Staff login(@PathVariable("is-auto") int isAuto, @RequestBody LoginForm loginForm, HttpServletResponse response) {
         if(staffService.loadUserByUsername(loginForm.getEmail())==null){
             return Staff.builder()
                     .name("가입된 사용자가 아닙니다.").build();
@@ -88,28 +96,13 @@ public class StaffController {
                     .name("비밀번호가 일치하지 않습니다.").build();
         }
 
-        String token=jwtTokenProvider.createTokenLogin(findStaff.getEmail(), findStaff.getRole());
-        response.setHeader("X-AUTH-TOKEN", token);
-        return findStaff;
-    }
-
-    @ApiOperation(value = "자동로그인", notes = "성공 시 jwt 토큰을 X-AUTH-TOKEN 키에 매핑하고 헤더에 넣어 반환")
-    @PostMapping(value = "/auto-login", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Staff autoLogin(@RequestBody LoginForm loginForm, HttpServletResponse response) {
-        if(staffService.autoLogin(loginForm.getEmail())==null){
-            return Staff.builder()
-                    .name("가입된 사용자가 아닙니다.").build();
+        String token;
+        if(isAuto==1){
+            token = jwtTokenProvider.createLongTermTokenLogin(findStaff.getEmail(), findStaff.getRole());
+        }else{
+            token = jwtTokenProvider.createTokenLogin(findStaff.getEmail(), findStaff.getRole());
         }
 
-        Staff findStaff= (Staff) staffService.loadUserByUsername(loginForm.getEmail());
-
-        boolean checkPassword = staffService.checkPassword(findStaff.getEmail(), loginForm.getPassword());
-        if(!checkPassword){
-            return Staff.builder()
-                    .name("비밀번호가 일치하지 않습니다.").build();
-        }
-
-        String token=jwtTokenProvider.createLongTermTokenLogin(findStaff.getEmail(), findStaff.getRole());
         response.setHeader("X-AUTH-TOKEN", token);
         return findStaff;
     }
