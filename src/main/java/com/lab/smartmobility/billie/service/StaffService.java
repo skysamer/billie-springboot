@@ -9,9 +9,11 @@ import com.lab.smartmobility.billie.entity.Staff;
 import com.lab.smartmobility.billie.repository.StaffRepository;
 import com.lab.smartmobility.billie.util.CustomSimpleMailMessage;
 import lombok.RequiredArgsConstructor;
+import org.apache.catalina.core.ApplicationContext;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -34,7 +36,7 @@ public class StaffService implements UserDetailsService {
     private final JavaMailSender javaMailSender;
 
     @Value("${spring.mail.username}")
-    private String managerEmail;
+    private final String managerEmail;
 
     /*로그인*/
     @Override
@@ -51,8 +53,7 @@ public class StaffService implements UserDetailsService {
         if(staff==null){
             return 9999;
         }
-        staff.setEmailToken(UUID.randomUUID().toString());
-        staff.setEmailTokenGeneratedAt(LocalDateTime.now());
+        staff.insert(UUID.randomUUID().toString(), LocalDateTime.now());
         staffRepository.save(staff);
 
         CustomSimpleMailMessage mailMessage = CustomSimpleMailMessage.builder()
@@ -72,7 +73,7 @@ public class StaffService implements UserDetailsService {
         }else if(ChronoUnit.MINUTES.between(staff.getEmailTokenGeneratedAt(), LocalDateTime.now())>=10){
             return 500;
         }
-        staff.setIsVerified(1);
+        staff.certify(1);
         staffRepository.save(staff);
         return 0;
     }

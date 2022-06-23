@@ -104,6 +104,15 @@ public class Staff implements UserDetails {
         this.isResigned = isResigned;
     }
 
+    public void insert(String emailToken, LocalDateTime emailTokenGeneratedAt){
+        this.emailToken = emailToken;
+        this.emailTokenGeneratedAt = emailTokenGeneratedAt;
+    }
+
+    public void certify(int isVerified){
+        this.isVerified = isVerified;
+    }
+
     @Override
     @JsonIgnore
     public Collection<? extends GrantedAuthority> getAuthorities() {

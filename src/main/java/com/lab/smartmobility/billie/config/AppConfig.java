@@ -2,6 +2,8 @@ package com.lab.smartmobility.billie.config;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.NameTokenizers;
 import org.springframework.context.annotation.Bean;
@@ -21,5 +23,10 @@ public class AppConfig {
     @Bean
     public Log log(){
         return LogFactory.getLog(getClass());
+    }
+
+    @Bean
+    public Workbook workbook(){
+        return new XSSFWorkbook();
     }
 }

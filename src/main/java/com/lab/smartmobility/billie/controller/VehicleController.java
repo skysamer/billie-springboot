@@ -93,16 +93,7 @@ public class VehicleController {
             @ApiResponse(code = 200, message = "차량 대여 신청 실패 or 해당 날짜에 차량이 이미 대여중입니다 or 현재 시각보다 과거로 예약할 수 없습니다 or 대여 성공")
     })
     public HttpMessage applyForRent(@Valid @RequestBody ApplyRentalVehicleDTO rentalVehicleDTO){
-        int checkApplyRental=service.applyForRent(rentalVehicleDTO);
-
-        if(checkApplyRental==9999){
-            return new HttpMessage("fail", "차량 대여 신청 실패");
-        } else if(checkApplyRental==500){
-            return new HttpMessage("fail", "해당 날짜에 차량이 이미 대여중입니다");
-        } else if(checkApplyRental==400){
-            return new HttpMessage("fail", "현재 시각보다 과거로 예약할 수 없습니다");
-        }
-        return new HttpMessage("success", "대여 성공");
+        return service.applyForRent(rentalVehicleDTO);
     }
 
     @GetMapping("/reservation-list/{startDate}/{endDate}")
