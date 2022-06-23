@@ -4,6 +4,10 @@
 > [공식 api 설계 문서](http://59.6.99.141:8080/billie/swagger-ui/index.html#/)
 
 </br>
+> 빠른예약탭소개
+<img width="300" alt="erd 수정" src="https://user-images.githubusercontent.com/73572543/175220074-a3e6636b-fa37-43e5-8203-e27d94f1aedf.gif">
+
+</br>
 
 ## 1. 제작 기간 & 참여 인원
 - 2022년 2월 1일 ~ 6월 27일 (1차 런칭)
