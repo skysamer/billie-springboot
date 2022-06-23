@@ -278,6 +278,39 @@ public class DateTimeUtil {
 ### 6.3. 주석제거 및 네이밍 컨벤션의 통일성
 - 주석은 소스코드에 영향을 미치지 않는다는 점이 오히려 코드 전체에 악영향을 미칠수 있다는 것을 깨닫고 최대한 제거하려 했습니다
 - 메서드위에 있는 큰 주석은 남기되, 메서드 안에 존재하는 자잘한 주석은 최대한 제거하고 네이밍컨벤션을 더욱 신경써서 코드 자체가 설계문서로 활용될 수 있도록 했습니다.
+  
+### 6.4. 클래스 내 중복 코드의 비공개 메서드화
+  - 차량과 교통카드 예약의 경우, 신규 예약, 예약 수정 및 관리자 예약 수정 api에 공통적으로 기존에 등록된 예약날짜 및 시간과 겹치는지 체크하는 로직이 존재합니다.
+  - 따라서 이 로직을 공통 메서드화 하여 중복을 최대한 제거하려고 노력했습니다.
+
+<details>
+<summary><b>코드</b></summary>
+<div markdown="1">
+
+~~~java
+
+/*신규 예약이 기존 예약 날짜 및 시간과 겹치는지 체크*/
+private boolean checkReservationIsDuplicate(Long reservationNum, LocalDateTime rentedAt, TrafficCard trafficCard){
+        List<TrafficCardReservation> reservationList=reservationRepository.findAllByReturnStatus(0);
+        if(reservationNum != null){
+            reservationList.remove(reservationRepository.findByReservationNum(reservationNum));
+        }
+
+        for(TrafficCardReservation reservation : reservationList){
+            if(((reservation.getRentedAt().isBefore(rentedAt) || reservation.getRentedAt().isEqual(rentedAt)) &&
+                    (reservation.getReturnedAt().isAfter(rentedAt)))
+                    && trafficCard.getCardNum().equals(reservation.getTrafficCard().getCardNum())){
+                return true;
+            }
+        }
+        return false;
+}
+
+~~~
+
+</div>
+</details>
+  
     
 </br>
 
