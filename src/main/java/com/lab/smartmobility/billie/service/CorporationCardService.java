@@ -317,7 +317,12 @@ public class CorporationCardService {
             CorporationCard card = cardRepository.findByCardNameAndCompany(approvalCardUseForm.getCardName(), approvalCardUseForm.getCompany());
             if(card==null){
                 toBeApproveApplication.approveExpenseByAdmin(1, 'f');
+                Staff requester = toBeApproveApplication.getStaff();
+                NotificationEventDTO notificationEvent =
+                        new NotificationEventDTO(requester.getName(), requester.getName(), toBeApproveApplication.getApprovalStatus(), requester);
+
                 applicationRepository.save(toBeApproveApplication);
+                applicationEventPublisher.publishEvent(notificationEvent);
                 continue;
             }
 
@@ -330,6 +335,7 @@ public class CorporationCardService {
 
                 if( ((existStart.isBefore(toBeStart) || existStart.isEqual(toBeStart)) && ((existEnd.isAfter(toBeStart)))
                         && existingApplication.getCorporationCard().equals(card)) ){
+                    log.info(existingApplication.getApplicationId());
                     throw new RuntimeException();
                 }
 
