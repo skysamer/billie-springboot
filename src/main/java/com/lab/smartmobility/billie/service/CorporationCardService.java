@@ -115,8 +115,8 @@ public class CorporationCardService {
 
         Application application=modelMapper.map(applyCorporationCardForm, Application.class);
         Staff requester=staffRepository.findByStaffNum(applyCorporationCardForm.getStaffNum());
-        application.assignRequester(requester);
 
+        application.assignRequester(requester);
         Staff approval= assignApproval(requester);
         if(requester.getRole().equals("ROLE_ADMIN")){
             application.updateApprovalStatus('t');
@@ -129,9 +129,9 @@ public class CorporationCardService {
                 .approveStatus(application.getApprovalStatus())
                 .build();
         try{
-            sseEmitterSender.sendSseEmitter(approval);
-            notificationRepository.save(notification);
             applicationRepository.save(application);
+            notificationRepository.save(notification);
+            sseEmitterSender.sendSseEmitter(approval);
         }catch (Exception e){
             log.error("fail : "+e);
             return new HttpMessage("fail", "fail-application");
@@ -142,6 +142,7 @@ public class CorporationCardService {
     /*후불 경비청구 신청*/
     public HttpMessage applyPostExpenseClaim(ApplyCorporationCardForm applyCorporationCardForm){
         Application application=modelMapper.map(applyCorporationCardForm, Application.class);
+
         Staff requester=staffRepository.findByStaffNum(applyCorporationCardForm.getStaffNum());
         application.insertRequesterAndPostExpense(requester, 99);
 
@@ -157,9 +158,9 @@ public class CorporationCardService {
                 .approveStatus(application.getApprovalStatus())
                 .build();
         try{
-            sseEmitterSender.sendSseEmitter(approval);
-            notificationRepository.save(notification);
             applicationRepository.save(application);
+            notificationRepository.save(notification);
+            sseEmitterSender.sendSseEmitter(approval);
         }catch (Exception e){
             log.error("fail : "+e);
             return new HttpMessage("fail", "fail-application");
@@ -268,7 +269,7 @@ public class CorporationCardService {
                 application.approveByManager('t');
 
                 Staff requester = application.getStaff();
-                Staff admin = staffRepository.findByStaffNum(37L);
+                Staff admin = staffRepository.findByStaffNum(42L);
 
                 Notification notification=Notification.builder()
                         .requester(requester.getName())
@@ -276,9 +277,10 @@ public class CorporationCardService {
                         .type("corporation")
                         .approveStatus(application.getApprovalStatus())
                         .build();
-                sseEmitterSender.sendSseEmitter(admin);
-                notificationRepository.save(notification);
+
                 applicationRepository.save(application);
+                notificationRepository.save(notification);
+                sseEmitterSender.sendSseEmitter(admin);
             }
         }catch (Exception e){
             log.error(e);
@@ -302,9 +304,10 @@ public class CorporationCardService {
                         .type("corporation")
                         .approveStatus(application.getApprovalStatus())
                         .build();
-                sseEmitterSender.sendSseEmitter(requester);
-                notificationRepository.save(notification);
+
                 applicationRepository.save(application);
+                notificationRepository.save(notification);
+                sseEmitterSender.sendSseEmitter(requester);
             }
         }catch (Exception e){
             log.error(e);
@@ -357,9 +360,10 @@ public class CorporationCardService {
                     .type("corporation")
                     .approveStatus(toBeApproveApplication.getApprovalStatus())
                     .build();
-            sseEmitterSender.sendSseEmitter(requester);
-            notificationRepository.save(notification);
+
             applicationRepository.save(toBeApproveApplication);
+            notificationRepository.save(notification);
+            sseEmitterSender.sendSseEmitter(requester);
         }
         return new HttpMessage("success", "success-final-approve");
     }

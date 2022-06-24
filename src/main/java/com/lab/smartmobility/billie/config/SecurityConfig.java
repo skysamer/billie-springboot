@@ -64,7 +64,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                         .antMatchers("/traffic-card/admin/**").hasRole("ADMIN")
 
                         /*------------------------------------------------------------------------------------법인카드-----------------------------------------------------------------------------------*/
-                        .antMatchers("/corporation-card/admin/expense-history/{base-year}/{page}/{size}").hasRole("ADMIN")
+                       /* .antMatchers("/corporation-card/admin/expense-history/{base-year}/{page}/{size}").hasRole("ADMIN")
                         .antMatchers("/corporation-card/admin/return-history/{disposal-info}/{card-name}/{base-year}/{page}/{size}", "/corporation-card/approve/admin").hasRole("ADMIN")
                         .antMatchers("/corporation-card/count/admin/expense-history/{base-year}", "/corporation-card/count/admin/return-history/{disposal-info}/{card-name}/{base-year}").hasRole("ADMIN")
                         .antMatchers("/corporation-card/disposal/{card-id}", "/corporation-card/excel/expense-history/{base-year}").hasRole("ADMIN")
@@ -91,7 +91,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                         .antMatchers("/corporation-card/my-application/{staff-num}/{application-id}", "/corporation-card/return-history/{return-id}").hasAnyRole("USER", "MANAGER", "ADMIN")
                         .antMatchers("/corporation-card/my-expense-history/{staff-num}/{base-year}/{page}/{size}", "/corporation-card/{card-id}").hasAnyRole("USER", "MANAGER", "ADMIN")
                         .antMatchers("/corporation-card/my-return-history/{staff-num}/{card-name}/{base-year}/{page}/{size}").hasAnyRole("USER", "MANAGER", "ADMIN")
-                        .antMatchers("/corporation-card/remove/application/{application-id}", "/corporation-card/rent", "/corporation-card/return").hasAnyRole("USER", "MANAGER", "ADMIN")
+                        .antMatchers("/corporation-card/remove/application/{application-id}", "/corporation-card/rent", "/corporation-card/return").hasAnyRole("USER", "MANAGER", "ADMIN")*/
 
                         /*------------------------------------------------------------------------------------마이 페이지-----------------------------------------------------------------------------------*/
                         .antMatchers("/my-page/user/**").hasAnyRole("USER", "MANAGER", "ADMIN")
