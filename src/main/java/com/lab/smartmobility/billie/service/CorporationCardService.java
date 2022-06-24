@@ -45,6 +45,9 @@ public class CorporationCardService {
     private final ModelMapper modelMapper;
     private final Log log;
 
+    private static final Long DEV_ADMIN_ID = 42L;
+    private static final Long OPR_ADMIN_ID = 4L;
+
     /*신규 법인카드 등록*/
     public int createCard(CorporationCardForm corporationCardForm){
         try{
@@ -162,7 +165,7 @@ public class CorporationCardService {
     /*승인권자 할당*/
     private Staff assignApproval(Staff requester){
         if(requester.getDepartment().equals("관리부") || requester.getRole().equals("ROLE_MANAGER")){
-            return staffRepository.findByStaffNum(4L); // 부장님은 4
+            return staffRepository.findByStaffNum(DEV_ADMIN_ID); // 부장님은 4
         }
         return staffRepository.findByDepartmentAndRole(requester.getDepartment(), "ROLE_MANAGER");
     }
@@ -260,7 +263,7 @@ public class CorporationCardService {
                 application.approveByManager('t');
 
                 Staff requester = application.getStaff();
-                Staff admin = staffRepository.findByStaffNum(42L);
+                Staff admin = staffRepository.findByStaffNum(DEV_ADMIN_ID);
 
                 NotificationEventDTO notificationEvent =
                         new NotificationEventDTO(requester.getName(), admin.getName(), application.getApprovalStatus(), admin);

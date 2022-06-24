@@ -19,14 +19,5 @@ public class HomeService {
     private final ApplicationEventPublisher applicationEventPublisher;
 
     public void test(){
-        Staff staff = Staff.builder()
-                .name("test")
-                .build();
-
-        NotificationEventDTO notificationEvent =
-                new NotificationEventDTO(staff.getName(), staff.getName(), 't', staff);
-
-        staffRepository.save(staff);
-        applicationEventPublisher.publishEvent(notificationEvent);
     }
 }
