@@ -31,10 +31,10 @@ public class MeetingService {
     /*회의 등록*/
     public int insertMeeting(ApplyMeetingForm applyMeetingForm){
         List<LocalDate> startAndEndDate=dateTimeUtil.getStartDateAndEndDate(applyMeetingForm.getDate());
-        LocalDate startDate=startAndEndDate.get(0);
-        LocalDate endDate=startAndEndDate.get(1);
+        LocalDate startDate = startAndEndDate.get(0);
+        LocalDate endDate = startAndEndDate.get(1);
 
-        List<Meeting> currentMonthList=meetingRepository.findByDateBetween(startDate, endDate);
+        List<Meeting> currentMonthList = meetingRepository.findByDateBetween(startDate, endDate);
         for(Meeting currentMonth : currentMonthList){
             if(currentMonth.getDate().isEqual(applyMeetingForm.getDate()) &&
                     (currentMonth.getStartTime().equals(applyMeetingForm.getStartTime()) || currentMonth.getStartTime().isBefore(applyMeetingForm.getStartTime())) &&

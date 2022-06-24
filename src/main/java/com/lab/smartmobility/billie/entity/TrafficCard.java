@@ -8,14 +8,9 @@ import org.springframework.lang.Nullable;
 import javax.persistence.*;
 import java.time.LocalDate;
 
-@Getter
-@Setter
-@ToString
-@AllArgsConstructor
-@NoArgsConstructor
-@Builder
-@Entity
-@ApiModel(value = "등록 교통카드 엔티티")
+@Getter @ToString
+@AllArgsConstructor @NoArgsConstructor @Builder
+@Entity @ApiModel(value = "등록 교통카드 엔티티")
 @Table(name = "tbl_traffic_card")
 public class TrafficCard {
     @Id
@@ -44,4 +39,13 @@ public class TrafficCard {
     @ApiModelProperty(value = "폐기이유")
     @Column(name = "discard_reason")
     private String discardReason;
+
+    public void discard(int rentalStatus, String discardReason){
+        this.rentalStatus = rentalStatus;
+        this.discardReason = discardReason;
+    }
+
+    public void rent(int rentalStatus){
+        this.rentalStatus = rentalStatus;
+    }
 }

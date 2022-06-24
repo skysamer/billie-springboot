@@ -6,7 +6,7 @@ import lombok.*;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
-@Getter @Setter @ToString
+@Getter @ToString
 @AllArgsConstructor @NoArgsConstructor @Builder
 @Entity @Table(name = "tbl_traffic_card_reservation")
 @ApiModel(value = "교통카드 예약 관리 엔티티")
@@ -48,5 +48,18 @@ public class TrafficCardReservation {
         this.trafficCard = trafficCard;
         this.rentedAt = rentedAt;
         this.returnedAt = returnedAt;
+    }
+
+    public void insert(TrafficCard card, Staff render, LocalDateTime rentedAt, LocalDateTime returnedAt){
+        this.trafficCard = card;
+        this.staff = render;
+        this.rentedAt = rentedAt;
+        this.returnedAt = returnedAt;
+    }
+
+    public void update(int returnStatus, LocalDateTime returnedAt, int balanceHistory){
+        this.returnStatus = returnStatus;
+        this.returnedAt = returnedAt;
+        this.balanceHistory = balanceHistory;
     }
 }

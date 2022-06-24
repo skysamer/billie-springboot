@@ -37,7 +37,7 @@ public class VehicleScheduler {
 
             for(VehicleReservation todayReservation : todayReservations){
                 Vehicle rentedVehicle=todayReservation.getVehicle();
-                rentedVehicle.setRentalStatus(1);
+                rentedVehicle.rent(1);
                 vehicleRepository.save(rentedVehicle);
                 log.info("차량 대여상태 변경 완료");
             }

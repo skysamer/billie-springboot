@@ -10,7 +10,7 @@ import javax.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
-@Getter @Setter @ToString
+@Getter @ToString
 @AllArgsConstructor @NoArgsConstructor @Builder
 @Entity
 @ApiModel(value = "차량 예약 관리 엔티티")

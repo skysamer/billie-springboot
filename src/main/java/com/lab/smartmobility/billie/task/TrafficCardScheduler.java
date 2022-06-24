@@ -36,7 +36,7 @@ public class TrafficCardScheduler {
 
             for(TrafficCardReservation todayReservation : todayReservations){
                 TrafficCard rentedCard=todayReservation.getTrafficCard();
-                rentedCard.setRentalStatus(1);
+                rentedCard.rent(1);
                 cardRepository.save(rentedCard);
                 log.info("교통카드 대여상태 변경 완료");
             }

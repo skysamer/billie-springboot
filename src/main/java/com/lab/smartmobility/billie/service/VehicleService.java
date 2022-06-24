@@ -145,6 +145,7 @@ public class VehicleService {
         return new HttpMessage("success", "대여 성공");
     }
 
+    /*예약 신청 날짜 및 시간이 기존예약괴 겹치는지 체크*/
     private boolean checkReservationIsDuplicate(Long rentNum, LocalDateTime rentedAt, Vehicle vehicle){
         List<VehicleReservation> reservationList=reservationRepository.findAllByReturnStatusCode(0);
         if(rentNum !=null){

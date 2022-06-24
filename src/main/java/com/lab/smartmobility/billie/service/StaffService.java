@@ -36,7 +36,7 @@ public class StaffService implements UserDetailsService {
     private final JavaMailSender javaMailSender;
 
     @Value("${spring.mail.username}")
-    private final String managerEmail;
+    private String managerEmail;
 
     /*로그인*/
     @Override

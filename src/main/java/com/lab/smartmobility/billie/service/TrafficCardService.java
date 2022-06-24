@@ -84,15 +84,13 @@ public class TrafficCardService {
 
     /*교통카드 폐기*/
     public int discardCard(Long cardNum, HashMap<String, String> reason){
-        log.info(reason.get("reason"));
         TrafficCard trafficCard=cardRepository.findByCardNum(cardNum);
         if(trafficCard.getRentalStatus()==99){
             return 500;
         }
-        trafficCard.setRentalStatus(99);
-        trafficCard.setDiscardReason(reason.get("reason"));
-        cardRepository.save(trafficCard);
 
+        trafficCard.discard(99, reason.get("reason"));
+        cardRepository.save(trafficCard);
         return 0;
     }
 
@@ -119,27 +117,37 @@ public class TrafficCardService {
             if(LocalDateTime.now().isAfter(rentedAt)){
                 return 400;
             }
-            List<TrafficCardReservation> reservationList=reservationRepository.findAllByReturnStatus(0);
-            for(TrafficCardReservation reservation : reservationList){
-                if(((reservation.getRentedAt().isBefore(rentedAt) || reservation.getRentedAt().isEqual(rentedAt)) &&
-                        (reservation.getReturnedAt().isAfter(rentedAt)))
-                        && trafficCard.getCardNum().equals(reservation.getTrafficCard().getCardNum())){
-                    return 500;
-                }
+
+            if(checkReservationIsDuplicate(null, rentedAt, trafficCard)){
+                return 500;
             }
 
             TrafficCardReservation trafficCardReservation=new TrafficCardReservation();
             modelMapper.map(trafficCardApplyDTO, trafficCardReservation);
-            trafficCardReservation.setTrafficCard(trafficCard);
-            trafficCardReservation.setStaff(renderInfo);
-            trafficCardReservation.setRentedAt(rentedAt);
-            trafficCardReservation.setReturnedAt(returnedAt);
+            trafficCardReservation.insert(trafficCard, renderInfo, rentedAt, returnedAt);
             reservationRepository.save(trafficCardReservation);
         }catch (Exception e){
             e.printStackTrace();
             return 9999;
         }
         return 0;
+    }
+
+    /*신규 예약이 기존 예약 날짜 및 시간과 겹치는지 체크*/
+    private boolean checkReservationIsDuplicate(Long reservationNum, LocalDateTime rentedAt, TrafficCard trafficCard){
+        List<TrafficCardReservation> reservationList=reservationRepository.findAllByReturnStatus(0);
+        if(reservationNum != null){
+            reservationList.remove(reservationRepository.findByReservationNum(reservationNum));
+        }
+
+        for(TrafficCardReservation reservation : reservationList){
+            if(((reservation.getRentedAt().isBefore(rentedAt) || reservation.getRentedAt().isEqual(rentedAt)) &&
+                    (reservation.getReturnedAt().isAfter(rentedAt)))
+                    && trafficCard.getCardNum().equals(reservation.getTrafficCard().getCardNum())){
+                return true;
+            }
+        }
+        return false;
     }
 
     /*교통카드 대여 목록 조회*/
@@ -173,14 +181,9 @@ public class TrafficCardService {
             }else if(LocalDateTime.now().isAfter(reservationInfo.getRentedAt())){
                 return 303;
             }
-            List<TrafficCardReservation> reservationList=reservationRepository.findAllByReturnStatus(0);
-            reservationList.remove(reservationRepository.findByReservationNum(reservationNum));
-            for(TrafficCardReservation reservation : reservationList){
-                if(((reservation.getRentedAt().isBefore(rentedAt) || reservation.getRentedAt().isEqual(rentedAt)) &&
-                        (reservation.getReturnedAt().isAfter(rentedAt)))
-                        && trafficCard.getCardNum().equals(reservation.getTrafficCard().getCardNum())){
-                    return 500;
-                }
+
+            if(checkReservationIsDuplicate(reservationNum, rentedAt, trafficCard)){
+                return 500;
             }
 
             modelMapper.map(trafficCardApplyDTO, reservationInfo);
@@ -226,14 +229,8 @@ public class TrafficCardService {
         LocalDateTime rentedAt = dateTimeUtil.combineDateAndTime(trafficCardApplyDTO.getDateOfRental(), trafficCardApplyDTO.getTimeOfRental());
         LocalDateTime returnedAt = dateTimeUtil.combineDateAndTime(trafficCardApplyDTO.getExpectedReturnDate(), trafficCardApplyDTO.getExpectedReturnTime());
 
-        List<TrafficCardReservation> reservationList=reservationRepository.findAllByReturnStatus(0);
-        reservationList.remove(reservationRepository.findByReservationNum(reservationNum));
-        for(TrafficCardReservation reservation : reservationList){
-            if(((reservation.getRentedAt().isBefore(rentedAt) || reservation.getRentedAt().isEqual(rentedAt)) &&
-                    (reservation.getReturnedAt().isAfter(rentedAt)))
-                    && trafficCard.getCardNum().equals(reservation.getTrafficCard().getCardNum())){
-                return new HttpMessage("fail", "already-reservation");
-            }
+        if(checkReservationIsDuplicate(reservationNum, rentedAt, trafficCard)){
+            return new HttpMessage("fail", "already-reservation");
         }
 
         modelMapper.map(trafficCardApplyDTO, trafficCardReservation);
@@ -250,24 +247,17 @@ public class TrafficCardService {
 
     /*교통카드 반납 신청*/
     public int applyCardReturn(ReturnTrafficCardDTO returnTrafficCard){
-        LocalDateTime returnedAt=LocalDateTime.of(returnTrafficCard.getDateOfReturn().getYear(),
-                returnTrafficCard.getDateOfReturn().getMonth(), returnTrafficCard.getDateOfReturn().getDayOfMonth(),
-                returnTrafficCard.getTimeOfReturn().getHour(),
-                returnTrafficCard.getTimeOfReturn().getMinute(), 0);
-
+        LocalDateTime returnedAt = dateTimeUtil.combineDateAndTime(returnTrafficCard.getDateOfReturn(), returnTrafficCard.getTimeOfReturn());
         try{
             if(cardRepository.findByCardNum(returnTrafficCard.getCardNum())==null){
                 throw new AccessDeniedException("error");
             }
-
             cardRepository.changeRentalStatus(0, returnTrafficCard.getCardNum());
             cardRepository.changeBalance(returnTrafficCard.getBalance(), returnTrafficCard.getCardNum());
 
             TrafficCardReservation updatedCardReservationInfo=reservationRepository.findByReservationNum(returnTrafficCard.getReservationNum());
             modelMapper.map(returnTrafficCard, updatedCardReservationInfo);
-            updatedCardReservationInfo.setReturnedAt(returnedAt);
-            updatedCardReservationInfo.setReturnStatus(1);
-            updatedCardReservationInfo.setBalanceHistory(returnTrafficCard.getBalance());
+            updatedCardReservationInfo.update(1, returnedAt, returnTrafficCard.getBalance());
             reservationRepository.save(updatedCardReservationInfo);
             return 0;
         }catch (Exception e){

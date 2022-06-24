@@ -6,14 +6,9 @@ import lombok.*;
 import javax.persistence.*;
 import java.time.LocalDate;
 
-@Getter
-@Setter
-@ToString
-@AllArgsConstructor
-@NoArgsConstructor
-@Builder
-@Entity
-@ApiModel(value = "등록 차량 정보 엔티티")
+@Getter @ToString
+@AllArgsConstructor @NoArgsConstructor @Builder
+@Entity @ApiModel(value = "등록 차량 정보 엔티티")
 @Table(name = "tbl_vehicle")
 public class Vehicle {
     @Id
@@ -55,5 +50,9 @@ public class Vehicle {
     public void discard(int rentalStatus, String discardReason){
         this.rentalStatus = rentalStatus;
         this.discardReason = discardReason;
+    }
+
+    public void rent(int rentalStatus){
+        this.rentalStatus = rentalStatus;
     }
 }
