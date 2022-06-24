@@ -1,5 +1,6 @@
 package com.lab.smartmobility.billie.service;
 
+import com.lab.smartmobility.billie.dto.NotificationEventDTO;
 import com.lab.smartmobility.billie.dto.TotalCount;
 import com.lab.smartmobility.billie.dto.corporation.*;
 import com.lab.smartmobility.billie.entity.*;
@@ -16,6 +17,7 @@ import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.usermodel.XSSFCellStyle;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.modelmapper.ModelMapper;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,7 +33,6 @@ public class CorporationCardService {
     private final CorporationCardRepositoryImpl cardRepositoryImpl;
     private final ApplicationRepository applicationRepository;
     private final StaffRepository staffRepository;
-    private final NotificationRepository notificationRepository;
     private final ApplicationRepositoryImpl applicationRepositoryImpl;
     private final CorporationCardReturnRepository cardReturnRepository;
     private final CorporationCardUseCaseRepository cardUseCaseRepository;
@@ -40,7 +41,7 @@ public class CorporationCardService {
     private final CorporationReturnRepositoryImpl returnRepository;
 
     private final DateTimeUtil dateTimeUtil;
-    private final SseEmitterSender sseEmitterSender;
+    private final ApplicationEventPublisher applicationEventPublisher;
     private final ModelMapper modelMapper;
     private final Log log;
 
@@ -122,16 +123,11 @@ public class CorporationCardService {
             application.updateApprovalStatus('t');
         }
 
-        Notification notification=Notification.builder()
-                .requester(requester.getName())
-                .receiver(approval.getName())
-                .type("corporation")
-                .approveStatus(application.getApprovalStatus())
-                .build();
+        NotificationEventDTO notificationEvent =
+                new NotificationEventDTO(requester.getName(), approval.getName(), application.getApprovalStatus(), approval);
         try{
             applicationRepository.save(application);
-            notificationRepository.save(notification);
-            sseEmitterSender.sendSseEmitter(approval);
+            applicationEventPublisher.publishEvent(notificationEvent);
         }catch (Exception e){
             log.error("fail : "+e);
             return new HttpMessage("fail", "fail-application");
@@ -151,16 +147,11 @@ public class CorporationCardService {
             application.updateApprovalStatus('t');
         }
 
-        Notification notification=Notification.builder()
-                .requester(requester.getName())
-                .receiver(approval.getName())
-                .type("corporation")
-                .approveStatus(application.getApprovalStatus())
-                .build();
+        NotificationEventDTO notificationEvent =
+                new NotificationEventDTO(requester.getName(), approval.getName(), application.getApprovalStatus(), approval);
         try{
             applicationRepository.save(application);
-            notificationRepository.save(notification);
-            sseEmitterSender.sendSseEmitter(approval);
+            applicationEventPublisher.publishEvent(notificationEvent);
         }catch (Exception e){
             log.error("fail : "+e);
             return new HttpMessage("fail", "fail-application");
@@ -271,16 +262,11 @@ public class CorporationCardService {
                 Staff requester = application.getStaff();
                 Staff admin = staffRepository.findByStaffNum(42L);
 
-                Notification notification=Notification.builder()
-                        .requester(requester.getName())
-                        .receiver(admin.getName())
-                        .type("corporation")
-                        .approveStatus(application.getApprovalStatus())
-                        .build();
+                NotificationEventDTO notificationEvent =
+                        new NotificationEventDTO(requester.getName(), admin.getName(), application.getApprovalStatus(), admin);
 
                 applicationRepository.save(application);
-                notificationRepository.save(notification);
-                sseEmitterSender.sendSseEmitter(admin);
+                applicationEventPublisher.publishEvent(notificationEvent);
             }
         }catch (Exception e){
             log.error(e);
@@ -298,16 +284,11 @@ public class CorporationCardService {
 
                 Staff requester = application.getStaff();
 
-                Notification notification=Notification.builder()
-                        .requester(requester.getName())
-                        .receiver(requester.getName())
-                        .type("corporation")
-                        .approveStatus(application.getApprovalStatus())
-                        .build();
+                NotificationEventDTO notificationEvent =
+                        new NotificationEventDTO(requester.getName(), requester.getName(), application.getApprovalStatus(), requester);
 
                 applicationRepository.save(application);
-                notificationRepository.save(notification);
-                sseEmitterSender.sendSseEmitter(requester);
+                applicationEventPublisher.publishEvent(notificationEvent);
             }
         }catch (Exception e){
             log.error(e);
@@ -353,17 +334,11 @@ public class CorporationCardService {
             toBeApproveApplication.approveCorporationByAdmin(card, 'f');
 
             Staff requester = toBeApproveApplication.getStaff();
-
-            Notification notification=Notification.builder()
-                    .requester(requester.getName())
-                    .receiver(requester.getName())
-                    .type("corporation")
-                    .approveStatus(toBeApproveApplication.getApprovalStatus())
-                    .build();
+            NotificationEventDTO notificationEvent =
+                    new NotificationEventDTO(requester.getName(), requester.getName(), toBeApproveApplication.getApprovalStatus(), requester);
 
             applicationRepository.save(toBeApproveApplication);
-            notificationRepository.save(notification);
-            sseEmitterSender.sendSseEmitter(requester);
+            applicationEventPublisher.publishEvent(notificationEvent);
         }
         return new HttpMessage("success", "success-final-approve");
     }
@@ -545,6 +520,8 @@ public class CorporationCardService {
         sheet.addMergedRegion(new CellRangeAddress(0, 0, 7, 10));
         cell = row.createCell(7);
         cell.setCellValue("법인카드 사용건");
+
+
 
         cell = row.createCell(11);
         cell.setCellValue("총 사용금액");
