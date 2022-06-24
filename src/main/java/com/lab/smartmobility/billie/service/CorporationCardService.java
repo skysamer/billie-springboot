@@ -266,6 +266,18 @@ public class CorporationCardService {
             for(ApprovalCardUseForm approvalCardUseForm : approvalCardUseForms){
                 Application application=applicationRepository.findByApplicationId(approvalCardUseForm.getApplicationId());
                 application.approveByManager('t');
+
+                Staff requester = application.getStaff();
+                Staff admin = staffRepository.findByStaffNum(37L);
+
+                Notification notification=Notification.builder()
+                        .requester(requester.getName())
+                        .receiver(admin.getName())
+                        .type("corporation")
+                        .approveStatus(application.getApprovalStatus())
+                        .build();
+                sseEmitterSender.sendSseEmitter(admin);
+                notificationRepository.save(notification);
                 applicationRepository.save(application);
             }
         }catch (Exception e){
@@ -281,6 +293,17 @@ public class CorporationCardService {
             for(CompanionCardUseForm companionCardUseForm : companionCardUseForms){
                 Application application=applicationRepository.findByApplicationId(companionCardUseForm.getApplicationId());
                 application.reject('c', companionCardUseForm.getReason());
+
+                Staff requester = application.getStaff();
+
+                Notification notification=Notification.builder()
+                        .requester(requester.getName())
+                        .receiver(requester.getName())
+                        .type("corporation")
+                        .approveStatus(application.getApprovalStatus())
+                        .build();
+                sseEmitterSender.sendSseEmitter(requester);
+                notificationRepository.save(notification);
                 applicationRepository.save(application);
             }
         }catch (Exception e){
@@ -325,6 +348,17 @@ public class CorporationCardService {
 
             }
             toBeApproveApplication.approveCorporationByAdmin(card, 'f');
+
+            Staff requester = toBeApproveApplication.getStaff();
+
+            Notification notification=Notification.builder()
+                    .requester(requester.getName())
+                    .receiver(requester.getName())
+                    .type("corporation")
+                    .approveStatus(toBeApproveApplication.getApprovalStatus())
+                    .build();
+            sseEmitterSender.sendSseEmitter(requester);
+            notificationRepository.save(notification);
             applicationRepository.save(toBeApproveApplication);
         }
         return new HttpMessage("success", "success-final-approve");
