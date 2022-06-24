@@ -310,7 +310,43 @@ private boolean checkReservationIsDuplicate(Long reservationNum, LocalDateTime r
 
 </div>
 </details>
-  
+
+### 6.5. 실시간 알림 전송 및 알림 데이터 저장 로직을 이벤트 리스너로 제어
+  - 법인카드 및 승인 절차에는 실시간 알림 전송로직이 포함되어 있었습니다.
+  - 그러나 법인카드 서비스단의 각 승인 로직 메서드에 알림관련 로직이 포함되어 있는 것은 단일책임원칙에 위배된다고 생각했습니다.
+  - 따라서 위 로직을 이벤트 리스너로 제어해서 처리했습니다.
+
+
+<details>
+<summary><b>코드</b></summary>
+<div markdown="1">
+
+~~~java
+
+@Component
+@RequiredArgsConstructor
+public class NotificationEventHandler {
+    private final NotificationRepository notificationRepository;
+    private final SseEmitterSender sseEmitterSender;
+
+    @EventListener
+    public void corporationNotificationEvent(NotificationEventDTO notificationEventDTO){
+        Notification notification=Notification.builder()
+                .requester(notificationEventDTO.getRequester())
+                .receiver(notificationEventDTO.getReceiver())
+                .type("corporation")
+                .approveStatus(notificationEventDTO.getApprovalStatus())
+                .build();
+
+        notificationRepository.save(notification);
+        sseEmitterSender.sendSseEmitter(notificationEventDTO.getApproval());
+    }
+}
+
+~~~
+
+</div>
+</details>
     
 </br>
 
