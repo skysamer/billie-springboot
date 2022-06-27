@@ -118,7 +118,7 @@ public class TrafficCardService {
                 return 400;
             }
 
-            if(checkReservationIsDuplicate(null, rentedAt, trafficCard)){
+            if(checkReservationIsDuplicate(-1L, rentedAt, returnedAt, trafficCard)){
                 return 500;
             }
 
@@ -134,20 +134,12 @@ public class TrafficCardService {
     }
 
     /*신규 예약이 기존 예약 날짜 및 시간과 겹치는지 체크*/
-    private boolean checkReservationIsDuplicate(Long reservationNum, LocalDateTime rentedAt, TrafficCard trafficCard){
-        List<TrafficCardReservation> reservationList=reservationRepository.findAllByReturnStatus(0);
-        if(reservationNum != null){
-            reservationList.remove(reservationRepository.findByReservationNum(reservationNum));
+    /*예약 신청 날짜 및 시간이 기존예약괴 겹치는지 체크*/
+    private boolean checkReservationIsDuplicate(Long reservationNum, LocalDateTime rentedAt, LocalDateTime returnedAt, TrafficCard card){
+        if(reservationNum == -1L){
+            return reservationRepository.countByTrafficCardAndReturnStatusAndRentedAtLessThanAndReturnedAtGreaterThan(card, 0, returnedAt, rentedAt) == 1;
         }
-
-        for(TrafficCardReservation reservation : reservationList){
-            if(((reservation.getRentedAt().isBefore(rentedAt) || reservation.getRentedAt().isEqual(rentedAt)) &&
-                    (reservation.getReturnedAt().isAfter(rentedAt)))
-                    && trafficCard.getCardNum().equals(reservation.getTrafficCard().getCardNum())){
-                return true;
-            }
-        }
-        return false;
+        return reservationRepository.countByReservationNumNotAndReturnStatusAndTrafficCardAndRentedAtLessThanAndReturnedAtGreaterThan(reservationNum, 0, card, returnedAt, rentedAt) == 1;
     }
 
     /*교통카드 대여 목록 조회*/
@@ -182,7 +174,7 @@ public class TrafficCardService {
                 return 303;
             }
 
-            if(checkReservationIsDuplicate(reservationNum, rentedAt, trafficCard)){
+            if(checkReservationIsDuplicate(reservationNum, rentedAt, returnedAt, trafficCard)){
                 return 500;
             }
 
@@ -229,7 +221,7 @@ public class TrafficCardService {
         LocalDateTime rentedAt = dateTimeUtil.combineDateAndTime(trafficCardApplyDTO.getDateOfRental(), trafficCardApplyDTO.getTimeOfRental());
         LocalDateTime returnedAt = dateTimeUtil.combineDateAndTime(trafficCardApplyDTO.getExpectedReturnDate(), trafficCardApplyDTO.getExpectedReturnTime());
 
-        if(checkReservationIsDuplicate(reservationNum, rentedAt, trafficCard)){
+        if(checkReservationIsDuplicate(reservationNum, rentedAt, returnedAt, trafficCard)){
             return new HttpMessage("fail", "already-reservation");
         }
 

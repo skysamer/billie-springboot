@@ -21,6 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 
 @Service
@@ -163,7 +164,7 @@ public class CorporationCardService {
     /*승인권자 할당*/
     private Staff assignApproval(Staff requester){
         if(requester.getDepartment().equals("관리부") || requester.getRole().equals("ROLE_MANAGER")){
-            return staffRepository.findByStaffNum(DEV_ADMIN_ID); // 부장님은 4
+            return staffRepository.findByStaffNum(OPR_ADMIN_ID); // 부장님은 4
         }
         return staffRepository.findByDepartmentAndRole(requester.getDepartment(), "ROLE_MANAGER");
     }
@@ -261,7 +262,7 @@ public class CorporationCardService {
                 application.approveByManager('t');
 
                 Staff requester = application.getStaff();
-                Staff admin = staffRepository.findByStaffNum(DEV_ADMIN_ID);
+                Staff admin = staffRepository.findByStaffNum(OPR_ADMIN_ID);
 
                 NotificationEventDTO notificationEvent =
                         new NotificationEventDTO(requester.getName(), admin.getName(), application.getApprovalStatus(), admin);
@@ -324,19 +325,10 @@ public class CorporationCardService {
                 continue;
             }
 
-            List<Application> existingApplicationList = applicationRepository.findAllByCorporationCardAndIsReturned(card, 0);
-            LocalDateTime toBeStart = dateTimeUtil.combineDateAndTime(toBeApproveApplication.getStartDate(), toBeApproveApplication.getStartTime());
-
-            for(Application existingApplication : existingApplicationList){
-                LocalDateTime existStart = dateTimeUtil.combineDateAndTime(existingApplication.getStartDate(), existingApplication.getStartTime());
-                LocalDateTime existEnd = dateTimeUtil.combineDateAndTime(existingApplication.getEndDate(), existingApplication.getEndTime());
-
-                if( ((existStart.isBefore(toBeStart) || existStart.isEqual(toBeStart)) && ((existEnd.isAfter(toBeStart)))
-                        && existingApplication.getCorporationCard().equals(card)) ){
-                    log.info(existingApplication.getApplicationId());
-                    throw new RuntimeException();
-                }
-
+            if(checkReservationIsDuplicate(card, 0,
+                    toBeApproveApplication.getStartDate(), toBeApproveApplication.getEndDate(),
+                    toBeApproveApplication.getStartTime(), toBeApproveApplication.getEndTime())){
+                throw new RuntimeException();
             }
             toBeApproveApplication.approveCorporationByAdmin(card, 'f');
 
@@ -348,6 +340,11 @@ public class CorporationCardService {
             applicationEventPublisher.publishEvent(notificationEvent);
         }
         return new HttpMessage("success", "success-final-approve");
+    }
+
+    /*시간대가 겹치는지 체크*/
+    private boolean checkReservationIsDuplicate(CorporationCard card, int isReturned, LocalDate startDate, LocalDate endDate, LocalTime startTime, LocalTime endTime){
+        return applicationRepositoryImpl.isDuplicate(card, isReturned, startDate, endDate, startTime, endTime) == 1;
     }
 
     /*기존 신청 내역에 지급카드가 존재하는지 검사*/

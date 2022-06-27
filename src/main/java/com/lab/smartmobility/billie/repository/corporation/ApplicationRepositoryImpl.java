@@ -25,6 +25,19 @@ public class ApplicationRepositoryImpl {
     private final JPAQueryFactory jpaQueryFactory;
     private final DateTimeUtil baseDateParser;
 
+    public long isDuplicate(CorporationCard card, int isReturned, LocalDate startDate, LocalDate endDate, LocalTime startTime, LocalTime endTime){
+        return jpaQueryFactory
+                .selectFrom(application)
+                .where(application.corporationCard.eq(card)
+                        .and(application.isReturned.eq(isReturned))
+                        .and(application.startDate.before(endDate))
+                        .and(application.endDate.after(startDate))
+                        .and(application.startTime.before(endTime))
+                        .and(application.endTime.after(startTime))
+                )
+                .stream().count();
+    }
+
     public List<Application> getToBeApproveList(List<Long> idList){
         return jpaQueryFactory
                 .selectFrom(application)

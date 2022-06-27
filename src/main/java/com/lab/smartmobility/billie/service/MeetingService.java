@@ -13,6 +13,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -30,23 +32,26 @@ public class MeetingService {
 
     /*회의 등록*/
     public int insertMeeting(ApplyMeetingForm applyMeetingForm){
-        List<LocalDate> startAndEndDate=dateTimeUtil.getStartDateAndEndDate(applyMeetingForm.getDate());
-        LocalDate startDate = startAndEndDate.get(0);
-        LocalDate endDate = startAndEndDate.get(1);
+        if(dateTimeUtil.combineDateAndTime(applyMeetingForm.getDate(), applyMeetingForm.getStartTime()).isBefore(LocalDateTime.now())){
+            log.info("to-do");
+        }
 
-        List<Meeting> currentMonthList = meetingRepository.findByDateBetween(startDate, endDate);
-        for(Meeting currentMonth : currentMonthList){
-            if(currentMonth.getDate().isEqual(applyMeetingForm.getDate()) &&
-                    (currentMonth.getStartTime().equals(applyMeetingForm.getStartTime()) || currentMonth.getStartTime().isBefore(applyMeetingForm.getStartTime())) &&
-                    currentMonth.getEndTime().isAfter(applyMeetingForm.getStartTime())){
-                return 500;
-            }
+        if(checkIsDuplicate(-1L, applyMeetingForm.getDate(), applyMeetingForm.getEndTime(), applyMeetingForm.getStartTime())){
+            return 500;
         }
 
         Meeting newMeeting=modelMapper.map(applyMeetingForm, Meeting.class);
         newMeeting.setStaff(staffRepository.findByStaffNum(applyMeetingForm.getStaffNum()));
         meetingRepository.save(newMeeting);
         return 0;
+    }
+
+    /*예약시간이 겹치는지 체크*/
+    public boolean checkIsDuplicate(Long meetingNum, LocalDate date, LocalTime endTime, LocalTime startTime){
+        if(meetingNum == -1L){
+            return meetingRepository.countByDateAndStartTimeLessThanAndEndTimeGreaterThan(date, endTime, startTime) == 1;
+        }
+        return meetingRepository.countByDateAndMeetingNumNotAndStartTimeLessThanAndEndTimeGreaterThan(date, meetingNum, endTime, startTime) == 1;
     }
 
     /*개별 회의 조회*/
@@ -61,14 +66,8 @@ public class MeetingService {
             LocalDate startDate=startAndEndDate.get(0);
             LocalDate endDate=startAndEndDate.get(1);
 
-            List<Meeting> currentMonthList=meetingRepository.findByDateBetween(startDate, endDate);
-            currentMonthList.remove(meetingRepository.findByMeetingNum(meetingNum));
-            for(Meeting currentMonth : currentMonthList){
-                if( currentMonth.getDate().isEqual(applyMeetingForm.getDate()) &&
-                        (currentMonth.getStartTime().equals(applyMeetingForm.getStartTime()) || currentMonth.getStartTime().isBefore(applyMeetingForm.getStartTime())) &&
-                        currentMonth.getEndTime().isAfter(applyMeetingForm.getStartTime()) ){
-                    return 500;
-                }
+            if(checkIsDuplicate(meetingNum, applyMeetingForm.getDate(), applyMeetingForm.getEndTime(), applyMeetingForm.getStartTime())){
+                return 500;
             }
 
             Meeting modifiedMeeting=meetingRepository.findByMeetingNum(meetingNum);

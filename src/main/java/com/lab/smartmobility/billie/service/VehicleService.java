@@ -130,7 +130,7 @@ public class VehicleService {
                 return new HttpMessage("fail", "현재 시각보다 과거로 예약할 수 없습니다");
             }
 
-            if(checkReservationIsDuplicate(null, rentedAt, vehicle)){
+            if(checkReservationIsDuplicate(-1L, rentedAt, returnedAt, vehicle)){
                 return new HttpMessage("fail", "해당 날짜에 차량이 이미 대여중입니다");
             }
 
@@ -146,20 +146,11 @@ public class VehicleService {
     }
 
     /*예약 신청 날짜 및 시간이 기존예약괴 겹치는지 체크*/
-    private boolean checkReservationIsDuplicate(Long rentNum, LocalDateTime rentedAt, Vehicle vehicle){
-        List<VehicleReservation> reservationList=reservationRepository.findAllByReturnStatusCode(0);
-        if(rentNum !=null){
-            reservationList.remove(reservationRepository.findByRentNum(rentNum));
+    private boolean checkReservationIsDuplicate(Long rentNum, LocalDateTime rentedAt, LocalDateTime returnedAt, Vehicle vehicle){
+        if(rentNum == -1L){
+            return reservationRepository.countByVehicleAndReturnStatusCodeAndRentedAtLessThanAndReturnedAtGreaterThan(vehicle, 0, returnedAt, rentedAt) == 1;
         }
-
-        for(VehicleReservation reservation : reservationList){
-            if(((reservation.getRentedAt().isBefore(rentedAt) || reservation.getRentedAt().isEqual(rentedAt)) &&
-                    (reservation.getReturnedAt().isAfter(rentedAt)))
-                    && vehicle.getVehicleNum().equals(reservation.getVehicle().getVehicleNum())){
-                return true;
-            }
-        }
-        return false;
+        return reservationRepository.countByRentNumNotAndVehicleAndReturnStatusCodeAndRentedAtLessThanAndReturnedAtGreaterThan(rentNum, vehicle, 0, returnedAt, rentedAt) == 1;
     }
 
     /*월단위 차량 예약 목록 조회*/
@@ -192,7 +183,7 @@ public class VehicleService {
                 return 303;
             }
 
-            if(checkReservationIsDuplicate(rentNum, rentedAt, vehicle)){
+            if(checkReservationIsDuplicate(rentNum, rentedAt, returnedAt,  vehicle)){
                 return 500;
             }
 
@@ -243,7 +234,7 @@ public class VehicleService {
         LocalDateTime rentedAt = dateTimeUtil.combineDateAndTime(rentalVehicleDTO.getDateOfRental(), rentalVehicleDTO.getTimeOfRental());
         LocalDateTime returnedAt = dateTimeUtil.combineDateAndTime(rentalVehicleDTO.getExpectedReturnDate(), rentalVehicleDTO.getExpectedReturnTime());
 
-        if(checkReservationIsDuplicate(rentNum, rentedAt, vehicle)){
+        if(checkReservationIsDuplicate(rentNum, rentedAt, returnedAt, vehicle)){
             return new HttpMessage("fail", "already-reservation");
         }
 
