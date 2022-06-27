@@ -5,11 +5,9 @@ import com.lab.smartmobility.billie.dto.TotalCount;
 import com.lab.smartmobility.billie.dto.corporation.*;
 import com.lab.smartmobility.billie.entity.*;
 import com.lab.smartmobility.billie.entity.corporation.*;
-import com.lab.smartmobility.billie.repository.NotificationRepository;
 import com.lab.smartmobility.billie.repository.StaffRepository;
 import com.lab.smartmobility.billie.repository.corporation.*;
 import com.lab.smartmobility.billie.util.DateTimeUtil;
-import com.lab.smartmobility.billie.util.SseEmitterSender;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.logging.Log;
 import org.apache.poi.ss.usermodel.*;
@@ -505,7 +503,6 @@ public class CorporationCardService {
         Cell cell = null;
         int rowNum = 0;
 
-        // Header
         row = sheet.createRow(rowNum++);
         cell = row.createCell(0);
         cell.setCellValue("사용자");
@@ -553,7 +550,6 @@ public class CorporationCardService {
         sheet.addMergedRegion(new CellRangeAddress(0, 1, 11, 11));
         sheet.addMergedRegion(new CellRangeAddress(0, 1, 12, 12));
 
-        // Body
         int rowCount=2;
         for (CorporationHistoryForm corporationHistoryForm : corporationHistoryFormList) {
             row = sheet.createRow(rowNum++);

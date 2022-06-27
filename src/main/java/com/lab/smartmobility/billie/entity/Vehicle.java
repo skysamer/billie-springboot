@@ -6,7 +6,7 @@ import lombok.*;
 import javax.persistence.*;
 import java.time.LocalDate;
 
-@Getter @ToString
+@Getter @Setter @ToString
 @AllArgsConstructor @NoArgsConstructor @Builder
 @Entity @ApiModel(value = "등록 차량 정보 엔티티")
 @Table(name = "tbl_vehicle")
