@@ -164,7 +164,7 @@ public class CorporationCardService {
     /*승인권자 할당*/
     private Staff assignApproval(Staff requester){
         if(requester.getDepartment().equals("관리부") || requester.getRole().equals("ROLE_MANAGER")){
-            return staffRepository.findByStaffNum(OPR_ADMIN_ID); // 부장님은 4
+            return staffRepository.findByStaffNum(DEV_ADMIN_ID); // 부장님은 4
         }
         return staffRepository.findByDepartmentAndRole(requester.getDepartment(), "ROLE_MANAGER");
     }
@@ -262,7 +262,7 @@ public class CorporationCardService {
                 application.approveByManager('t');
 
                 Staff requester = application.getStaff();
-                Staff admin = staffRepository.findByStaffNum(OPR_ADMIN_ID);
+                Staff admin = staffRepository.findByStaffNum(DEV_ADMIN_ID);
 
                 NotificationEventDTO notificationEvent =
                         new NotificationEventDTO(requester.getName(), admin.getName(), application.getApprovalStatus(), admin);
