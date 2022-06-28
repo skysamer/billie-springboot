@@ -30,15 +30,15 @@ public class ApplicationRepositoryImpl {
                 .selectFrom(application)
                 .where(application.corporationCard.eq(card)
                         .and(application.isReturned.eq(isReturned))
-                        .and( (application.startDate.before(endDate)).or(application.startDate.eq(startDate)) )
-                        .and( (application.endDate.after(startDate)).or(application.endDate.eq(endDate)) )
+                        .and( (application.startDate.before(endDate)).or(application.startDate.eq(endDate)) )
+                        .and( (application.endDate.after(startDate)).or(application.endDate.eq(startDate)) )
                         .and(application.startTime.before(endTime))
                         .and(application.endTime.after(startTime))
                 )
                 .stream().count();
     }
-
     public List<Application> getToBeApproveList(List<Long> idList){
+
         return jpaQueryFactory
                 .selectFrom(application)
                 .where(application.applicationId.in(idList))

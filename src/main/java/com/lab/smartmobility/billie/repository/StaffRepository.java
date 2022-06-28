@@ -10,12 +10,7 @@ import java.time.LocalDate;
 @Repository
 public interface StaffRepository  extends JpaRepository<Staff, Long>{
     Staff findByEmail(String email);
-
     Staff findByStaffNum(Long staffNum);
-
     boolean existsByEmail(String email);
-
-    boolean existsByNameAndDepartmentAndBirthAndEmail(String name, String department, LocalDate birth, String email);
-
     Staff findByDepartmentAndRole(String department, String role);
 }
