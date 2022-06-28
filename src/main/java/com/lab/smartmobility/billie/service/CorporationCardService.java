@@ -20,7 +20,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 
@@ -325,7 +324,7 @@ public class CorporationCardService {
                 continue;
             }
 
-            if(checkReservationIsDuplicate(card, 0,
+            if(checkReservationIsDuplicate(card,
                     toBeApproveApplication.getStartDate(), toBeApproveApplication.getEndDate(),
                     toBeApproveApplication.getStartTime(), toBeApproveApplication.getEndTime())){
                 throw new RuntimeException();
@@ -343,8 +342,8 @@ public class CorporationCardService {
     }
 
     /*시간대가 겹치는지 체크*/
-    private boolean checkReservationIsDuplicate(CorporationCard card, int isReturned, LocalDate startDate, LocalDate endDate, LocalTime startTime, LocalTime endTime){
-        return applicationRepositoryImpl.isDuplicate(card, isReturned, startDate, endDate, startTime, endTime) == 1;
+    private boolean checkReservationIsDuplicate(CorporationCard card, LocalDate startDate, LocalDate endDate, LocalTime startTime, LocalTime endTime){
+        return applicationRepositoryImpl.isDuplicate(card, 0, startDate, endDate, startTime, endTime) == 1;
     }
 
     /*기존 신청 내역에 지급카드가 존재하는지 검사*/
