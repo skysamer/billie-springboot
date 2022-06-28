@@ -20,6 +20,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 
@@ -37,6 +38,7 @@ public class CorporationCardService {
     private final ExpenseClaimRepository expenseClaimRepository;
     private final ExpenseCaseRepository expenseCaseRepository;
     private final CorporationReturnRepositoryImpl returnRepository;
+    private final DateTimeUtil dateTimeUtil;
 
     private final ApplicationEventPublisher applicationEventPublisher;
     private final ModelMapper modelMapper;
@@ -110,7 +112,8 @@ public class CorporationCardService {
 
     /*법인카드 사용 신청*/
     public HttpMessage applyCardReservation(ApplyCorporationCardForm applyCorporationCardForm) {
-        if(applyCorporationCardForm.getStartDate().isBefore(LocalDate.now())){
+        LocalDateTime applyDate = dateTimeUtil.combineDateAndTime(applyCorporationCardForm.getStartDate(), applyCorporationCardForm.getStartTime());
+        if(applyDate.isBefore(LocalDateTime.now())){
             return new HttpMessage("fail", "cannot-reservation-earlier-day");
         }
 

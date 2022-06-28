@@ -41,7 +41,7 @@ public class MeetingService {
         }
 
         Meeting newMeeting=modelMapper.map(applyMeetingForm, Meeting.class);
-        newMeeting.setStaff(staffRepository.findByStaffNum(applyMeetingForm.getStaffNum()));
+        newMeeting.insertRenderInfo(staffRepository.findByStaffNum(applyMeetingForm.getStaffNum()));
         meetingRepository.save(newMeeting);
         return 0;
     }

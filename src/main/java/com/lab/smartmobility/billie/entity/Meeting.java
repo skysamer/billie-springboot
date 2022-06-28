@@ -6,14 +6,10 @@ import javax.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
-@Getter
-@Setter
-@ToString
-@Builder
-@NoArgsConstructor
+@Getter @ToString
+@Builder @NoArgsConstructor
 @AllArgsConstructor
-@Entity
-@ApiModel(value = "회의실 예약 정보 엔티티", description = "매핑된 직원정보가 대여자 정보")
+@Entity @ApiModel(value = "회의실 예약 정보 엔티티", description = "매핑된 직원정보가 대여자 정보")
 @Table(name = "tbl_meeting")
 public class Meeting {
     @Id
@@ -46,4 +42,8 @@ public class Meeting {
     @JoinColumn(name = "staff_num")
     @ApiModelProperty(value = "대여자 정보")
     private Staff staff;
+
+    public void insertRenderInfo(Staff staff){
+        this.staff = staff;
+    }
 }
