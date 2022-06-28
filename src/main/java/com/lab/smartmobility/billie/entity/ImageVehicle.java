@@ -5,13 +5,9 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.*;
 import javax.persistence.*;
 
-@Getter
-@Setter
-@ToString
-@AllArgsConstructor
-@NoArgsConstructor
-@Builder
-@Entity
+@Getter @ToString
+@AllArgsConstructor @NoArgsConstructor
+@Builder @Entity
 @ApiModel(value = "차량 반납 관련 이미지 엔티티")
 @Table(name = "tbl_vehicle_image")
 public class ImageVehicle {

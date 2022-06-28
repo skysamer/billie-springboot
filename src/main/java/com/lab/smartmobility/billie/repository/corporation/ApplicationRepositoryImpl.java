@@ -4,7 +4,6 @@ import com.lab.smartmobility.billie.entity.corporation.Application;
 import com.lab.smartmobility.billie.entity.Staff;
 import com.lab.smartmobility.billie.entity.corporation.CorporationCard;
 import com.lab.smartmobility.billie.util.DateTimeUtil;
-import com.querydsl.core.types.ExpressionUtils;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
@@ -16,7 +15,6 @@ import java.time.LocalTime;
 import java.util.List;
 import static com.lab.smartmobility.billie.entity.corporation.QApplication.application;
 import static com.lab.smartmobility.billie.entity.corporation.QCorporationCard.corporationCard;
-import static com.lab.smartmobility.billie.entity.QStaff.staff;
 
 @Repository
 @RequiredArgsConstructor

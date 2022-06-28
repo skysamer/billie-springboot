@@ -38,7 +38,6 @@ public class CorporationCardService {
     private final ExpenseCaseRepository expenseCaseRepository;
     private final CorporationReturnRepositoryImpl returnRepository;
 
-    private final DateTimeUtil dateTimeUtil;
     private final ApplicationEventPublisher applicationEventPublisher;
     private final ModelMapper modelMapper;
     private final Log log;

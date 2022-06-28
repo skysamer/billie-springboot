@@ -8,7 +8,7 @@ import org.springframework.lang.Nullable;
 import javax.persistence.*;
 import java.time.LocalDate;
 
-@Getter @Setter @ToString
+@Getter @ToString
 @AllArgsConstructor @NoArgsConstructor @Builder
 @Entity @ApiModel(value = "등록 교통카드 엔티티")
 @Table(name = "tbl_traffic_card")
