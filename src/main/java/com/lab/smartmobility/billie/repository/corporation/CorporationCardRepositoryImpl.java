@@ -6,11 +6,14 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.logging.Log;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.util.List;
 
 import static com.lab.smartmobility.billie.entity.corporation.QCorporationCard.corporationCard;
 
 @Repository
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class CorporationCardRepositoryImpl {
     private final Log log;

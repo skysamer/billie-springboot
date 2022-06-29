@@ -9,7 +9,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 @Repository
-@Transactional
+@Transactional(readOnly = true)
 public interface TrafficCardRepository extends JpaRepository<TrafficCard, Long> {
     TrafficCard findByCardNum(Long cardNum);
     void deleteByCardNum(Long cardNum);

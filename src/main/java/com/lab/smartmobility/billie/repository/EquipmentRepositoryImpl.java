@@ -7,10 +7,13 @@ import lombok.RequiredArgsConstructor;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.util.List;
 import static com.lab.smartmobility.billie.entity.QEquipment.equipment;
 
 @Repository
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class EquipmentRepositoryImpl implements EquipmentRepository{
     private final Log log = LogFactory.getLog(getClass());

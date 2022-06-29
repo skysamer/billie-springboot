@@ -30,7 +30,7 @@ import java.util.List;
 @Api(tags = {"로그인, 비밀번호 찾기 및 회원가입을 위한 api"})
 @RestController
 public class StaffController {
-    private final Log log = LogFactory.getLog(getClass());
+    private final Log log;
     private final JwtTokenProvider jwtTokenProvider;
     private final StaffService staffService;
 

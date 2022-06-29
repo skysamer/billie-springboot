@@ -1,9 +1,12 @@
-/*
 package com.lab.smartmobility.billie.staff;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.lab.smartmobility.billie.config.JwtTokenProvider;
 import com.lab.smartmobility.billie.dto.staff.EmailTokenForm;
+import com.lab.smartmobility.billie.dto.staff.LoginForm;
 import com.lab.smartmobility.billie.dto.staff.SignUpForm;
+import com.lab.smartmobility.billie.entity.HttpMessage;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,17 +17,20 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
 @AutoConfigureMockMvc
 public class StaffTest {
-    @Autowired
-    MockMvc mockMvc;
+    @Autowired MockMvc mockMvc;
+    @Autowired ObjectMapper objectMapper;
+    @Autowired JwtTokenProvider tokenProvider;
 
-    @Autowired
-    ObjectMapper objectMapper;
+    String token;
+    @BeforeEach
+    void createUserToken(){
+        this.token = tokenProvider.createTokenLogin("smtkdals94@gmail.com", "ROLE_USER");
+    }
 
     @DisplayName("이메일 인증 토큰 검증 - 실패")
     @Test
@@ -36,8 +42,7 @@ public class StaffTest {
                 .content(objectMapper.writeValueAsString(emailTokenForm)))
                 .andExpect(status().isOk())
                 .andReturn();
-        String response=result.getResponse().getContentAsString();
-        System.out.println(response);
+        HttpMessage response= (HttpMessage) result.getAsyncResult();
     }
 
     @DisplayName("이메일 인증 토큰 검증 - 성공")
@@ -82,4 +87,4 @@ public class StaffTest {
         System.out.println(response);
     }
 }
-*/
+

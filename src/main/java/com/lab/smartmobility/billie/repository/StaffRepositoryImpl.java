@@ -1,22 +1,22 @@
 package com.lab.smartmobility.billie.repository;
 
 import com.lab.smartmobility.billie.dto.staff.StaffInfoForm;
-import com.lab.smartmobility.billie.entity.QStaff;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.logging.Log;
 import org.springframework.stereotype.Repository;
-
+import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
+import static com.lab.smartmobility.billie.entity.QStaff.staff;
+
 @Repository
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class StaffRepositoryImpl {
     private final JPAQueryFactory jpaQueryFactory;
     private final Log log;
-
-    QStaff staff = QStaff.staff;
 
     public List<StaffInfoForm> getStaffInfoList(){
         return jpaQueryFactory

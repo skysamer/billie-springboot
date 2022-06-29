@@ -16,13 +16,11 @@ import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -47,6 +45,8 @@ public class VehicleService {
     private final DateTimeUtil dateTimeUtil;
     private final Workbook workbook;
     private final Log log;
+
+    private static final Long IS_INSERT = -1L;
 
     /*보유 차량 및 대여 가능 여부 조회*/
     public List<VehicleDTO> vehicleList(){
@@ -97,7 +97,6 @@ public class VehicleService {
     /*차량 정보 삭제*/
     public int removeVehicleInfo(Long vehicleNum){
         try {
-            Vehicle vehicle=vehicleRepository.findByVehicleNum(vehicleNum);
             vehicleRepository.deleteByVehicleNum(vehicleNum);
         }catch (Exception e){
             e.printStackTrace();
@@ -130,7 +129,7 @@ public class VehicleService {
                 return new HttpMessage("fail", "현재 시각보다 과거로 예약할 수 없습니다");
             }
 
-            if(checkReservationIsDuplicate(-1L, rentedAt, returnedAt, vehicle)){
+            if(checkReservationIsDuplicate(IS_INSERT, rentedAt, returnedAt, vehicle)){
                 return new HttpMessage("fail", "해당 날짜에 차량이 이미 대여중입니다");
             }
 
@@ -147,7 +146,7 @@ public class VehicleService {
 
     /*예약 신청 날짜 및 시간이 기존예약괴 겹치는지 체크*/
     private boolean checkReservationIsDuplicate(Long rentNum, LocalDateTime rentedAt, LocalDateTime returnedAt, Vehicle vehicle){
-        if(rentNum == -1L){
+        if(Objects.equals(rentNum, IS_INSERT)){
             return reservationRepository.countByVehicleAndReturnStatusCodeAndRentedAtLessThanAndReturnedAtGreaterThan(vehicle, 0, returnedAt, rentedAt) == 1;
         }
         return reservationRepository.countByRentNumNotAndVehicleAndReturnStatusCodeAndRentedAtLessThanAndReturnedAtGreaterThan(rentNum, vehicle, 0, returnedAt, rentedAt) == 1;

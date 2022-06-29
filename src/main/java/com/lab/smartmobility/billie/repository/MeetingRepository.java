@@ -9,8 +9,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 
-@Transactional
-@Repository
+@Transactional(readOnly = true)
 public interface MeetingRepository extends JpaRepository<Meeting, Long> {
     Meeting findByMeetingNum(Long meetingNum);
 

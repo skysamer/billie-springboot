@@ -3,11 +3,11 @@ package com.lab.smartmobility.billie.repository;
 import com.lab.smartmobility.billie.entity.Staff;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
-import javax.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.time.LocalDate;
 
-@Transactional
-@Repository
+@Transactional(readOnly = true)
 public interface StaffRepository  extends JpaRepository<Staff, Long>{
     Staff findByEmail(String email);
     Staff findByStaffNum(Long staffNum);

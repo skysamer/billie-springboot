@@ -10,6 +10,8 @@ import lombok.RequiredArgsConstructor;
 import org.apache.commons.logging.Log;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
@@ -17,6 +19,7 @@ import static com.lab.smartmobility.billie.entity.corporation.QApplication.appli
 import static com.lab.smartmobility.billie.entity.corporation.QCorporationCard.corporationCard;
 
 @Repository
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class ApplicationRepositoryImpl {
     private final Log log;

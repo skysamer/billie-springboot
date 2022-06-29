@@ -7,8 +7,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
-@Repository
-@Transactional
+@Transactional(readOnly = true)
 public interface ReturnVehicleImageRepository extends JpaRepository<ImageVehicle, Long> {
     List<ImageVehicle> findAllByVehicleReservation(VehicleReservation vehicleReservation);
 }

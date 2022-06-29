@@ -8,8 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-@Repository
-@Transactional
+@Transactional(readOnly = true)
 public interface NotificationRepository extends JpaRepository<Notification, Long> {
     List<Notification> findAllByReceiverAndReadAt(String receiver, int readAt);
     //boolean existsByStaffAndReadAt(Staff staff, int readAt);
