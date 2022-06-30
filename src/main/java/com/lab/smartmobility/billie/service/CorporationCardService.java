@@ -525,8 +525,6 @@ public class CorporationCardService {
         cell = row.createCell(7);
         cell.setCellValue("법인카드 사용건");
 
-
-
         cell = row.createCell(11);
         cell.setCellValue("총 사용금액");
         cell = row.createCell(12);
@@ -548,7 +546,7 @@ public class CorporationCardService {
         sheet.addMergedRegion(new CellRangeAddress(0, 1, 11, 11));
         sheet.addMergedRegion(new CellRangeAddress(0, 1, 12, 12));
 
-        int rowCount=2;
+        int rowCount = 2;
         for (CorporationHistoryForm corporationHistoryForm : corporationHistoryFormList) {
             row = sheet.createRow(rowNum++);
 
@@ -588,12 +586,17 @@ public class CorporationCardService {
                 row = sheet.createRow(rowNum++);
             }
 
+            if(rowCount == rowCount+(caseSize-1)){
+                rowCount = rowCount + caseSize;
+                continue;
+            }
+
             for(int i=0; i<7; i++){
                 sheet.addMergedRegion(new CellRangeAddress(rowCount, rowCount+(caseSize-1), i, i));
             }
             sheet.addMergedRegion(new CellRangeAddress(rowCount, rowCount+(caseSize-1), 11, 11));
             sheet.addMergedRegion(new CellRangeAddress(rowCount, rowCount+(caseSize-1), 12, 12));
-            rowCount=rowCount+caseSize;
+            rowCount = rowCount + caseSize;
         }
         return workbook;
     }
@@ -667,7 +670,7 @@ public class CorporationCardService {
         sheet.addMergedRegion(new CellRangeAddress(0, 1, 12, 12));
 
         // Body
-        int rowCount=2;
+        int rowCount = 2;
         for (ExpenseClaimHistoryForm expenseClaimHistoryForm : expenseClaimHistoryFormList) {
             row = sheet.createRow(rowNum++);
 
@@ -693,6 +696,7 @@ public class CorporationCardService {
             cell.setCellValue(expenseClaimHistoryForm.getNote());
 
             int caseSize=expenseClaimHistoryForm.getExpenseCaseList().size();
+
             for(int i=0; i<caseSize; i++){
                 cell = row.createCell(8);
                 cell.setCellValue(expenseClaimHistoryForm.getExpenseCaseList().get(i).getUsedAt().toString());
@@ -705,6 +709,11 @@ public class CorporationCardService {
                     break;
                 }
                 row = sheet.createRow(rowNum++);
+            }
+
+            if(rowCount == rowCount+(caseSize-1)){
+                rowCount = rowCount + caseSize;
+                continue;
             }
 
             for(int i=0; i<8; i++){
