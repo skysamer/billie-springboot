@@ -1,3 +1,4 @@
+/*
 package com.lab.smartmobility.billie.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -41,4 +42,4 @@ class VehicleControllerTest {
     @DisplayName("전체 보유 차량 조회 테스트")
     void getPossessVehicleList(){
     }
-}
+}*/
