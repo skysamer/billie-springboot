@@ -80,7 +80,6 @@ public class VacationService {
         try{
             insertVacation(applyVacationFormList, staff);
             insertNotification(staff, manager);
-            sseEmitterSender.sendSseEmitter(manager);
         }catch (Exception e){
             e.printStackTrace();
             return 9999;
@@ -179,13 +178,11 @@ public class VacationService {
             if(vacationList.get(0).getStaff().getDepartment().equals("관리부") || vacationList.get(0).getStaff().getRole().equals("ROLE_MANAGER")){
                 Staff staff= vacationList.get(0).getStaff();
                 insertNotification(staff, staff);
-                sseEmitterSender.sendSseEmitter(staff);
             }
 
             // TODO sseEmitter
             Staff admin=staffRepository.findByStaffNum(37L); // 부장님은 4
             insertNotification(vacationList.get(0).getStaff(), admin);
-            sseEmitterSender.sendSseEmitter(admin);
         }catch (Exception e){
             e.printStackTrace();
             return 9999;
@@ -204,7 +201,6 @@ public class VacationService {
             // TODO sseEmitter
             Staff staff= vacationList.get(0).getStaff();
             insertNotification(staff, staff);
-            sseEmitterSender.sendSseEmitter(staff);
         }catch (Exception e){
             e.printStackTrace();
             return 9999;
@@ -231,7 +227,6 @@ public class VacationService {
 
             // TODO sseEmitter
             insertNotification(staff, staff);
-            sseEmitterSender.sendSseEmitter(staff);
         }catch (Exception e){
             e.printStackTrace();
             return 9999;
@@ -249,7 +244,6 @@ public class VacationService {
             // TODO sseEmitter
             Staff staff= vacationList.get(0).getStaff();
             insertNotification(staff, staff);
-            sseEmitterSender.sendSseEmitter(staff);
         }catch (Exception e){
             e.printStackTrace();
             return 9999;

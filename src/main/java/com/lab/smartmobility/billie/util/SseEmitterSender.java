@@ -1,5 +1,6 @@
 package com.lab.smartmobility.billie.util;
 
+import com.lab.smartmobility.billie.entity.Notification;
 import com.lab.smartmobility.billie.entity.Staff;
 import com.lab.smartmobility.billie.repository.NotificationRepository;
 import lombok.RequiredArgsConstructor;
@@ -15,13 +16,13 @@ public class SseEmitterSender {
     private final NotificationRepository notificationRepository;
     private final Log log= LogFactory.getLog(getClass());
 
-    public void sendSseEmitter(Staff staff){
+    public void sendSseEmitter(Staff staff, Notification notification){
         log.info("sse-start");
         if(SSE_EMITTERS.containsKey(staff.getEmail())){
             SseEmitter sseEmitter= SSE_EMITTERS.get(staff.getEmail());
             log.info(staff.getEmail());
             try{
-                sseEmitter.send(SseEmitter.event().name("notification").data("new-notification"));
+                sseEmitter.send(SseEmitter.event().name("notification").data(notification));
                 log.info("success");
             }catch (Exception e){
                 e.printStackTrace();

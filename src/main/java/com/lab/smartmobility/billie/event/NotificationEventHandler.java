@@ -29,6 +29,6 @@ public class NotificationEventHandler {
                 .build();
 
         notificationRepository.save(notification);
-        sseEmitterSender.sendSseEmitter(notificationEventDTO.getApproval());
+        sseEmitterSender.sendSseEmitter(notificationEventDTO.getApproval(), notification);
     }
 }

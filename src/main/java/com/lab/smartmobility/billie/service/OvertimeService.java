@@ -61,7 +61,6 @@ public class OvertimeService {
                 .createdAt(LocalDateTime.now())
                 .readAt(0)
                 .build();
-        sseEmitterSender.sendSseEmitter(receiver);
     }
 
     /*나의 추가근무 신청 목록 조회*/

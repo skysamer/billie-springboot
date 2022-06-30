@@ -251,19 +251,8 @@ public class VehicleService {
     }
 
     /*차량 반납 신청*/
-    public int returnVehicle(VehicleReturnDTO vehicleReturnDTO, List<MultipartFile> imageFiles){
+    public int returnVehicle(VehicleReturnDTO vehicleReturnDTO){
         try{
-            VehicleReservation vehicleReservation=reservationRepository.findByRentNum(vehicleReturnDTO.getRentNum());
-            List<String> imageDataList=saveImageFile(imageFiles);
-
-            for(int i = 1; i< Objects.requireNonNull(imageDataList).size(); i++){
-                ImageVehicle imageVehicle=ImageVehicle.builder()
-                        .imagePath(imageDataList.get(0))
-                        .originImageName(imageDataList.get(i))
-                        .vehicleReservation(vehicleReservation)
-                        .build();
-                imageRepository.save(imageVehicle);
-            }
             changeVehicleInfo(vehicleReturnDTO);
             updateReturnInfo(vehicleReturnDTO);
         }catch (Exception e){
@@ -312,13 +301,14 @@ public class VehicleService {
     }
 
     /*반납 시 차량 정보 업데이트*/
-    private void changeVehicleInfo(VehicleReturnDTO vehicleReturnDTO) throws Exception{
+    private void changeVehicleInfo(VehicleReturnDTO vehicleReturnDTO) {
         Vehicle vehicle = vehicleRepository.findByVehicleNum(vehicleRepository.findByVehicleName(vehicleReturnDTO.getVehicleName()).getVehicleNum());
         vehicle.update(0, vehicleReturnDTO.getParkingLoc(), vehicleReturnDTO.getDistanceDriven());
         vehicleRepository.save(vehicle);
     }
 
-    private void updateReturnInfo(VehicleReturnDTO vehicleReturnDTO) throws Exception{
+    /*반납 정보 업데이트*/
+    private void updateReturnInfo(VehicleReturnDTO vehicleReturnDTO) {
         VehicleReservation updatedReturnInfo=reservationRepository.findByRentNum(vehicleReturnDTO.getRentNum());
         LocalDateTime returnedAt = dateTimeUtil.combineDateAndTime(vehicleReturnDTO.getDateOfReturn(), vehicleReturnDTO.getTimeOfReturn());
         Duration duration = Duration.between(updatedReturnInfo.getReturnedAt(), returnedAt);

@@ -182,9 +182,8 @@ public class VehicleController {
     @ApiResponses({
             @ApiResponse(code = 200, message = "저장 실패 or 반납 이력 저장 완료")
     })
-    public HttpMessage returnVehicle(@ApiParam(value = "반납 신청 폼 데이터") @Valid @RequestPart(value = "returnVehicle") VehicleReturnDTO vehicleReturnDTO,
-                                     @ApiParam(value = "이미지 파일") @PathVariable("imageFiles") List<MultipartFile> imageFiles){
-        if(service.returnVehicle(vehicleReturnDTO, imageFiles)==9999){
+    public HttpMessage returnVehicle(@ApiParam(value = "반납 신청 폼 데이터") @Valid @RequestPart(value = "returnVehicle") VehicleReturnDTO vehicleReturnDTO){
+        if(service.returnVehicle(vehicleReturnDTO)==9999){
             return new HttpMessage("fail", "저장 실패");
         }
         return new HttpMessage("success", "반납 이력 저장 완료");
