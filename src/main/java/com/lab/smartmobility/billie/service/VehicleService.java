@@ -44,7 +44,6 @@ public class VehicleService {
     private final ModelMapper modelMapper;
     private final VehicleReservationRepositoryImpl reservationRepositoryImpl;
     private final DateTimeUtil dateTimeUtil;
-    private final Workbook workbook;
     private final Log log;
 
     private static final Long IS_INSERT = -1L;

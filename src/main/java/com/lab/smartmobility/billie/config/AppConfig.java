@@ -27,8 +27,4 @@ public class AppConfig {
         return LogFactory.getLog(getClass());
     }
 
-    @Bean
-    public Workbook workbook(){
-        return new XSSFWorkbook();
-    }
 }
