@@ -50,10 +50,6 @@
 
 간편하게 웹 어플리케이션에서 차량 및 교통카드 등을 예약하고 반납할 수 있는 플랫폼을 개발했습니다.
 
-<details>
-<summary><b>핵심 기능 설명 펼치기</b></summary>
-<div markdown="1">
-
 ### 4.1. Spring Security와 JWT를 활용한 로그인 및 회원가입
 - **jwt 토큰 생성** :pushpin: [코드 확인](https://github.com/skysamer/billie-springboot/blob/master/src/main/java/com/lab/smartmobility/billie/config/JwtTokenProvider.java)
   
@@ -137,12 +133,9 @@ WHERE
 	`end` > :start
   
 ~~~
+
     - 따라서 위의 쿼리문을 쿼리메소드 및 QueryDSL로 변환하여 처리했습니다.  
 
-</div>
-</details>
-
-</br>
 
 ## 5. 트러블 슈팅
 ### 5.1. 프론트엔드와 통신 시 Cors 오류
@@ -381,4 +374,12 @@ public class NotificationEventHandler {
 리팩토링한 코드를 다시 테스트를 하려고 보니까 만약 테스트코드를 미리 작성해놓았다면 굳이 번거롭게 다시 테스트를 진행하지 않고 기존의 테스트코드를 돌리면 됐었는데 하는 아쉬움이 남습니다.
   
 이러한 아쉬운 부분들은 다음 2차 런칭때 다듬어볼 생각입니다.
+	
+
+## 8. 2차 개발 및 추후 리팩토링 시 고려사항
+- 테스트 코드 작성
+- api 반환타입을 ResponseEntity로 설정
+- 세밀한 트랜잭션 관리 (서비스 단으로 트랜잭션 이관 및 리포지토리를 readonly 설정)
+- 가독성이 떨어지는 경우, 쿼리메소드를 지양하고 queryDSL 고려
+- 명확한 책임의 분리
 
