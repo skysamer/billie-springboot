@@ -53,14 +53,15 @@ public class StaffService implements UserDetailsService {
             return 9999;
         }
         staff.insert(UUID.randomUUID().toString(), LocalDateTime.now());
-        staffRepository.save(staff);
 
         CustomSimpleMailMessage mailMessage = CustomSimpleMailMessage.builder()
                 .subject("[Billie] 이메일 인증 토큰입니다.")
                 .to(new String[]{staff.getEmail()})
                 .text("이메일 인증 토큰 : " + staff.getEmailToken())
                 .build();
+
         javaMailSender.send(mailMessage);
+        staffRepository.save(staff);
         return 0;
     }
 

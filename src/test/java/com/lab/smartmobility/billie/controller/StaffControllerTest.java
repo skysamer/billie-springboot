@@ -1,24 +1,27 @@
 package com.lab.smartmobility.billie.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.lab.smartmobility.billie.config.JwtTokenProvider;
-import com.lab.smartmobility.billie.dto.vehicle.VehicleDTO;
-import com.lab.smartmobility.billie.entity.Vehicle;
+import com.lab.smartmobility.billie.dto.staff.EmailForm;
+import com.lab.smartmobility.billie.entity.Staff;
+import com.lab.smartmobility.billie.repository.StaffRepository;
 import com.lab.smartmobility.billie.repository.vehicle.VehicleRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.filter.CharacterEncodingFilter;
+
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.Period;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -28,14 +31,17 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
-class VehicleControllerTest {
-    @Autowired MockMvc mockMvc;
-    @Autowired ObjectMapper objectMapper;
-    @Autowired JwtTokenProvider tokenProvider;
-    @Autowired VehicleRepository vehicleRepository;
-
+class StaffControllerTest {
     @Autowired
-    private WebApplicationContext ctx;
+    MockMvc mockMvc;
+    @Autowired
+    ObjectMapper objectMapper;
+    @Autowired
+    JwtTokenProvider tokenProvider;
+    @Autowired
+    StaffRepository staffRepository;
+    @Autowired
+    WebApplicationContext ctx;
 
     @BeforeEach
     public void setUp() {
@@ -60,31 +66,14 @@ class VehicleControllerTest {
     static final String tokenKey = "X-AUTH-TOKEN";
 
     @Test
-    @DisplayName("전체 보유 차량 조회 테스트")
-    void getPossessVehicleList() throws Exception {
+    @DisplayName("이메일 토큰 전송 테스트")
+    void sendEmail() throws Exception {
+        String email = "smtkdals94@gmail.com";
+        EmailForm emailForm = new EmailForm(email);
 
-        mockMvc.perform(get("/vehicle/to-own")
-                        .header(tokenKey, adminToken)
+        mockMvc.perform(post("/send-email-token")
                         .contentType(MediaType.APPLICATION_JSON)
-                )
-                .andExpect(status().isOk())
-                .andDo(print());
-    }
-
-    @Test
-    @DisplayName("개별 차량 정보 조회 테스트")
-    void vehicleInfo() throws Exception {
-        Long vehicleNum = 42L;
-        Vehicle vehicle = vehicleRepository.findByVehicleNum(vehicleNum);
-
-        MvcResult result = mockMvc.perform(get("/vehicle/"+vehicleNum)
-                    .header(tokenKey, adminToken)
-                )
-                .andExpect(status().isOk())
-                .andDo(print())
-                .andReturn();
-
-        Vehicle apiReturn = objectMapper.readValue(result.getResponse().getContentAsString(), Vehicle.class);
-        assertThat(vehicle.getVehicleNum()).isEqualTo(apiReturn.getVehicleNum());
+                        .content(objectMapper.writeValueAsString(emailForm)))
+                .andExpect(status().isOk());
     }
 }

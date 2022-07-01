@@ -62,10 +62,6 @@ public class MeetingService {
     /*회의실 예약 수정*/
     public int updateMeeting(Long meetingNum, ApplyMeetingForm applyMeetingForm){
         try{
-            List<LocalDate> startAndEndDate=dateTimeUtil.getStartDateAndEndDate(applyMeetingForm.getDate());
-            LocalDate startDate=startAndEndDate.get(0);
-            LocalDate endDate=startAndEndDate.get(1);
-
             if(checkIsDuplicate(meetingNum, applyMeetingForm.getDate(), applyMeetingForm.getEndTime(), applyMeetingForm.getStartTime())){
                 return 500;
             }
