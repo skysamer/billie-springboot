@@ -1,10 +1,7 @@
 package com.lab.smartmobility.billie.dto.staff;
 
 import io.swagger.annotations.ApiModel;
-import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Getter
 @AllArgsConstructor @NoArgsConstructor

@@ -5,8 +5,10 @@ import com.lab.smartmobility.billie.dto.staff.DepartmentDTO;
 import com.lab.smartmobility.billie.dto.staff.RankDTO;
 import com.lab.smartmobility.billie.dto.staff.EmailTokenForm;
 import com.lab.smartmobility.billie.dto.staff.SignUpForm;
+import com.lab.smartmobility.billie.entity.HttpMessage;
 import com.lab.smartmobility.billie.entity.Staff;
 import com.lab.smartmobility.billie.repository.StaffRepository;
+import com.lab.smartmobility.billie.repository.StaffRepositoryImpl;
 import com.lab.smartmobility.billie.util.CustomSimpleMailMessage;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.logging.Log;
@@ -31,6 +33,7 @@ import java.util.stream.Collectors;
 public class StaffService implements UserDetailsService {
     private final Log log = LogFactory.getLog(getClass());
     private final StaffRepository staffRepository;
+    private final StaffRepositoryImpl staffRepositoryImpl;
     private final CommonEncoder passwordEncoder;
     private final JavaMailSender javaMailSender;
 
@@ -78,18 +81,19 @@ public class StaffService implements UserDetailsService {
         return 0;
     }
 
+    /*비밀번호 일치 여부*/
     public boolean checkPassword(String email, String password) {
         Staff staff = staffRepository.findByEmail(email);
         return passwordEncoder.matches(password, staff.getPasswordToCheckMatch());
     }
 
     /*회원가입*/
-    public int joinIn(SignUpForm signUpForm) {
+    public HttpMessage joinIn(SignUpForm signUpForm) {
         Staff staff=staffRepository.findByEmail(signUpForm.getEmail());
-        if(staff.getPasswordToCheckMatch()!=null && staff.getRole()!=null){
-            return 9999;
-        }else if(staff.getIsVerified()==0){
-            return 500;
+        if(staff.getPasswordToCheckMatch() != null && staff.getRole() != null){
+            return new HttpMessage("fail", "exists join info");
+        }else if(staff.getIsVerified() == 0){
+            return new HttpMessage("fail", "not verified");
         }
 
         if (staff.getDepartment().equals("관리부") || staff.getStaffNum().equals(4L) || staff.getRank().equals("대표")) {
@@ -102,7 +106,7 @@ public class StaffService implements UserDetailsService {
 
         staff.setPassword(passwordEncoder.encode(signUpForm.getPassword()));
         staffRepository.save(staff);
-        return 0;
+        return new HttpMessage("success", "success sign up");
     }
 
     /*비밀번호 찾기*/
@@ -154,23 +158,11 @@ public class StaffService implements UserDetailsService {
 
     /*부서 목록 조회*/
     public List<DepartmentDTO> getDepartmentList(){
-        List<Staff> staffList=staffRepository.findAll();
-        List<DepartmentDTO> departmentList=new ArrayList<>();
-        for(Staff staff : staffList){
-            DepartmentDTO department=new DepartmentDTO(staff.getDepartment());
-            departmentList.add(department);
-        }
-        return departmentList.stream().distinct().collect(Collectors.toList());
+        return staffRepositoryImpl.getDepartmentNameList();
     }
 
     /*직급 목록 조회*/
     public List<RankDTO> getRankList(){
-        List<Staff> staffList=staffRepository.findAll();
-        List<RankDTO> rankList=new ArrayList<>();
-        for(Staff staff : staffList){
-            RankDTO department=new RankDTO(staff.getRank());
-            rankList.add(department);
-        }
-        return rankList.stream().distinct().collect(Collectors.toList());
+        return staffRepositoryImpl.getRankList();
     }
 }

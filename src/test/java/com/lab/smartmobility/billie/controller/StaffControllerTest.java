@@ -1,12 +1,11 @@
 package com.lab.smartmobility.billie.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.lab.smartmobility.billie.config.JwtTokenProvider;
+import com.lab.smartmobility.billie.dto.staff.DepartmentDTO;
 import com.lab.smartmobility.billie.dto.staff.EmailForm;
-import com.lab.smartmobility.billie.entity.Staff;
+import com.lab.smartmobility.billie.dto.staff.RankDTO;
 import com.lab.smartmobility.billie.repository.StaffRepository;
-import com.lab.smartmobility.billie.repository.vehicle.VehicleRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -15,13 +14,13 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.filter.CharacterEncodingFilter;
 
-import java.time.Duration;
-import java.time.LocalDateTime;
-import java.time.Period;
+import java.util.Arrays;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -75,5 +74,35 @@ class StaffControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(emailForm)))
                 .andExpect(status().isOk());
+    }
+
+    @Test
+    @DisplayName("부서 목록 조회 테스트")
+    void getDepartmentList() throws Exception {
+        MvcResult result = mockMvc.perform(get("/department")
+                        .header(tokenKey, adminToken)
+                )
+                .andExpect(status().isOk())
+                .andDo(print())
+                .andReturn();
+
+        List<DepartmentDTO> dropdown = Arrays.asList(objectMapper.readValue(result.getResponse().getContentAsString(), DepartmentDTO[].class));
+        assertThat(dropdown.get(0).getDepartment()).isNotNull();
+        assertThat(dropdown.size()).isEqualTo(4);
+    }
+
+    @Test
+    @DisplayName("직급 목록 조회 테스트")
+    void getRankList() throws Exception {
+        MvcResult result = mockMvc.perform(get("/rank")
+                        .header(tokenKey, adminToken)
+                )
+                .andExpect(status().isOk())
+                .andDo(print())
+                .andReturn();
+
+        List<RankDTO> dropdown = Arrays.asList(objectMapper.readValue(result.getResponse().getContentAsString(), RankDTO[].class));
+        assertThat(dropdown.get(0).getRank()).isNotNull();
+        assertThat(dropdown.size()).isEqualTo(10);
     }
 }

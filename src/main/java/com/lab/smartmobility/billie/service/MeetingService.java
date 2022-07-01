@@ -8,6 +8,7 @@ import com.lab.smartmobility.billie.util.DateTimeUtil;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.logging.Log;
 import org.modelmapper.ModelMapper;
+import org.springframework.boot.autoconfigure.cache.RedisCacheManagerBuilderCustomizer;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,10 +33,6 @@ public class MeetingService {
 
     /*회의 등록*/
     public int insertMeeting(ApplyMeetingForm applyMeetingForm){
-        if(dateTimeUtil.combineDateAndTime(applyMeetingForm.getDate(), applyMeetingForm.getStartTime()).isBefore(LocalDateTime.now())){
-            log.info("to-do");
-        }
-
         if(checkIsDuplicate(-1L, applyMeetingForm.getDate(), applyMeetingForm.getEndTime(), applyMeetingForm.getStartTime())){
             return 500;
         }
@@ -100,7 +97,7 @@ public class MeetingService {
     // 회의 삭제(키값 필요)
     public int removeMeeting(Long meetingNum){
         meetingRepository.deleteByMeetingNum(meetingNum);
-        if(meetingRepository.findByMeetingNum(meetingNum)==null){
+        if(meetingRepository.findByMeetingNum(meetingNum) == null){
             return 0;
         }
         return 1;

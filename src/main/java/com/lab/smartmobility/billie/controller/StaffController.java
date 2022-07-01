@@ -71,19 +71,13 @@ public class StaffController {
     })
     @PostMapping(value = "/sign-up", produces = MediaType.APPLICATION_JSON_VALUE)
     public HttpMessage joinIn(@RequestBody SignUpForm signUpForm) {
-        int checkJoin= staffService.joinIn(signUpForm);
-        if(checkJoin==9999){
-            return new HttpMessage("fail", "exists join info");
-        }else if(checkJoin==500){
-            return new HttpMessage("fail", "not verified");
-        }
-        return new HttpMessage("success", "success sign up");
+        return staffService.joinIn(signUpForm);
     }
 
     @ApiOperation(value = "로그인", notes = "성공 시 jwt 토큰을 X-AUTH-TOKEN 키에 매핑하고 헤더에 넣어 반환")
     @PostMapping(value = "/login/{is-auto}", produces = MediaType.APPLICATION_JSON_VALUE)
     public Staff login(@PathVariable("is-auto") int isAuto, @RequestBody LoginForm loginForm, HttpServletResponse response) {
-        if(staffService.loadUserByUsername(loginForm.getEmail())==null){
+        if(staffService.loadUserByUsername(loginForm.getEmail()) == null){
             return Staff.builder()
                     .name("가입된 사용자가 아닙니다.").build();
         }
