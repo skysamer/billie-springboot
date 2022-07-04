@@ -1,95 +1,27 @@
-package com.lab.smartmobility.billie.controller;
+package com.lab.smartmobility.billie.controller.traffic;
 
-import com.lab.smartmobility.billie.dto.traffic.ReturnTrafficCardDTO;
 import com.lab.smartmobility.billie.dto.traffic.TrafficCardApplyDTO;
-import com.lab.smartmobility.billie.dto.traffic.TrafficCardForm;
 import com.lab.smartmobility.billie.entity.HttpMessage;
-import com.lab.smartmobility.billie.entity.TrafficCard;
 import com.lab.smartmobility.billie.entity.TrafficCardReservation;
-import com.lab.smartmobility.billie.service.TrafficCardService;
+import com.lab.smartmobility.billie.service.traffic.TrafficCardReservationService;
 import io.swagger.annotations.*;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.poi.ss.usermodel.Workbook;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
-import java.io.IOException;
 import java.time.LocalDate;
-import java.util.HashMap;
 import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@Api(tags = {"교통카드 관리 api"})
+@Api(tags = {"교통카드 예약 api"})
 @RequestMapping("/traffic-card")
-public class TrafficCardController {
-    private final TrafficCardService service;
+public class TrafficCardReservationController {
+    private final TrafficCardReservationService service;
     private final Log log= LogFactory.getLog(getClass());
-
-    @GetMapping("/card-list")
-    @ApiOperation(value = "보유 교통카드 목록 조회")
-    public List<TrafficCard> getPossessCardList(){
-        return service.getPossessCardList();
-    }
-
-    @PostMapping("/register")
-    @ApiOperation(value = "신규 교통카드 등록")
-    @ApiResponses({
-            @ApiResponse(code = 200, message = "등록 성공 or 등록 실패")
-    })
-    public HttpMessage register(@RequestBody TrafficCardForm trafficCardForm){
-        if(service.registerCard(trafficCardForm)==9999){
-            return new HttpMessage("fail", "등록 실패");
-        }
-        return new HttpMessage("success", "등록 성공");
-    }
-
-    @GetMapping("/card/{card-num}")
-    @ApiOperation(value = "개별 교통카드 상세 정보")
-    public TrafficCard getCardInfo(@PathVariable("card-num") Long cardNum){
-        return service.getCardInfo(cardNum);
-    }
-
-    @PutMapping("/modify")
-    @ApiOperation(value = "교통카드 등록 정보 수정")
-    @ApiResponses({
-            @ApiResponse(code = 200, message = "수정 성공 or 수정 실패")
-    })
-    public HttpMessage modify(@RequestBody TrafficCardForm trafficCardForm){
-        if(service.updateCardInfo(trafficCardForm)==9999){
-            return new HttpMessage("fail", "수정 실패");
-        }
-        return new HttpMessage("success", "수정 성공");
-    }
-
-    @PutMapping("/discard/{card-num}")
-    @ApiOperation(value = "교통카드 폐기")
-    @ApiResponses({
-            @ApiResponse(code = 200, message = "폐기 성공 or 이미 폐기된 카드입니다")
-    })
-    public HttpMessage discard(@PathVariable("card-num") Long cardNum, @RequestBody HashMap<String, String> reason){
-        if(service.discardCard(cardNum, reason)==500){
-            return new HttpMessage("fail", "이미 폐기된 카드입니다");
-        }
-        return new HttpMessage("success", "폐기 성공");
-    }
-
-    @DeleteMapping("/{card-num}")
-    @ApiOperation(value = "교통카드 정보 삭제")
-    @ApiResponses({
-            @ApiResponse(code = 200, message = "삭제 성공 or 삭제 실패")
-    })
-    public HttpMessage removeCardInfo(@PathVariable("card-num") Long cardNum){
-        if(service.removeCardInfo(cardNum)==9999){
-            return new HttpMessage("fail", "삭제 실패");
-        }
-        return new HttpMessage("success", "삭제 성공");
-    }
 
     @PostMapping("/apply-rental")
     @ApiOperation(value = "교통카드 대여 신청")
@@ -187,55 +119,5 @@ public class TrafficCardController {
     @ApiOperation(value = "금일 나의 교통카드 예약 목록 조회")
     public List<TrafficCardReservation> getMyTodayCardReservation(@PathVariable("staff-num") Long staffNum){
         return service.getMyCardReservation(staffNum);
-    }
-
-    @PostMapping("/apply-return")
-    @ApiOperation(value = "교통카드 반납 신청")
-    @ApiResponses({
-            @ApiResponse(code = 200, message = "반납 신청 실패 or 반납 신청 완료")
-    })
-    public HttpMessage applyCardReturn(@Valid @RequestBody ReturnTrafficCardDTO returnTrafficCard){
-        if(service.applyCardReturn(returnTrafficCard)==9999){
-            return new HttpMessage("fail", "반납 신청 실패");
-        }
-        return new HttpMessage("success", "반납 신청 완료");
-    }
-
-    @GetMapping("/return-list/{disposal-info}/{card-num}/{base-date}")
-    @ApiOperation(value = "교통카드 반납 목록 조회", notes = "전체 교통카드 조회의 경우 -1 // 폐기정보(0:미포함, 1:포함) // base-date : yyyy-MM")
-    public List<TrafficCardReservation> getCardReturnList(@PathVariable("disposal-info") int disposalInfo,
-            @PathVariable("card-num") Long cardNum,
-            @PathVariable("base-date") String baseDate,
-            @RequestParam("page") Integer page, @RequestParam("size") Integer size){
-        PageRequest pageRequest = PageRequest.of(page, size);
-        return service.getCardReturnList(disposalInfo, cardNum, baseDate, pageRequest);
-    }
-
-    @GetMapping("/return/{reservation-num}")
-    @ApiOperation(value = "교통카드 반납 이력 상세 조회")
-    public TrafficCardReservation getCardReturnHistory(@PathVariable("reservation-num") Long reservationNum){
-        return service.getCardReturn(reservationNum);
-    }
-
-    @GetMapping("/return-count/{disposal-info}/{card-num}/{base-date}")
-    @ApiOperation(value = "교통카드 반납 이력 개수 조회", notes = "전체 교통카드 조회의 경우 -1 // 폐기정보(0:미포함, 1:포함) // base-date : yyyy-MM")
-    public HttpMessage getReturnCount(@PathVariable("disposal-info") int disposalInfo,
-                                      @PathVariable("card-num") Long cardNum,
-                                      @PathVariable("base-date") String baseDate){
-        return new HttpMessage("count", service.getReturnCount(disposalInfo, cardNum, baseDate));
-    }
-
-    @GetMapping("/excel/{disposal-info}/{card-num}/{base-date}")
-    @ApiOperation(value = "교통카드 반납 이력 엑셀 다운로드", notes = "전체 교통카드 조회의 경우 -1 // 폐기정보(0:미포함, 1:포함) // base-date : yyyy-MM")
-    public void excelDownload(@PathVariable("disposal-info") int disposalInfo,
-                              @PathVariable("card-num") Long cardNum,
-                              @PathVariable("base-date") String baseDate, HttpServletResponse response) throws IOException {
-        Workbook wb=service.excelDownload(disposalInfo, cardNum, baseDate);
-
-        response.setContentType("ms-vnd/excel");
-        response.setHeader("Content-Disposition", "attachment;filename="+baseDate+"_traffic_card_history.xlsx");
-
-        wb.write(response.getOutputStream());
-        wb.close();
     }
 }

@@ -8,13 +8,11 @@ import com.lab.smartmobility.billie.util.DateTimeUtil;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.logging.Log;
 import org.modelmapper.ModelMapper;
-import org.springframework.boot.autoconfigure.cache.RedisCacheManagerBuilderCustomizer;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -94,7 +92,7 @@ public class MeetingService {
         return meetingRepository.findByDateBetween(startDate, endDate);
     }
 
-    // 회의 삭제(키값 필요)
+    // 회의 삭제
     public int removeMeeting(Long meetingNum){
         meetingRepository.deleteByMeetingNum(meetingNum);
         if(meetingRepository.findByMeetingNum(meetingNum) == null){

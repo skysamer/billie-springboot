@@ -2,14 +2,11 @@ package com.lab.smartmobility.billie.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.lab.smartmobility.billie.config.JwtTokenProvider;
-import com.lab.smartmobility.billie.dto.vehicle.VehicleDTO;
 import com.lab.smartmobility.billie.entity.Vehicle;
 import com.lab.smartmobility.billie.repository.vehicle.VehicleRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -74,7 +71,7 @@ class VehicleControllerTest {
     @Test
     @DisplayName("개별 차량 정보 조회 테스트")
     void vehicleInfo() throws Exception {
-        Long vehicleNum = 42L;
+        Long vehicleNum = 1L;
         Vehicle vehicle = vehicleRepository.findByVehicleNum(vehicleNum);
 
         MvcResult result = mockMvc.perform(get("/vehicle/"+vehicleNum)
