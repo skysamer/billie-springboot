@@ -3,7 +3,7 @@ package com.lab.smartmobility.billie.controller.corporation;
 import com.lab.smartmobility.billie.dto.corporation.*;
 import com.lab.smartmobility.billie.entity.corporation.CorporationCard;
 import com.lab.smartmobility.billie.entity.HttpMessage;
-import com.lab.smartmobility.billie.service.CorporationCardService;
+import com.lab.smartmobility.billie.service.corporation.CorporationCardService;
 import io.swagger.annotations.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;

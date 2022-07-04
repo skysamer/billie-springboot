@@ -5,7 +5,7 @@ import com.lab.smartmobility.billie.dto.corporation.ApprovalCardUseForm;
 import com.lab.smartmobility.billie.dto.corporation.CompanionCardUseForm;
 import com.lab.smartmobility.billie.entity.HttpMessage;
 import com.lab.smartmobility.billie.entity.corporation.Application;
-import com.lab.smartmobility.billie.service.CorporationCardService;
+import com.lab.smartmobility.billie.service.corporation.CorporationCardApprovalService;
 import io.swagger.annotations.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -20,7 +20,7 @@ import java.util.List;
 @Api(tags = {"법인카드 승인 api"})
 @RequiredArgsConstructor
 public class CorporationCardApprovalController {
-    private final CorporationCardService service;
+    private final CorporationCardApprovalService service;
 
     @ApiOperation(value = "부서장의 카드 사용승인 요청 목록 조회", notes = "부서장 권한만 이용 가능")
     @GetMapping("/request-list-manager/{manager-num}/{card-name}/{base-year}/{disposal-info}/{page}/{size}")

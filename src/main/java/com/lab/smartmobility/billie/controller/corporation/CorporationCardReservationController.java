@@ -4,7 +4,7 @@ import com.lab.smartmobility.billie.dto.TotalCount;
 import com.lab.smartmobility.billie.dto.corporation.ApplyCorporationCardForm;
 import com.lab.smartmobility.billie.entity.HttpMessage;
 import com.lab.smartmobility.billie.entity.corporation.Application;
-import com.lab.smartmobility.billie.service.CorporationCardService;
+import com.lab.smartmobility.billie.service.corporation.CorporationCardReservationService;
 import io.swagger.annotations.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -18,7 +18,7 @@ import java.util.List;
 @Api(tags = {"법인카드 예약 api"})
 @RequiredArgsConstructor
 public class CorporationCardReservationController {
-    private final CorporationCardService service;
+    private final CorporationCardReservationService service;
 
     @ApiOperation(value = "법인카드 예약 요청")
     @ApiResponses({

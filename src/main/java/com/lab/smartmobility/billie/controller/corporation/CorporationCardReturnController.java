@@ -6,7 +6,7 @@ import com.lab.smartmobility.billie.dto.corporation.CorporationReturnForm;
 import com.lab.smartmobility.billie.dto.corporation.ExpenseClaimForm;
 import com.lab.smartmobility.billie.dto.corporation.ExpenseClaimHistoryForm;
 import com.lab.smartmobility.billie.entity.HttpMessage;
-import com.lab.smartmobility.billie.service.CorporationCardService;
+import com.lab.smartmobility.billie.service.corporation.CorporationCardReturnService;
 import io.swagger.annotations.*;
 import lombok.RequiredArgsConstructor;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -22,7 +22,7 @@ import java.util.List;
 @Api(tags = {"법인카드 승인 api"})
 @RequiredArgsConstructor
 public class CorporationCardReturnController {
-    private final CorporationCardService service;
+    private final CorporationCardReturnService service;
 
     @ApiOperation(value = "법인카드 반납 신청")
     @ApiResponses({
