@@ -1,3 +1,4 @@
+/*
 package com.lab.smartmobility.billie.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -105,4 +106,4 @@ class StaffControllerTest {
         assertThat(dropdown.get(0).getRank()).isNotNull();
         assertThat(dropdown.size()).isEqualTo(10);
     }
-}
+}*/
