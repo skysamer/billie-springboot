@@ -93,16 +93,7 @@
   - 이에 QueryDSL과 BooleanExpression을 반환하는 메서드를 생성하여 동적으로 쿼리에 조건절을 추가하도록 했습니다.
   - Projections 객체를 활용하여 데이터를 반납이력 폼에 맞게 추출했습니다.
   
-### 4.6. 이미지 업로드
-- **차량 반납 시 이미지 업로드 기능** :pushpin: [코드 확인](https://github.com/skysamer/billie-springboot/blob/master/src/main/java/com/lab/smartmobility/billie/service/VehicleService.java)
-  - 차량 반납 시, 차량의 상태를 확인하기 위해 차량사진을 찍어 업로드할 수 있는 기능이 필요했습니다.
-  - MultipartFile 타입으로 이미지 파일을 전송받아 웹서버 지정된 경로에 이미지 파일을 연/월/일 별로 저장했습니다.
-  - 이미지 정보들을 테이블에 따로 저장하여 차량 예약 테이블과 연관관계를 맺어줬습니다.
-  
-- **이미지 조회 기능** :pushpin: [코드 확인](https://github.com/skysamer/billie-springboot/blob/master/src/main/java/com/lab/smartmobility/billie/service/VehicleService.java)
-  - 저장된 이미지 파일은 FileInputStream 객체로 불러와 byte 형태로 변환한 다음, 바이트 배열을 프론트로 전송해주었습니다.
-  
-### 4.7 구글 SMTP 이메일 전송
+### 4.6 구글 SMTP 이메일 전송
 - **비밀번호 초기화 기능** :pushpin: [코드 확인](https://github.com/skysamer/billie-springboot/blob/master/src/main/java/com/lab/smartmobility/billie/service/StaffService.java)
   - 비밀번호를 잊어버렸을 경우, 랜덤하게 10자리 문자열을 생성하여 비밀번호를 초기화 해주고 javaMailSender로 임의의 문자열을 전송하는 기능을 구현했습니다.
   
@@ -112,7 +103,7 @@
   - 이때 입력된 이메일로 UUID로 만든 임의의 문자열 토큰을 전송하여 직원 확인 및 이메일을 인증하는 로직을 구현했습니다.
   - 이때 생성시간을 저장하여 10분 이내로 인증하지 않으면 인증에 실패하도록 했습니다.
   
-### 4.8 중복시간체크
+### 4.7 중복시간체크
   - **신규예약시간이 기존예약시간과 겹치는지 체크하는 로직** :pushpin: [코드 확인](https://github.com/skysamer/billie-springboot/blob/master/src/main/java/com/lab/smartmobility/billie/service/VehicleService.java)
     - 신규 예약 시간이 기존 예약시간과 겹치는 경우 예약을 금지시켜야 했습니다.
     - 중복기간은 총 4가지의 케이스로 구분 할 수 있었습니다.
@@ -205,7 +196,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
 
 ## 6. 리팩토링
 ### 6.1. 날짜와 시간을 다루는 로직의 개별 클래스화
-- 특정 매체를 예약하고 반납하는 기능이 핵심 기능이었기에 시간과 날짜를 다루는 로직이 매우 많았습니다.
+- 특정 오브젝트를 예약하고 반납하는 기능이 핵심 기능이었기에 시간과 날짜를 다루는 로직이 매우 많았습니다.
 - 원래는 각 도메인 별 서비스 단에 이러한 날짜 제어 로직을 전부 집어 넣었지만 이러한 설계방식이 단일책임원칙(SRP)을 위배한다는 사실을 깨달았습니다.
 - 따라서 날짜 제어를 다루는 dateTimeUtil 클래스를 추가하고 각 메서드 별로 분기하여 필요한 날짜 제어 로직을 추가했습니다.
 
