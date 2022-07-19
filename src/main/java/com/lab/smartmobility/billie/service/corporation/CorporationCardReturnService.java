@@ -7,7 +7,6 @@ import com.lab.smartmobility.billie.entity.Staff;
 import com.lab.smartmobility.billie.entity.corporation.*;
 import com.lab.smartmobility.billie.repository.StaffRepository;
 import com.lab.smartmobility.billie.repository.corporation.*;
-import com.lab.smartmobility.billie.util.DateTimeUtil;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.logging.Log;
 import org.apache.poi.ss.usermodel.*;
@@ -15,7 +14,6 @@ import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.usermodel.XSSFCellStyle;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.modelmapper.ModelMapper;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -128,25 +126,25 @@ public class CorporationCardReturnService {
 
     /*부서장 법인카드 반납 이력 목록 조회*/
     public List<CorporationHistoryForm> getCardReturnHistoryListByManager(Long managerNum, int disposalInfo, String cardName, String baseYear, Pageable pageable){
-        Staff manager=staffRepository.findByStaffNum(managerNum);
+        Staff manager = staffRepository.findByStaffNum(managerNum);
         return returnRepository.returnHistoryListByManager(manager.getDepartment(), "ROLE_USER", disposalInfo, cardName, baseYear, pageable);
     }
 
     /*부서장 법인카드 반납 이력 조건별 개수*/
     public TotalCount getCardReturnHistoryCountByManager(Long managerNum, int disposalInfo, String cardName, String baseYear){
-        Staff manager=staffRepository.findByStaffNum(managerNum);
+        Staff manager = staffRepository.findByStaffNum(managerNum);
         return new TotalCount(returnRepository.getReturnHistoryCountByManager(manager.getDepartment(), "ROLE_USER", disposalInfo, cardName, baseYear));
     }
 
     /*부서장 경비청구 이력 목록 조회*/
     public List<ExpenseClaimHistoryForm> getExpenseClaimHistoryListByManager(Long managerNum, String baseYear, Pageable pageable){
-        Staff manager=staffRepository.findByStaffNum(managerNum);
+        Staff manager = staffRepository.findByStaffNum(managerNum);
         return returnRepository.getExpenseClaimHistoryListByManager(manager.getDepartment(), "ROLE_USER", baseYear, pageable);
     }
 
     /*부서장 경비청구 이력 조건별 개수*/
     public TotalCount getExpenseClaimHistoryCountByManager(Long managerNum, String baseYear){
-        Staff manager=staffRepository.findByStaffNum(managerNum);
+        Staff manager = staffRepository.findByStaffNum(managerNum);
         return new TotalCount(returnRepository.getExpenseClaimHistoryCountByManager(manager.getDepartment(), "ROLE_USER", baseYear));
     }
 

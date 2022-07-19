@@ -110,11 +110,9 @@ public class VehicleReturnService {
     private void updateReturnInfo(VehicleReturnDTO vehicleReturnDTO) {
         VehicleReservation updatedReturnInfo=reservationRepository.findByRentNum(vehicleReturnDTO.getRentNum());
         LocalDateTime returnedAt = dateTimeUtil.combineDateAndTime(vehicleReturnDTO.getDateOfReturn(), vehicleReturnDTO.getTimeOfReturn());
-        Duration duration = Duration.between(updatedReturnInfo.getReturnedAt(), returnedAt);
-        String totalDrivingTime=String.valueOf(duration).replace("PT", "").replace("H", "시간").replace("M", "분");
 
         modelMapper.map(vehicleReturnDTO, updatedReturnInfo);
-        updatedReturnInfo.update(1, returnedAt, totalDrivingTime);
+        updatedReturnInfo.update(returnedAt);
         reservationRepository.save(updatedReturnInfo);
     }
 
@@ -235,14 +233,12 @@ public class VehicleReturnService {
             cell = row.createCell(4);
             cell.setCellValue(String.valueOf(endTime));
             cell = row.createCell(5);
-            cell.setCellValue(reservation.getTotalDrivingTime());
-            cell = row.createCell(6);
             cell.setCellValue(reservation.getPassenger());
-            cell = row.createCell(7);
+            cell = row.createCell(6);
             cell.setCellValue(reservation.getContent());
-            cell = row.createCell(8);
+            cell = row.createCell(7);
             cell.setCellValue(reservation.getDistanceDriven());
-            cell = row.createCell(9);
+            cell = row.createCell(8);
             cell.setCellValue(reservation.getParkingLoc());
         }
         return workbook;

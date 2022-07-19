@@ -8,6 +8,7 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 @Component
@@ -21,26 +22,23 @@ public class VacationScheduler {
         List<Staff> staffList=staffRepository.findAll();
 
         for(Staff staff : staffList){
-            if(staff.getHireDate().isEqual(LocalDate.now()) && LocalDate.now().isAfter(staff.getHireDate().plusYears(1))){
+            long yearPeriod = ChronoUnit.YEARS.between(staff.getHireDate(), LocalDate.now());
+            long monthPeriod = ChronoUnit.MONTHS.between(staff.getHireDate(), LocalDate.now());
+            long dayPeriod = ChronoUnit.DAYS.between(staff.getHireDate(), LocalDate.now());
+
+            if(monthPeriod == 1 && (dayPeriod == 30 || dayPeriod == 31)){
+                staff.setVacationCount(11);
+                staffRepository.save(staff);
+            }else if(yearPeriod < 3 && (dayPeriod % 365 == 0)){
                 staff.setVacationCount(15);
+                staffRepository.save(staff);
+            }else if(yearPeriod > 3 && (dayPeriod % 365 == 0)){
+                int vacationCount = 15 + (int)((yearPeriod-3) / 2) + 1;
+                staff.setVacationCount(vacationCount);
                 staffRepository.save(staff);
             }
         }
         log.info("직원 휴가개수 업데이트 완료");
-    }
-
-    @Scheduled(cron = "0 0 2 1 * *")
-    private void updateVacationCountForNewRecruit(){
-        List<Staff> staffList=staffRepository.findAll();
-
-        for(Staff staff : staffList){
-            if(LocalDate.now().isBefore(staff.getHireDate().plusYears(1))){
-                double vacationCount=staff.getVacationCount();
-                staff.setVacationCount(vacationCount + 1);
-                staffRepository.save(staff);
-            }
-        }
-        log.info("1년차 미만 신입 직원 휴가개수 업데이트 완료");
     }
 
 }

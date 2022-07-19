@@ -38,45 +38,6 @@ public class ApplicationRepositoryImpl {
                 )
                 .stream().count();
     }
-    public List<Application> getToBeApproveList(List<Long> idList){
-
-        return jpaQueryFactory
-                .selectFrom(application)
-                .where(application.applicationId.in(idList))
-                .fetch();
-    }
-
-    public List<Application> getExistingApplicationList(List<CorporationCard> cardList){
-        return jpaQueryFactory
-                .selectFrom(application)
-                .where(application.isReturned.eq(0)
-                        .and(application.corporationCard.in(cardList))
-                )
-                .fetch();
-    }
-
-    public boolean isTimeOverlap(String cardName, String company, LocalDate startDate, LocalDate endDate, LocalTime startTime, LocalTime endTime){
-        return jpaQueryFactory
-                .selectFrom(application)
-                .where(application.isReturned.eq(0)
-                        .and(application.corporationCard.cardName.eq(cardName))
-                        .and(application.corporationCard.company.eq(company))
-                        .and(application.startDate.between(startDate, endDate))
-                        .and(application.startTime.between(startTime, endTime))
-                        .and((application.startDate.between(startDate, endDate).and(application.startTime.between(startTime, endTime)))
-                                .or(application.endDate.between(startDate, endDate).and(application.endTime.between(startTime, endTime)))
-                        )
-                )
-                .fetch().size() > 0;
-    }
-
-    public long approveByAdmin(List<Long> idList){
-        return jpaQueryFactory
-                .update(application)
-                .set(application.approvalStatus, 'f')
-                .where(application.applicationId.in(idList))
-                .execute();
-    }
 
     public List<Application> getMyApplicationList(Staff my, String cardName, String baseYear, Pageable pageable){
         return jpaQueryFactory

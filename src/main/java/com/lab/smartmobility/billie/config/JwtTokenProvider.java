@@ -31,7 +31,7 @@ public class JwtTokenProvider {
     @Value("${spring.jwt.secret-key}")
     private String secretKey;
 
-    private final StaffService userDetailsService;
+    private final StaffService staffService;
 
     @PostConstruct
     protected void init() {
@@ -71,7 +71,7 @@ public class JwtTokenProvider {
     }
 
     public Authentication getAuthentication(String token) {
-        Staff userDetails = (Staff) userDetailsService.loadUserByUsername(this.getUserPk(token));
+        Staff userDetails = (Staff) staffService.loadUserByUsername(this.getUserPk(token));
         return new UsernamePasswordAuthenticationToken(userDetails, "", List.of(new SimpleGrantedAuthority(userDetails.getRole())));
     }
 

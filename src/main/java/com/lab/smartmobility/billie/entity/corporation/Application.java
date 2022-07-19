@@ -44,7 +44,7 @@ public class Application {
 
     @ApiModelProperty(value = "승인상태(w:대기, t:팀장승인, f:승인완료, c:반려)")
     @Column(name = "approval_status")
-    private char approvalStatus='w';
+    private char approvalStatus = 'w';
 
     @ApiModelProperty(value = "반려사유")
     @Column(name = "reason_for_rejection")

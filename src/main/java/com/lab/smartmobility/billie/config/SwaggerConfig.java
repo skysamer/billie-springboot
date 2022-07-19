@@ -3,7 +3,6 @@ package com.lab.smartmobility.billie.config;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
-import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import springfox.documentation.builders.ApiInfoBuilder;
 import springfox.documentation.builders.PathSelectors;
@@ -38,5 +37,4 @@ public class SwaggerConfig implements WebMvcConfigurer {
                 .description("빌리 웹 애플리케이션 api 문서")
                 .build();
     }
-
 }

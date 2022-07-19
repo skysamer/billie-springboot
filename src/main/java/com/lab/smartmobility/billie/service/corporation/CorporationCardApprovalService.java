@@ -59,8 +59,10 @@ public class CorporationCardApprovalService {
                 Staff requester = application.getStaff();
                 Staff admin = staffRepository.findByStaffNum(ADMIN_ID);
 
-                NotificationEventDTO notificationEvent =
-                        new NotificationEventDTO(requester.getName(), admin.getName(), application.getApprovalStatus(), admin);
+                NotificationEventDTO notificationEvent = NotificationEventDTO.builder()
+                        .requester(requester.getName()).receiver(admin.getName())
+                        .approvalStatus(application.getApprovalStatus()).approval(admin)
+                        .build();
 
                 applicationRepository.save(application);
                 applicationEventPublisher.publishEvent(notificationEvent);
@@ -81,8 +83,10 @@ public class CorporationCardApprovalService {
 
                 Staff requester = application.getStaff();
 
-                NotificationEventDTO notificationEvent =
-                        new NotificationEventDTO(requester.getName(), requester.getName(), application.getApprovalStatus(), requester);
+                NotificationEventDTO notificationEvent = NotificationEventDTO.builder()
+                        .requester(requester.getName()).receiver(requester.getName())
+                        .approvalStatus(application.getApprovalStatus()).type("corporation").approval(requester)
+                        .build();
 
                 applicationRepository.save(application);
                 applicationEventPublisher.publishEvent(notificationEvent);
@@ -109,11 +113,13 @@ public class CorporationCardApprovalService {
         for(ApprovalCardUseForm approvalCardUseForm : approvalCardUseForms){
             Application toBeApproveApplication = applicationRepository.findByApplicationId(approvalCardUseForm.getApplicationId());
             CorporationCard card = cardRepository.findByCardNameAndCompany(approvalCardUseForm.getCardName(), approvalCardUseForm.getCompany());
-            if(card==null){
+            if(card == null){
                 toBeApproveApplication.approveExpenseByAdmin(1, 'f');
                 Staff requester = toBeApproveApplication.getStaff();
-                NotificationEventDTO notificationEvent =
-                        new NotificationEventDTO(requester.getName(), requester.getName(), toBeApproveApplication.getApprovalStatus(), requester);
+                NotificationEventDTO notificationEvent = NotificationEventDTO.builder()
+                        .requester(requester.getName()).receiver(requester.getName())
+                        .approvalStatus(toBeApproveApplication.getApprovalStatus()).type("corporation").approval(requester)
+                        .build();
 
                 applicationRepository.save(toBeApproveApplication);
                 applicationEventPublisher.publishEvent(notificationEvent);
@@ -128,8 +134,10 @@ public class CorporationCardApprovalService {
             toBeApproveApplication.approveCorporationByAdmin(card, 'f');
 
             Staff requester = toBeApproveApplication.getStaff();
-            NotificationEventDTO notificationEvent =
-                    new NotificationEventDTO(requester.getName(), requester.getName(), toBeApproveApplication.getApprovalStatus(), requester);
+            NotificationEventDTO notificationEvent = NotificationEventDTO.builder()
+                    .requester(requester.getName()).receiver(requester.getName())
+                    .approvalStatus(toBeApproveApplication.getApprovalStatus()).type("corporation").approval(requester)
+                    .build();
 
             applicationRepository.save(toBeApproveApplication);
             applicationEventPublisher.publishEvent(notificationEvent);
@@ -140,11 +148,6 @@ public class CorporationCardApprovalService {
     /*시간대가 겹치는지 체크*/
     private boolean checkReservationIsDuplicate(CorporationCard card, LocalDate startDate, LocalDate endDate, LocalTime startTime, LocalTime endTime){
         return applicationRepositoryImpl.isDuplicate(card, 0, startDate, endDate, startTime, endTime) == 1;
-    }
-
-    /*기존 신청 내역에 지급카드가 존재하는지 검사*/
-    private boolean isCardAlreadyDistributed(List<ApprovalCardUseForm> approvalCardUseForms, List<Long> idList){
-        return true;
     }
 
     /*승인된 법인카드 신청 내역 월별 조회*/

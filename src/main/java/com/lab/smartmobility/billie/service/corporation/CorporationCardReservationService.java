@@ -52,8 +52,10 @@ public class CorporationCardReservationService {
             application.updateApprovalStatus('t');
         }
 
-        NotificationEventDTO notificationEvent =
-                new NotificationEventDTO(requester.getName(), approval.getName(), application.getApprovalStatus(), approval);
+        NotificationEventDTO notificationEvent = NotificationEventDTO.builder()
+                .requester(requester.getName()).receiver(approval.getName())
+                .approvalStatus(application.getApprovalStatus()).type("corporation").approval(approval)
+                .build();
         try{
             applicationRepository.save(application);
             applicationEventPublisher.publishEvent(notificationEvent);
@@ -76,8 +78,11 @@ public class CorporationCardReservationService {
             application.updateApprovalStatus('t');
         }
 
-        NotificationEventDTO notificationEvent =
-                new NotificationEventDTO(requester.getName(), approval.getName(), application.getApprovalStatus(), approval);
+        NotificationEventDTO notificationEvent = NotificationEventDTO.builder()
+                .requester(requester.getName()).receiver(approval.getName())
+                .approvalStatus(application.getApprovalStatus()).type("corporation").approval(approval)
+                .build();
+
         try{
             applicationRepository.save(application);
             applicationEventPublisher.publishEvent(notificationEvent);
@@ -91,7 +96,7 @@ public class CorporationCardReservationService {
     /*승인권자 할당*/
     private Staff assignApproval(Staff requester){
         if(requester.getDepartment().equals("관리부") || requester.getRole().equals("ROLE_MANAGER")){
-            return staffRepository.findByStaffNum(ADMIN_ID); // 부장님은 4
+            return staffRepository.findByStaffNum(ADMIN_ID);
         }
         return staffRepository.findByDepartmentAndRole(requester.getDepartment(), "ROLE_MANAGER");
     }

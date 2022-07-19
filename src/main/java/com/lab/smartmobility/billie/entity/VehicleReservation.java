@@ -7,7 +7,6 @@ import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Getter @ToString
@@ -48,10 +47,6 @@ public class VehicleReservation {
     @ApiModelProperty(value = "반납상태코드")
     private int returnStatusCode;
 
-    @Column(name = "total_driving_time")
-    @ApiModelProperty(value = "총 주행시간")
-    private String totalDrivingTime;
-
     @ManyToOne
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "vehicle_num")
@@ -69,10 +64,9 @@ public class VehicleReservation {
         this.returnedAt = returnedAt;
     }
 
-    public void update(int returnStatusCode, LocalDateTime returnedAt, String totalDrivingTime){
-        this.returnStatusCode = returnStatusCode;
+    public void update(LocalDateTime returnedAt){
+        this.returnStatusCode = 1;
         this.returnedAt = returnedAt;
-        this.totalDrivingTime = totalDrivingTime;
     }
 
     public void insert(Vehicle vehicle, Staff staff, LocalDateTime rentedAt, LocalDateTime returnedAt){

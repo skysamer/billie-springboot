@@ -18,12 +18,10 @@ import java.util.List;
 
 @Api(tags = {"회의실 예약을 위한 api"})
 @RequiredArgsConstructor
-@CrossOrigin
 @RequestMapping("/meeting/*")
 @RestController
 public class MeetingController {
     private final Log log = LogFactory.getLog(getClass());
-
     private final MeetingService meetingService;
 
     @PostMapping("/insert")
