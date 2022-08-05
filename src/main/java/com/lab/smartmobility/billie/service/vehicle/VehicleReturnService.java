@@ -5,7 +5,6 @@ import com.lab.smartmobility.billie.entity.ImageVehicle;
 import com.lab.smartmobility.billie.entity.Vehicle;
 import com.lab.smartmobility.billie.entity.VehicleReservation;
 import com.lab.smartmobility.billie.repository.ReturnVehicleImageRepository;
-import com.lab.smartmobility.billie.repository.StaffRepository;
 import com.lab.smartmobility.billie.repository.vehicle.VehicleRepository;
 import com.lab.smartmobility.billie.repository.vehicle.VehicleReservationRepository;
 import com.lab.smartmobility.billie.repository.vehicle.VehicleReservationRepositoryImpl;
@@ -28,7 +27,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -174,14 +172,14 @@ public class VehicleReturnService {
 
     /*반납 이력 엑셀 다운로드*/
     public Workbook excelDownload(int disposalInfo, Long vehicleNum, String baseDate){
-        Vehicle vehicle=vehicleRepository.findByVehicleNum(vehicleNum);
+        Vehicle vehicle = vehicleRepository.findByVehicleNum(vehicleNum);
         List<VehicleReservation> returnHistoryList;
         if(baseDate.equals("all")){
             returnHistoryList = new ArrayList<>(reservationRepositoryImpl.findAll(vehicle, disposalInfo));
         }else{
-            LocalDateTime startDateTime= dateTimeUtil.getStartDateTime(baseDate);
-            LocalDateTime endDateTime= dateTimeUtil.getEndDateTime(baseDate);
-            returnHistoryList= new ArrayList<>(reservationRepositoryImpl.findAll(vehicle, startDateTime, endDateTime, disposalInfo));
+            LocalDateTime startDateTime = dateTimeUtil.getStartDateTime(baseDate);
+            LocalDateTime endDateTime = dateTimeUtil.getEndDateTime(baseDate);
+            returnHistoryList = new ArrayList<>(reservationRepositoryImpl.findAll(vehicle, startDateTime, endDateTime, disposalInfo));
         }
 
         Workbook workbook = new XSSFWorkbook();

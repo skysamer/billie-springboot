@@ -6,23 +6,20 @@ import com.lab.smartmobility.billie.entity.HttpMessage;
 import com.lab.smartmobility.billie.entity.Mail;
 import com.lab.smartmobility.billie.entity.Staff;
 import com.lab.smartmobility.billie.service.StaffService;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jws;
-import io.jsonwebtoken.Jwts;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.List;
 
@@ -75,30 +72,28 @@ public class StaffController {
     }
 
     @ApiOperation(value = "로그인", notes = "성공 시 jwt 토큰을 X-AUTH-TOKEN 키에 매핑하고 헤더에 넣어 반환")
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "로그인 성공 (가입 직원 정보)"),
+            @ApiResponse(code = 400, message = "아이디 혹은 비밀번호 불일치")
+    })
     @PostMapping(value = "/login/{is-auto}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Staff login(@PathVariable("is-auto") int isAuto, @RequestBody LoginForm loginForm, HttpServletResponse response) {
-        if(staffService.loadUserByUsername(loginForm.getEmail()) == null){
-            return Staff.builder()
-                    .name("가입된 사용자가 아닙니다.").build();
+    public ResponseEntity<Staff> login(@PathVariable("is-auto") int isAuto, @RequestBody LoginForm loginForm) {
+        Staff staff = (Staff) staffService.loadUserByUsername(loginForm.getEmail() + " " + loginForm.getPassword());
+        if(staff == null){
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
+        String token = setToken(isAuto, staff);
 
-        Staff findStaff= (Staff) staffService.loadUserByUsername(loginForm.getEmail());
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("X-AUTH-TOKEN", token);
+        return new ResponseEntity<>(staff, headers, HttpStatus.OK);
+    }
 
-        boolean checkPassword = staffService.checkPassword(findStaff.getEmail(), loginForm.getPassword());
-        if(!checkPassword){
-            return Staff.builder()
-                    .name("비밀번호가 일치하지 않습니다.").build();
-        }
-
-        String token;
+    private String setToken(int isAuto, Staff staff){
         if(isAuto==1){
-            token = jwtTokenProvider.createLongTermTokenLogin(findStaff.getEmail(), findStaff.getRole());
-        }else{
-            token = jwtTokenProvider.createTokenLogin(findStaff.getEmail(), findStaff.getRole());
+            return jwtTokenProvider.createLongTermTokenLogin(staff.getEmail(), staff.getRole());
         }
-
-        response.setHeader("X-AUTH-TOKEN", token);
-        return findStaff;
+        return jwtTokenProvider.createTokenLogin(staff.getEmail(), staff.getRole());
     }
 
     @ApiOperation(value = "비밀번호 찾기")

@@ -1,10 +1,7 @@
 package com.lab.smartmobility.billie.service;
 
 import com.lab.smartmobility.billie.config.CommonEncoder;
-import com.lab.smartmobility.billie.dto.staff.DepartmentDTO;
-import com.lab.smartmobility.billie.dto.staff.RankDTO;
-import com.lab.smartmobility.billie.dto.staff.EmailTokenForm;
-import com.lab.smartmobility.billie.dto.staff.SignUpForm;
+import com.lab.smartmobility.billie.dto.staff.*;
 import com.lab.smartmobility.billie.entity.HttpMessage;
 import com.lab.smartmobility.billie.entity.Staff;
 import com.lab.smartmobility.billie.repository.StaffRepository;
@@ -42,11 +39,18 @@ public class StaffService implements UserDetailsService {
 
     /*로그인*/
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        if (!staffRepository.existsByEmail(username)) {
-            return null;
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+        String[] emailAndPassword = email.split(" ");
+        if (staffRepository.existsByEmail(emailAndPassword[0]) && checkPassword(emailAndPassword[0], emailAndPassword[1])) {
+            return staffRepository.findByEmail(emailAndPassword[0]);
         }
-        return staffRepository.findByEmail(username);
+        return null;
+    }
+
+    /*비밀번호 일치 여부*/
+    private boolean checkPassword(String email, String password) {
+        Staff staff = staffRepository.findByEmail(email);
+        return passwordEncoder.matches(password, staff.getPasswordToCheckMatch());
     }
 
     /*이메일 토큰 전송*/
@@ -79,12 +83,6 @@ public class StaffService implements UserDetailsService {
         staff.certify(1);
         staffRepository.save(staff);
         return 0;
-    }
-
-    /*비밀번호 일치 여부*/
-    public boolean checkPassword(String email, String password) {
-        Staff staff = staffRepository.findByEmail(email);
-        return passwordEncoder.matches(password, staff.getPasswordToCheckMatch());
     }
 
     /*회원가입*/

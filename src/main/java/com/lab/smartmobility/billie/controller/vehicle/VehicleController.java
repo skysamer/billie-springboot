@@ -1,5 +1,6 @@
 package com.lab.smartmobility.billie.controller.vehicle;
 
+import com.lab.smartmobility.billie.dto.vehicle.NonBorrowableVehicle;
 import com.lab.smartmobility.billie.dto.vehicle.VehicleDTO;
 import com.lab.smartmobility.billie.entity.HttpMessage;
 import com.lab.smartmobility.billie.entity.Vehicle;
@@ -8,8 +9,12 @@ import io.swagger.annotations.*;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 
@@ -76,4 +81,23 @@ public class VehicleController {
         return new HttpMessage("success", "폐기 성공");
     }
 
+    @GetMapping("/user/not-borrow/{rented-at}/{returned-at}")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "rented-at", value = "대여 시작 시간 (yyyy-MM-dd hh:mm)"),
+            @ApiImplicitParam(name = "returned-at", value = "대여 종료 시간 (yyyy-MM-dd hh:mm)")
+    })
+    @ApiOperation(value = "해당 예약 날짜에 빌릴수 없는 차량 목록 조회")
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "조회성공"),
+            @ApiResponse(code = 404, message = "모든 차량 대여 가능")
+    })
+    public ResponseEntity<List<NonBorrowableVehicle>> getNonBorrowableVehicleList(@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm") @PathVariable("rented-at") LocalDateTime rentedAt,
+                                                                                  @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm") @PathVariable("returned-at") LocalDateTime returnedAt){
+        List<NonBorrowableVehicle> nonBorrowableVehicleList = service.getBorrowableVehicleList(rentedAt, returnedAt);
+        if(nonBorrowableVehicleList.size() == 0){
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
+        return new ResponseEntity<>(nonBorrowableVehicleList, HttpStatus.OK);
+    }
 }

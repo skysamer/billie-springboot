@@ -1,37 +1,21 @@
 package com.lab.smartmobility.billie.service.vehicle;
 
-import com.lab.smartmobility.billie.dto.vehicle.ApplyRentalVehicleDTO;
+import com.lab.smartmobility.billie.dto.vehicle.NonBorrowableVehicle;
 import com.lab.smartmobility.billie.dto.vehicle.VehicleDTO;
-import com.lab.smartmobility.billie.dto.vehicle.VehicleReturnDTO;
 import com.lab.smartmobility.billie.entity.*;
 import com.lab.smartmobility.billie.repository.*;
 import com.lab.smartmobility.billie.repository.vehicle.VehicleRepository;
+import com.lab.smartmobility.billie.repository.vehicle.VehicleRepositoryImpl;
 import com.lab.smartmobility.billie.repository.vehicle.VehicleReservationRepository;
 import com.lab.smartmobility.billie.repository.vehicle.VehicleReservationRepositoryImpl;
 import com.lab.smartmobility.billie.util.DateTimeUtil;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.modelmapper.ModelMapper;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.time.Duration;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.*;
 
 @Service
@@ -39,12 +23,13 @@ import java.util.*;
 @Transactional
 public class VehicleService {
     private final VehicleRepository vehicleRepository;
+    private final VehicleRepositoryImpl vehicleRepositoryImpl;
     private final VehicleReservationRepository reservationRepository;
-    private final ReturnVehicleImageRepository imageRepository;
     private final ModelMapper modelMapper;
     private final VehicleReservationRepositoryImpl reservationRepositoryImpl;
-    private final DateTimeUtil dateTimeUtil;
     private final Log log;
+
+    private static final Long IS_INSERT = -1L;
 
     /*보유 차량 및 대여 가능 여부 조회*/
     public List<VehicleDTO> vehicleList(){
@@ -115,8 +100,9 @@ public class VehicleService {
         return 0;
     }
 
-
-
-
+    /*해당 날짜에 예약이 불가능한 차량 목록 조회*/
+    public List<NonBorrowableVehicle> getBorrowableVehicleList(LocalDateTime rentedAt, LocalDateTime returnedAt){
+        return vehicleRepositoryImpl.getNonBorrowableVehicleList(rentedAt, returnedAt);
+    }
 
 }

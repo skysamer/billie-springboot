@@ -5,6 +5,7 @@ import com.lab.smartmobility.billie.entity.Staff;
 import com.lab.smartmobility.billie.repository.StaffRepository;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.logging.Log;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,6 +23,9 @@ public class VacationCalculateService {
     /*나의 남은 휴가 개수, 전체 개수, 사용개수 및 소진기한*/
     public MyVacationDTO getMyVacationInfo(Long staffNum){
         Staff staff = staffRepository.findByStaffNum(staffNum);
+        if(staff == null){
+            return null;
+        }
 
         double totalVacationCount = calculateTotalVacationCount(staff);
         if(totalVacationCount > 25){

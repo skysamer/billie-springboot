@@ -41,7 +41,7 @@ public class VacationApplicationService {
         Vacation vacation = modelMapper.map(vacationApplicationForm, Vacation.class);
 
         insertVacationEntity(applicant, vacation);
-        notificationSender.sendNotification(applicant, approval, vacation);
+        notificationSender.sendVacationNotification(applicant, approval, vacation);
         return new HttpMessage("success", "휴가 신청 성공");
     }
 
@@ -62,5 +62,17 @@ public class VacationApplicationService {
     /*나의 휴가 신청 내역 상세 조회*/
     public Vacation getMyApplication(Long vacationId){
         return vacationRepository.findByVacationId(vacationId);
+    }
+
+    /*휴가 신청 내역 수정*/
+    public HttpMessage modify(Long vacationId, VacationApplicationForm vacationApplicationForm){
+        Vacation vacation = vacationRepository.findByVacationId(vacationId);
+        if(vacation.getApprovalStatus() != 'w'){
+            return new HttpMessage("fail", "승인절차가 진행되었으므로 취소 승인 후 재작성되어야 합니다");
+        }
+
+        Vacation modifiedVacation = modelMapper.map(vacationApplicationForm, vacation.getClass());
+        vacationRepository.save(modifiedVacation);
+        return new HttpMessage("success", "");
     }
 }

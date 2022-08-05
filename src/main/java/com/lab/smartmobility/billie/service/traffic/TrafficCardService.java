@@ -1,14 +1,17 @@
 package com.lab.smartmobility.billie.service.traffic;
 
+import com.lab.smartmobility.billie.dto.traffic.NonBorrowableTrafficCard;
 import com.lab.smartmobility.billie.dto.traffic.TrafficCardForm;
 import com.lab.smartmobility.billie.entity.*;
 import com.lab.smartmobility.billie.repository.traffic.TrafficCardRepository;
+import com.lab.smartmobility.billie.repository.traffic.TrafficCardRepositoryImpl;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.logging.Log;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 
@@ -17,6 +20,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class TrafficCardService {
     private final TrafficCardRepository cardRepository;
+    private final TrafficCardRepositoryImpl cardRepositoryImpl;
     private final ModelMapper modelMapper;
     private final Log log;
 
@@ -83,4 +87,8 @@ public class TrafficCardService {
         return 0;
     }
 
+    /*대여할 수 없는 카드 목록 조회*/
+    public List<NonBorrowableTrafficCard> getNonBorrowableCardList(LocalDateTime rentedAt, LocalDateTime returnedAt){
+        return cardRepositoryImpl.getNonBorrowableVehicleList(rentedAt, returnedAt);
+    }
 }

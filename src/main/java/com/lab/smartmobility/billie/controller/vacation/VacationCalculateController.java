@@ -2,12 +2,11 @@ package com.lab.smartmobility.billie.controller.vacation;
 
 import com.lab.smartmobility.billie.dto.MyVacationDTO;
 import com.lab.smartmobility.billie.service.vacation.VacationCalculateService;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiImplicitParams;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.*;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.logging.Log;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -25,9 +24,17 @@ public class VacationCalculateController {
     @ApiImplicitParams({
             @ApiImplicitParam(name = "staff-num", value = "직원 고유 번호")
     })
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "정상요청"),
+            @ApiResponse(code = 404, message = "직원정보없음")
+    })
     @GetMapping("/user/calculate/{staff-num}")
-    public MyVacationDTO getMyVacation(@PathVariable("staff-num") Long staffNum){
-        return service.getMyVacationInfo(staffNum);
+    public ResponseEntity<MyVacationDTO> getMyVacation(@PathVariable("staff-num") Long staffNum){
+        MyVacationDTO myVacationDTO = service.getMyVacationInfo(staffNum);
+        if(myVacationDTO == null){
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(myVacationDTO, HttpStatus.OK);
     }
 
 }

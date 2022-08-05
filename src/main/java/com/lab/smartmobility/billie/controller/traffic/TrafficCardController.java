@@ -1,5 +1,6 @@
 package com.lab.smartmobility.billie.controller.traffic;
 
+import com.lab.smartmobility.billie.dto.traffic.NonBorrowableTrafficCard;
 import com.lab.smartmobility.billie.dto.traffic.TrafficCardForm;
 import com.lab.smartmobility.billie.entity.HttpMessage;
 import com.lab.smartmobility.billie.entity.TrafficCard;
@@ -8,8 +9,12 @@ import io.swagger.annotations.*;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 
@@ -82,6 +87,21 @@ public class TrafficCardController {
     }
 
 
-
-
+    @ApiOperation(value = "해당 날짜에 대여가 불가능한 카드 목록 조회")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "vacation-id", value = "각 휴가 데이터의 고유 시퀀스")
+    })
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "조회성공"),
+            @ApiResponse(code = 404, message = "모든 카드 대여 가능")
+    })
+    @GetMapping("/user/not-borrow/{rented-at}/{returned-at}")
+    public ResponseEntity<List<NonBorrowableTrafficCard>> getNonBorrowableCardList(@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm") @PathVariable("rented-at") LocalDateTime rentedAt,
+                                                                                   @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm") @PathVariable("returned-at") LocalDateTime returnedAt){
+        List<NonBorrowableTrafficCard> nonBorrowableTrafficCardList = service.getNonBorrowableCardList(rentedAt, returnedAt);
+        if(nonBorrowableTrafficCardList.size() == 0){
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(nonBorrowableTrafficCardList, HttpStatus.OK);
+    }
 }
