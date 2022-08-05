@@ -64,15 +64,27 @@ public class VacationApplicationService {
         return vacationRepository.findByVacationId(vacationId);
     }
 
-    /*휴가 신청 내역 수정*/
+    // TODO 휴가 신청 내역 수정
     public HttpMessage modify(Long vacationId, VacationApplicationForm vacationApplicationForm){
         Vacation vacation = vacationRepository.findByVacationId(vacationId);
-        if(vacation.getApprovalStatus() != 'w'){
-            return new HttpMessage("fail", "승인절차가 진행되었으므로 취소 승인 후 재작성되어야 합니다");
+        if(vacation.getApprovalStatus() == 'w'){
+            Vacation modifiedVacation = modelMapper.map(vacationApplicationForm, vacation.getClass());
+            vacationRepository.save(modifiedVacation);
+            return new HttpMessage("success", "승인 절차가 진행되지 않아 자동 수정되었습니다");
         }
 
-        Vacation modifiedVacation = modelMapper.map(vacationApplicationForm, vacation.getClass());
-        vacationRepository.save(modifiedVacation);
-        return new HttpMessage("success", "");
+
+        return new HttpMessage("success", "취소 요청이 전송되었습니다");
+    }
+
+    // TODO 휴가 신청 내역 취소
+    public HttpMessage delete(Long vacationId){
+        Vacation vacation = vacationRepository.findByVacationId(vacationId);
+        if(vacation.getApprovalStatus() == 'w'){
+            vacationRepository.delete(vacation);
+            return new HttpMessage("success", "승인 절차가 진행되지 않아 자동 취소되었습니다");
+        }
+
+        return new HttpMessage("success", "취소 요청이 전송되었습니다");
     }
 }

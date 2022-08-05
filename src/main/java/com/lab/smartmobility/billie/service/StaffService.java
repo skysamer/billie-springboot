@@ -37,11 +37,19 @@ public class StaffService implements UserDetailsService {
     @Value("${spring.mail.username}")
     private String managerEmail;
 
-    /*로그인*/
+
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+        if (staffRepository.existsByEmail(email)) {
+            return staffRepository.findByEmail(email);
+        }
+        return null;
+    }
+
+    /*로그인*/
+    public Staff login(String email, String password) {
         String[] emailAndPassword = email.split(" ");
-        if (staffRepository.existsByEmail(emailAndPassword[0]) && checkPassword(emailAndPassword[0], emailAndPassword[1])) {
+        if (staffRepository.existsByEmail(email) && checkPassword(emailAndPassword[0], password)) {
             return staffRepository.findByEmail(emailAndPassword[0]);
         }
         return null;

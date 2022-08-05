@@ -78,7 +78,7 @@ public class StaffController {
     })
     @PostMapping(value = "/login/{is-auto}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Staff> login(@PathVariable("is-auto") int isAuto, @RequestBody LoginForm loginForm) {
-        Staff staff = (Staff) staffService.loadUserByUsername(loginForm.getEmail() + " " + loginForm.getPassword());
+        Staff staff = staffService.login(loginForm.getEmail(), loginForm.getPassword());
         if(staff == null){
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
