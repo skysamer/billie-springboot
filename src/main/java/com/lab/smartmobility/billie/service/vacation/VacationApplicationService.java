@@ -2,7 +2,7 @@ package com.lab.smartmobility.billie.service.vacation;
 
 import com.lab.smartmobility.billie.dto.PageResult;
 import com.lab.smartmobility.billie.dto.vacation.VacationApplicationForm;
-import com.lab.smartmobility.billie.entity.HttpMessage;
+import com.lab.smartmobility.billie.entity.HttpBodyMessage;
 import com.lab.smartmobility.billie.entity.Staff;
 import com.lab.smartmobility.billie.entity.Vacation;
 import com.lab.smartmobility.billie.repository.StaffRepository;
@@ -32,9 +32,9 @@ public class VacationApplicationService {
     private final Log log;
 
     /*휴가 신청*/
-    public HttpMessage apply(VacationApplicationForm vacationApplicationForm){
+    public HttpBodyMessage apply(VacationApplicationForm vacationApplicationForm){
         if(isEarlierDate(vacationApplicationForm.getStartDate())){
-            return new HttpMessage("fail", "이전 날짜로 신청할 수 없습니다");
+            return new HttpBodyMessage("fail", "이전 날짜로 신청할 수 없습니다");
         }
         Staff applicant = staffRepository.findByStaffNum(vacationApplicationForm.getStaffNum());
         Staff approval = assigneeToApprover.assignApproval(applicant);
@@ -42,7 +42,7 @@ public class VacationApplicationService {
 
         insertVacationEntity(applicant, vacation);
         notificationSender.sendVacationNotification(applicant, approval, vacation);
-        return new HttpMessage("success", "휴가 신청 성공");
+        return new HttpBodyMessage("success", "휴가 신청 성공");
     }
 
     private boolean isEarlierDate(LocalDate startDate){
@@ -65,26 +65,26 @@ public class VacationApplicationService {
     }
 
     // TODO 휴가 신청 내역 수정
-    public HttpMessage modify(Long vacationId, VacationApplicationForm vacationApplicationForm){
+    public HttpBodyMessage modify(Long vacationId, VacationApplicationForm vacationApplicationForm){
         Vacation vacation = vacationRepository.findByVacationId(vacationId);
         if(vacation.getApprovalStatus() == 'w'){
             Vacation modifiedVacation = modelMapper.map(vacationApplicationForm, vacation.getClass());
             vacationRepository.save(modifiedVacation);
-            return new HttpMessage("success", "승인 절차가 진행되지 않아 자동 수정되었습니다");
+            return new HttpBodyMessage("success", "승인 절차가 진행되지 않아 자동 수정되었습니다");
         }
 
 
-        return new HttpMessage("success", "취소 요청이 전송되었습니다");
+        return new HttpBodyMessage("success", "취소 요청이 전송되었습니다");
     }
 
     // TODO 휴가 신청 내역 취소
-    public HttpMessage delete(Long vacationId){
+    public HttpBodyMessage delete(Long vacationId){
         Vacation vacation = vacationRepository.findByVacationId(vacationId);
         if(vacation.getApprovalStatus() == 'w'){
             vacationRepository.delete(vacation);
-            return new HttpMessage("success", "승인 절차가 진행되지 않아 자동 취소되었습니다");
+            return new HttpBodyMessage("success", "승인 절차가 진행되지 않아 자동 취소되었습니다");
         }
 
-        return new HttpMessage("success", "취소 요청이 전송되었습니다");
+        return new HttpBodyMessage("success", "취소 요청이 전송되었습니다");
     }
 }

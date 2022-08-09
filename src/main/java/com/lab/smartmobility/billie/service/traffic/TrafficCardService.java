@@ -54,7 +54,7 @@ public class TrafficCardService {
     /*교통카드 등록 정보 수정*/
     public int updateCardInfo(TrafficCardForm trafficCardForm){
         try{
-            TrafficCard updatedCardInfo=cardRepository.findByCardNum(trafficCardForm.getCardNum());
+            TrafficCard updatedCardInfo = cardRepository.findByCardNum(trafficCardForm.getCardNum());
             modelMapper.map(trafficCardForm, updatedCardInfo);
             cardRepository.save(updatedCardInfo);
         }catch (Exception e){

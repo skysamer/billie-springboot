@@ -1,10 +1,9 @@
 package com.lab.smartmobility.billie.controller.traffic;
 
 import com.lab.smartmobility.billie.dto.traffic.ReturnTrafficCardDTO;
-import com.lab.smartmobility.billie.entity.HttpMessage;
+import com.lab.smartmobility.billie.entity.HttpBodyMessage;
 import com.lab.smartmobility.billie.entity.TrafficCardReservation;
 import com.lab.smartmobility.billie.service.traffic.TrafficCardReturnService;
-import com.lab.smartmobility.billie.service.traffic.TrafficCardService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
@@ -34,11 +33,11 @@ public class TrafficCardReturnController {
     @ApiResponses({
             @ApiResponse(code = 200, message = "반납 신청 실패 or 반납 신청 완료")
     })
-    public HttpMessage applyCardReturn(@Valid @RequestBody ReturnTrafficCardDTO returnTrafficCard){
+    public HttpBodyMessage applyCardReturn(@Valid @RequestBody ReturnTrafficCardDTO returnTrafficCard){
         if(service.applyCardReturn(returnTrafficCard)==9999){
-            return new HttpMessage("fail", "반납 신청 실패");
+            return new HttpBodyMessage("fail", "반납 신청 실패");
         }
-        return new HttpMessage("success", "반납 신청 완료");
+        return new HttpBodyMessage("success", "반납 신청 완료");
     }
 
     @GetMapping("/return-list/{disposal-info}/{card-num}/{base-date}")
@@ -59,10 +58,10 @@ public class TrafficCardReturnController {
 
     @GetMapping("/return-count/{disposal-info}/{card-num}/{base-date}")
     @ApiOperation(value = "교통카드 반납 이력 개수 조회", notes = "전체 교통카드 조회의 경우 -1 // 폐기정보(0:미포함, 1:포함) // base-date : yyyy-MM")
-    public HttpMessage getReturnCount(@PathVariable("disposal-info") int disposalInfo,
-                                      @PathVariable("card-num") Long cardNum,
-                                      @PathVariable("base-date") String baseDate){
-        return new HttpMessage("count", service.getReturnCount(disposalInfo, cardNum, baseDate));
+    public HttpBodyMessage getReturnCount(@PathVariable("disposal-info") int disposalInfo,
+                                          @PathVariable("card-num") Long cardNum,
+                                          @PathVariable("base-date") String baseDate){
+        return new HttpBodyMessage("count", service.getReturnCount(disposalInfo, cardNum, baseDate));
     }
 
     @GetMapping("/excel/{disposal-info}/{card-num}/{base-date}")

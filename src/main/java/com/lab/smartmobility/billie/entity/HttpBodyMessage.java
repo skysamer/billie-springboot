@@ -8,7 +8,7 @@ import lombok.*;
 @RequiredArgsConstructor
 @ApiModel(value = "api 요청 상태값")
 @AllArgsConstructor @Builder
-public class HttpMessage {
+public class HttpBodyMessage {
     @ApiModelProperty(value = "상태코드")
     private String code;
 

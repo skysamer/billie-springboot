@@ -2,7 +2,7 @@ package com.lab.smartmobility.billie.controller.vacation;
 
 import com.lab.smartmobility.billie.dto.PageResult;
 import com.lab.smartmobility.billie.dto.vacation.VacationApplicationForm;
-import com.lab.smartmobility.billie.entity.HttpMessage;
+import com.lab.smartmobility.billie.entity.HttpBodyMessage;
 import com.lab.smartmobility.billie.entity.Vacation;
 import com.lab.smartmobility.billie.service.vacation.VacationApplicationService;
 import io.swagger.annotations.*;
@@ -27,8 +27,8 @@ public class VacationApplicationController {
             @ApiResponse(code = 400, message = "이전 날짜로 신청할 수 없습니다")
     })
     @PostMapping("/user/apply")
-    public ResponseEntity<HttpMessage> apply(@RequestBody VacationApplicationForm vacationApplicationForm){
-        HttpMessage httpMessage = service.apply(vacationApplicationForm);
+    public ResponseEntity<HttpBodyMessage> apply(@RequestBody VacationApplicationForm vacationApplicationForm){
+        HttpBodyMessage httpMessage = service.apply(vacationApplicationForm);
         if(httpMessage.getCode().equals("fail")){
             return new ResponseEntity<>(httpMessage, HttpStatus.BAD_REQUEST);
         }

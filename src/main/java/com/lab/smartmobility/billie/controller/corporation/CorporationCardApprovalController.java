@@ -3,7 +3,7 @@ package com.lab.smartmobility.billie.controller.corporation;
 import com.lab.smartmobility.billie.dto.TotalCount;
 import com.lab.smartmobility.billie.dto.corporation.ApprovalCardUseForm;
 import com.lab.smartmobility.billie.dto.corporation.CompanionCardUseForm;
-import com.lab.smartmobility.billie.entity.HttpMessage;
+import com.lab.smartmobility.billie.entity.HttpBodyMessage;
 import com.lab.smartmobility.billie.entity.corporation.Application;
 import com.lab.smartmobility.billie.service.corporation.CorporationCardApprovalService;
 import io.swagger.annotations.*;
@@ -61,7 +61,7 @@ public class CorporationCardApprovalController {
             @ApiResponse(code = 200, message = "fail-approve // success-approve")
     })
     @PutMapping("/approve/manager")
-    public HttpMessage approveCardUseByManager(@RequestBody List<ApprovalCardUseForm> approvalCardUseFormList){
+    public HttpBodyMessage approveCardUseByManager(@RequestBody List<ApprovalCardUseForm> approvalCardUseFormList){
         return service.approveCardUseByManager(approvalCardUseFormList);
     }
 
@@ -70,7 +70,7 @@ public class CorporationCardApprovalController {
             @ApiResponse(code = 200, message = "fail-reject // success-reject")
     })
     @PutMapping("/companion/card-use")
-    public HttpMessage rejectCardUse(@RequestBody List<CompanionCardUseForm> companionCardUseForms){
+    public HttpBodyMessage rejectCardUse(@RequestBody List<CompanionCardUseForm> companionCardUseForms){
         return service.rejectCardUse(companionCardUseForms);
     }
 
@@ -109,11 +109,11 @@ public class CorporationCardApprovalController {
             @ApiResponse(code = 200, message = "this-card-is-already-used // success-final-approve")
     })
     @PutMapping("/approve/admin")
-    public HttpMessage approveCardUseByAdmin(@RequestBody List<ApprovalCardUseForm> approvalCardUseFormList){
+    public HttpBodyMessage approveCardUseByAdmin(@RequestBody List<ApprovalCardUseForm> approvalCardUseFormList){
         try{
             return service.approveCardUseByAdmin(approvalCardUseFormList);
         }catch (Exception e){
-            return new HttpMessage("fail", "this-card-is-already-rented");
+            return new HttpBodyMessage("fail", "this-card-is-already-rented");
         }
     }
 

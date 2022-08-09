@@ -1,6 +1,6 @@
 package com.lab.smartmobility.billie.handler;
 
-import com.lab.smartmobility.billie.entity.HttpMessage;
+import com.lab.smartmobility.billie.entity.HttpBodyMessage;
 import io.swagger.annotations.Api;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,9 +15,9 @@ import javax.servlet.http.HttpServletRequest;
 public class ExceptionController {
     @ExceptionHandler(MethodArgumentNotValidException.class)
     protected Object handleMethodArgumentNotValidException(MethodArgumentNotValidException e, HttpServletRequest request) {
-        final HttpMessage errorResponse = HttpMessage.builder()
+        final HttpBodyMessage errorResponse = HttpBodyMessage.builder()
                 .code("fail")
-                .message("json variable value is null").build();
+                .message("요청값은 null일 수 없습니다").build();
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
     }

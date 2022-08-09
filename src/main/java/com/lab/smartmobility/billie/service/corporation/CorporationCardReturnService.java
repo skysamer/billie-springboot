@@ -2,7 +2,7 @@ package com.lab.smartmobility.billie.service.corporation;
 
 import com.lab.smartmobility.billie.dto.TotalCount;
 import com.lab.smartmobility.billie.dto.corporation.*;
-import com.lab.smartmobility.billie.entity.HttpMessage;
+import com.lab.smartmobility.billie.entity.HttpBodyMessage;
 import com.lab.smartmobility.billie.entity.Staff;
 import com.lab.smartmobility.billie.entity.corporation.*;
 import com.lab.smartmobility.billie.repository.StaffRepository;
@@ -37,10 +37,10 @@ public class CorporationCardReturnService {
     private final Log log;
 
     /*법인카드 반납*/
-    public HttpMessage returnCorporationCard(CorporationReturnForm corporationReturnForm){
+    public HttpBodyMessage returnCorporationCard(CorporationReturnForm corporationReturnForm){
         Application application=applicationRepository.findByApplicationId(corporationReturnForm.getApplicationId());
         if(application.getApprovalStatus()=='w' || application.getApprovalStatus()=='t'){
-            return new HttpMessage("fail", "not-approved-application");
+            return new HttpBodyMessage("fail", "not-approved-application");
         }
 
         try{
@@ -62,16 +62,16 @@ public class CorporationCardReturnService {
             cardRepository.save(returnedCard);
         }catch (Exception e){
             log.error(e);
-            return new HttpMessage("fail", "fail-card-return");
+            return new HttpBodyMessage("fail", "fail-card-return");
         }
-        return new HttpMessage("success", "success-card-return");
+        return new HttpBodyMessage("success", "success-card-return");
     }
 
     /*개인 경비청구*/
-    public HttpMessage chargeForExpenses(ExpenseClaimForm expenseClaimForm){
+    public HttpBodyMessage chargeForExpenses(ExpenseClaimForm expenseClaimForm){
         Application application=applicationRepository.findByApplicationId(expenseClaimForm.getApplicationId());
         if(application.getApprovalStatus()=='w' || application.getApprovalStatus()=='t'){
-            return new HttpMessage("fail", "not-approved-application");
+            return new HttpBodyMessage("fail", "not-approved-application");
         }
 
         try{
@@ -89,9 +89,9 @@ public class CorporationCardReturnService {
             }
         }catch (Exception e){
             log.error(e);
-            return new HttpMessage("fail", "fail-expense-claim");
+            return new HttpBodyMessage("fail", "fail-expense-claim");
         }
-        return new HttpMessage("success", "success-expense-claim");
+        return new HttpBodyMessage("success", "success-expense-claim");
     }
 
     /*반납 이력 상세 조회*/

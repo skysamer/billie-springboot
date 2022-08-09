@@ -2,7 +2,7 @@ package com.lab.smartmobility.billie.controller.corporation;
 
 import com.lab.smartmobility.billie.dto.TotalCount;
 import com.lab.smartmobility.billie.dto.corporation.ApplyCorporationCardForm;
-import com.lab.smartmobility.billie.entity.HttpMessage;
+import com.lab.smartmobility.billie.entity.HttpBodyMessage;
 import com.lab.smartmobility.billie.entity.corporation.Application;
 import com.lab.smartmobility.billie.service.corporation.CorporationCardReservationService;
 import io.swagger.annotations.*;
@@ -25,7 +25,7 @@ public class CorporationCardReservationController {
             @ApiResponse(code = 200, message = "cannot-reservation-earlier-day // fail-application // success-application")
     })
     @PostMapping("/rent")
-    public HttpMessage rent(@Valid @RequestBody ApplyCorporationCardForm applyCorporationCardForm) {
+    public HttpBodyMessage rent(@Valid @RequestBody ApplyCorporationCardForm applyCorporationCardForm) {
         return service.applyCardReservation(applyCorporationCardForm);
     }
 
@@ -34,7 +34,7 @@ public class CorporationCardReservationController {
             @ApiResponse(code = 200, message = "fail-application // success-application")
     })
     @PostMapping("/post-expense")
-    public HttpMessage postExpenseClaim(@Valid @RequestBody ApplyCorporationCardForm applyCorporationCardForm) {
+    public HttpBodyMessage postExpenseClaim(@Valid @RequestBody ApplyCorporationCardForm applyCorporationCardForm) {
         return service.applyPostExpenseClaim(applyCorporationCardForm);
     }
 
@@ -87,8 +87,8 @@ public class CorporationCardReservationController {
     @ApiResponses({
             @ApiResponse(code = 200, message = "cannot-reservation-earlier-day // this-application-is-approved // not-the-employee // modify-application")
     })
-    public HttpMessage modifyApplicationInfo(@PathVariable("application-id") Long applicationId,
-                                             @Valid @RequestBody ApplyCorporationCardForm applyCorporationCardForm){
+    public HttpBodyMessage modifyApplicationInfo(@PathVariable("application-id") Long applicationId,
+                                                 @Valid @RequestBody ApplyCorporationCardForm applyCorporationCardForm){
         return service.modifyCardUseApplicationInfo(applicationId, applyCorporationCardForm);
     }
 
@@ -100,8 +100,8 @@ public class CorporationCardReservationController {
     @ApiResponses({
             @ApiResponse(code = 200, message = "this-application-is-approved // remove-application")
     })
-    public HttpMessage removeApplicationInfo(@PathVariable("application-id") Long applicationId,
-                                             @Valid @RequestBody ApplyCorporationCardForm applyCorporationCardForm){
+    public HttpBodyMessage removeApplicationInfo(@PathVariable("application-id") Long applicationId,
+                                                 @Valid @RequestBody ApplyCorporationCardForm applyCorporationCardForm){
         return service.removeCardUseApplicationInfo(applicationId);
     }
 
@@ -113,7 +113,7 @@ public class CorporationCardReservationController {
     @ApiResponses({
             @ApiResponse(code = 200, message = "remove-application // not-exist-info")
     })
-    public HttpMessage removeApplicationInfoByAdmin(@PathVariable("application-id") Long applicationId){
+    public HttpBodyMessage removeApplicationInfoByAdmin(@PathVariable("application-id") Long applicationId){
         return service.removeCardUseApplicationByAdmin(applicationId);
     }
 
@@ -125,8 +125,8 @@ public class CorporationCardReservationController {
     @ApiResponses({
             @ApiResponse(code = 200, message = "modify-application // not-exist-info")
     })
-    public HttpMessage modifyApplicationInfoByAdmin(@PathVariable("application-id") Long applicationId,
-                                                    @Valid @RequestBody ApplyCorporationCardForm applyCorporationCardForm){
+    public HttpBodyMessage modifyApplicationInfoByAdmin(@PathVariable("application-id") Long applicationId,
+                                                        @Valid @RequestBody ApplyCorporationCardForm applyCorporationCardForm){
         return service.modifyCardUseApplicationByAdmin(applicationId, applyCorporationCardForm);
     }
 }

@@ -2,7 +2,7 @@ package com.lab.smartmobility.billie.controller.corporation;
 
 import com.lab.smartmobility.billie.dto.corporation.*;
 import com.lab.smartmobility.billie.entity.corporation.CorporationCard;
-import com.lab.smartmobility.billie.entity.HttpMessage;
+import com.lab.smartmobility.billie.entity.HttpBodyMessage;
 import com.lab.smartmobility.billie.service.corporation.CorporationCardService;
 import io.swagger.annotations.*;
 import lombok.RequiredArgsConstructor;
@@ -21,12 +21,12 @@ public class CorporationCardController {
             @ApiResponse(code = 200, message = "fail-insert // success-insert")
     })
     @PostMapping("/insert")
-    public HttpMessage createNewCard(@RequestBody CorporationCardForm corporationCardForm){
+    public HttpBodyMessage createNewCard(@RequestBody CorporationCardForm corporationCardForm){
         int isInserted= service.createCard(corporationCardForm);
         if(isInserted==9999){
-            return new HttpMessage("fail", "fail-insert");
+            return new HttpBodyMessage("fail", "fail-insert");
         }
-        return new HttpMessage("success", "success-insert");
+        return new HttpBodyMessage("success", "success-insert");
     }
 
     @ApiOperation(value = "보유 법인카드 목록 조회")
@@ -52,12 +52,12 @@ public class CorporationCardController {
             @ApiResponse(code = 200, message = "fail-modify // success-modify")
     })
     @PutMapping("/modify/{card-id}")
-    public HttpMessage modifyCardInfo(@PathVariable("card-id") Long cardId, @RequestBody CorporationCardForm corporationCardForm){
+    public HttpBodyMessage modifyCardInfo(@PathVariable("card-id") Long cardId, @RequestBody CorporationCardForm corporationCardForm){
         int isModified= service.modifyCardInfo(cardId, corporationCardForm);
         if(isModified==9999){
-            return new HttpMessage("fail", "fail-modify");
+            return new HttpBodyMessage("fail", "fail-modify");
         }
-        return new HttpMessage("success", "success-modify");
+        return new HttpBodyMessage("success", "success-modify");
     }
 
     @ApiOperation(value = "법인카드 폐기")
@@ -66,12 +66,12 @@ public class CorporationCardController {
             @ApiResponse(code = 200, message = "fail-discard // success-discard")
     })
     @PatchMapping("/disposal/{card-id}")
-    public HttpMessage abrogate(@PathVariable("card-id") Long cardId, @RequestBody DisposalForm disposalForm){
+    public HttpBodyMessage abrogate(@PathVariable("card-id") Long cardId, @RequestBody DisposalForm disposalForm){
         int isDiscarded= service.abrogate(cardId, disposalForm);
         if(isDiscarded==9999){
-            return new HttpMessage("fail", "fail-discard");
+            return new HttpBodyMessage("fail", "fail-discard");
         }
-        return new HttpMessage("success", "success-discard");
+        return new HttpBodyMessage("success", "success-discard");
     }
 
     @ApiOperation(value = "법인카드 정보 삭제")
@@ -80,7 +80,7 @@ public class CorporationCardController {
             @ApiResponse(code = 200, message = "fail-remove // success-remove // not-exist-card-info")
     })
     @DeleteMapping("/remove/{card-id}")
-    public HttpMessage remove(@PathVariable("card-id") Long cardId){
+    public HttpBodyMessage remove(@PathVariable("card-id") Long cardId){
         return service.remove(cardId);
     }
 }

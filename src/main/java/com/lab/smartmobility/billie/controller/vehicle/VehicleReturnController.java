@@ -1,7 +1,7 @@
 package com.lab.smartmobility.billie.controller.vehicle;
 
 import com.lab.smartmobility.billie.dto.vehicle.VehicleReturnDTO;
-import com.lab.smartmobility.billie.entity.HttpMessage;
+import com.lab.smartmobility.billie.entity.HttpBodyMessage;
 import com.lab.smartmobility.billie.entity.VehicleReservation;
 import com.lab.smartmobility.billie.service.vehicle.VehicleReturnService;
 import io.swagger.annotations.*;
@@ -27,11 +27,11 @@ public class VehicleReturnController {
     @ApiResponses({
             @ApiResponse(code = 200, message = "저장 실패 or 반납 이력 저장 완료")
     })
-    public HttpMessage returnVehicle(@ApiParam(value = "반납 신청 폼 데이터") @Valid @RequestPart(value = "returnVehicle") VehicleReturnDTO vehicleReturnDTO){
+    public HttpBodyMessage returnVehicle(@ApiParam(value = "반납 신청 폼 데이터") @Valid @RequestPart(value = "returnVehicle") VehicleReturnDTO vehicleReturnDTO){
         if(service.returnVehicle(vehicleReturnDTO)==9999){
-            return new HttpMessage("fail", "저장 실패");
+            return new HttpBodyMessage("fail", "저장 실패");
         }
-        return new HttpMessage("success", "반납 이력 저장 완료");
+        return new HttpBodyMessage("success", "반납 이력 저장 완료");
     }
 
     @GetMapping("/return-list/{disposal-info}/{vehicle-num}/{base-date}")
@@ -46,10 +46,10 @@ public class VehicleReturnController {
 
     @GetMapping("/return-count/{disposal-info}/{vehicle-num}/{base-date}")
     @ApiOperation(value = "반납이력 전체 개수 조회", notes = "전체 차량 조회의 경우 -1 // 폐기정보(0:미포함, 1:포함) // base-date : yyyy-MM")
-    public HttpMessage getReturnCount(@PathVariable("disposal-info") int disposalInfo,
-                                      @PathVariable("vehicle-num") Long vehicleNum,
-                                      @PathVariable("base-date") String baseDate){
-        return new HttpMessage("count", service.getReturnCount(disposalInfo, vehicleNum, baseDate));
+    public HttpBodyMessage getReturnCount(@PathVariable("disposal-info") int disposalInfo,
+                                          @PathVariable("vehicle-num") Long vehicleNum,
+                                          @PathVariable("base-date") String baseDate){
+        return new HttpBodyMessage("count", service.getReturnCount(disposalInfo, vehicleNum, baseDate));
     }
 
     @GetMapping("/return/{rent-num}")

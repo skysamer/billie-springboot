@@ -2,7 +2,7 @@ package com.lab.smartmobility.billie.controller.traffic;
 
 import com.lab.smartmobility.billie.dto.traffic.NonBorrowableTrafficCard;
 import com.lab.smartmobility.billie.dto.traffic.TrafficCardForm;
-import com.lab.smartmobility.billie.entity.HttpMessage;
+import com.lab.smartmobility.billie.entity.HttpBodyMessage;
 import com.lab.smartmobility.billie.entity.TrafficCard;
 import com.lab.smartmobility.billie.service.traffic.TrafficCardService;
 import io.swagger.annotations.*;
@@ -37,11 +37,11 @@ public class TrafficCardController {
     @ApiResponses({
             @ApiResponse(code = 200, message = "등록 성공 or 등록 실패")
     })
-    public HttpMessage register(@RequestBody TrafficCardForm trafficCardForm){
+    public HttpBodyMessage register(@RequestBody TrafficCardForm trafficCardForm){
         if(service.registerCard(trafficCardForm)==9999){
-            return new HttpMessage("fail", "등록 실패");
+            return new HttpBodyMessage("fail", "등록 실패");
         }
-        return new HttpMessage("success", "등록 성공");
+        return new HttpBodyMessage("success", "등록 성공");
     }
 
     @GetMapping("/card/{card-num}")
@@ -55,11 +55,11 @@ public class TrafficCardController {
     @ApiResponses({
             @ApiResponse(code = 200, message = "수정 성공 or 수정 실패")
     })
-    public HttpMessage modify(@RequestBody TrafficCardForm trafficCardForm){
+    public HttpBodyMessage modify(@RequestBody TrafficCardForm trafficCardForm){
         if(service.updateCardInfo(trafficCardForm)==9999){
-            return new HttpMessage("fail", "수정 실패");
+            return new HttpBodyMessage("fail", "수정 실패");
         }
-        return new HttpMessage("success", "수정 성공");
+        return new HttpBodyMessage("success", "수정 성공");
     }
 
     @PutMapping("/discard/{card-num}")
@@ -67,11 +67,11 @@ public class TrafficCardController {
     @ApiResponses({
             @ApiResponse(code = 200, message = "폐기 성공 or 이미 폐기된 카드입니다")
     })
-    public HttpMessage discard(@PathVariable("card-num") Long cardNum, @RequestBody HashMap<String, String> reason){
+    public HttpBodyMessage discard(@PathVariable("card-num") Long cardNum, @RequestBody HashMap<String, String> reason){
         if(service.discardCard(cardNum, reason)==500){
-            return new HttpMessage("fail", "이미 폐기된 카드입니다");
+            return new HttpBodyMessage("fail", "이미 폐기된 카드입니다");
         }
-        return new HttpMessage("success", "폐기 성공");
+        return new HttpBodyMessage("success", "폐기 성공");
     }
 
     @DeleteMapping("/{card-num}")
@@ -79,11 +79,11 @@ public class TrafficCardController {
     @ApiResponses({
             @ApiResponse(code = 200, message = "삭제 성공 or 삭제 실패")
     })
-    public HttpMessage removeCardInfo(@PathVariable("card-num") Long cardNum){
+    public HttpBodyMessage removeCardInfo(@PathVariable("card-num") Long cardNum){
         if(service.removeCardInfo(cardNum)==9999){
-            return new HttpMessage("fail", "삭제 실패");
+            return new HttpBodyMessage("fail", "삭제 실패");
         }
-        return new HttpMessage("success", "삭제 성공");
+        return new HttpBodyMessage("success", "삭제 성공");
     }
 
 

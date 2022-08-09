@@ -199,16 +199,13 @@ public class VehicleReturnService {
         cell.setCellValue("반납일");
         cell = row.createCell(4);
         cell.setCellValue("대여종료 시간");
-
         cell = row.createCell(5);
-        cell.setCellValue("총 주행 시간");
-        cell = row.createCell(6);
         cell.setCellValue("동승자");
-        cell = row.createCell(7);
+        cell = row.createCell(6);
         cell.setCellValue("내용(장소)");
-        cell = row.createCell(8);
+        cell = row.createCell(7);
         cell.setCellValue("주행 후 계기판");
-        cell = row.createCell(9);
+        cell = row.createCell(8);
         cell.setCellValue("주차위치");
 
         for (VehicleReservation reservation : returnHistoryList) {

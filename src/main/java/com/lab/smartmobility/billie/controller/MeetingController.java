@@ -1,7 +1,7 @@
 package com.lab.smartmobility.billie.controller;
 
 import com.lab.smartmobility.billie.dto.ApplyMeetingForm;
-import com.lab.smartmobility.billie.entity.HttpMessage;
+import com.lab.smartmobility.billie.entity.HttpBodyMessage;
 import com.lab.smartmobility.billie.entity.Meeting;
 import com.lab.smartmobility.billie.service.MeetingService;
 import io.swagger.annotations.Api;
@@ -29,13 +29,13 @@ public class MeetingController {
     @ApiResponses({
             @ApiResponse(code = 200, message = "The time has already been reserved // reservation complete")
     })
-    public HttpMessage insertMeeting(@RequestBody ApplyMeetingForm applyMeetingForm){
+    public HttpBodyMessage insertMeeting(@RequestBody ApplyMeetingForm applyMeetingForm){
         int isInserted=meetingService.insertMeeting(applyMeetingForm);
 
         if(isInserted==500){
-            return new HttpMessage("fail", "The time has already been reserved");
+            return new HttpBodyMessage("fail", "The time has already been reserved");
         }
-        return new HttpMessage("success", "reservation complete");
+        return new HttpBodyMessage("success", "reservation complete");
     }
 
     @GetMapping("/{meeting-num}")
@@ -55,14 +55,14 @@ public class MeetingController {
     @ApiResponses({
             @ApiResponse(code = 200, message = "fail to modify // The time has already been reserved // reservation complete")
     })
-    public HttpMessage modifyMeeting(@RequestBody ApplyMeetingForm applyMeetingForm, @PathVariable("meeting-num") Long meetingNum){
+    public HttpBodyMessage modifyMeeting(@RequestBody ApplyMeetingForm applyMeetingForm, @PathVariable("meeting-num") Long meetingNum){
         int isUpdated=meetingService.updateMeeting(meetingNum, applyMeetingForm);
         if(isUpdated==9999){
-            return new HttpMessage("fail", "fail to modify");
+            return new HttpBodyMessage("fail", "fail to modify");
         }else if(isUpdated==500){
-            return new HttpMessage("fail", "The time has already been reserved");
+            return new HttpBodyMessage("fail", "The time has already been reserved");
         }
-        return new HttpMessage("success", "reservation complete");
+        return new HttpBodyMessage("success", "reservation complete");
     }
 
     @DeleteMapping("/{meeting-num}")
@@ -70,13 +70,13 @@ public class MeetingController {
     @ApiResponses({
             @ApiResponse(code = 200, message = "삭제 오류 or 삭제가 완료되었습니다")
     })
-    public HttpMessage removeMeeting(@PathVariable("meeting-num") Long meetingNum){
+    public HttpBodyMessage removeMeeting(@PathVariable("meeting-num") Long meetingNum){
         int deleteConfirm=meetingService.removeMeeting(meetingNum);
 
         if(deleteConfirm==1){
-            return new HttpMessage("fail", "삭제 오류");
+            return new HttpBodyMessage("fail", "삭제 오류");
         }
-        return new HttpMessage("success", "삭제가 완료되었습니다");
+        return new HttpBodyMessage("success", "삭제가 완료되었습니다");
     }
 
     @GetMapping("/today-tomorrow-list")

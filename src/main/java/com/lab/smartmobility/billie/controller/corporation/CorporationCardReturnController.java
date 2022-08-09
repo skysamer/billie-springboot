@@ -5,7 +5,7 @@ import com.lab.smartmobility.billie.dto.corporation.CorporationHistoryForm;
 import com.lab.smartmobility.billie.dto.corporation.CorporationReturnForm;
 import com.lab.smartmobility.billie.dto.corporation.ExpenseClaimForm;
 import com.lab.smartmobility.billie.dto.corporation.ExpenseClaimHistoryForm;
-import com.lab.smartmobility.billie.entity.HttpMessage;
+import com.lab.smartmobility.billie.entity.HttpBodyMessage;
 import com.lab.smartmobility.billie.service.corporation.CorporationCardReturnService;
 import io.swagger.annotations.*;
 import lombok.RequiredArgsConstructor;
@@ -29,7 +29,7 @@ public class CorporationCardReturnController {
             @ApiResponse(code = 200, message = "not-approved-application // fail-card-return // success-card-return")
     })
     @PostMapping("/return")
-    public HttpMessage ApplyReturnCard(@RequestBody CorporationReturnForm corporationReturnForm){
+    public HttpBodyMessage ApplyReturnCard(@RequestBody CorporationReturnForm corporationReturnForm){
         return service.returnCorporationCard(corporationReturnForm);
     }
 
@@ -38,7 +38,7 @@ public class CorporationCardReturnController {
             @ApiResponse(code = 200, message = "not-approved-application // fail-expense-claim // success-expense-claim")
     })
     @PostMapping("/expense-claim")
-    public HttpMessage ApplyReturnCard(@RequestBody ExpenseClaimForm expenseClaimForm){
+    public HttpBodyMessage ApplyReturnCard(@RequestBody ExpenseClaimForm expenseClaimForm){
         return service.chargeForExpenses(expenseClaimForm);
     }
 

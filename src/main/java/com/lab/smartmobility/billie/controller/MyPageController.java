@@ -1,7 +1,7 @@
 package com.lab.smartmobility.billie.controller;
 
 import com.lab.smartmobility.billie.dto.staff.StaffInfoForm;
-import com.lab.smartmobility.billie.entity.HttpMessage;
+import com.lab.smartmobility.billie.entity.HttpBodyMessage;
 import com.lab.smartmobility.billie.service.MyPageService;
 import io.swagger.annotations.*;
 import lombok.RequiredArgsConstructor;
@@ -35,7 +35,7 @@ public class MyPageController {
             @ApiResponse(code = 200, message = "success-register")
     })
     @PostMapping("/admin/register")
-    public HttpMessage register(@RequestBody StaffInfoForm staffInfoForm){
+    public HttpBodyMessage register(@RequestBody StaffInfoForm staffInfoForm){
         return service.registerNewStaff(staffInfoForm);
     }
 
@@ -47,7 +47,7 @@ public class MyPageController {
             @ApiResponse(code = 200, message = "success-modify // not-exits-staff-info")
     })
     @PutMapping("/admin/{staff-num}")
-    public HttpMessage modify(@PathVariable("staff-num") Long staffNum, @RequestBody StaffInfoForm staffInfoForm){
+    public HttpBodyMessage modify(@PathVariable("staff-num") Long staffNum, @RequestBody StaffInfoForm staffInfoForm){
         return service.modifyStaffInfo(staffNum, staffInfoForm);
     }
 
@@ -59,7 +59,7 @@ public class MyPageController {
             @ApiResponse(code = 200, message = "success-resign // not-exits-staff-info")
     })
     @PatchMapping("/admin/{staff-num}")
-    public HttpMessage resign(@PathVariable("staff-num") Long staffNum){
+    public HttpBodyMessage resign(@PathVariable("staff-num") Long staffNum){
         return service.resign(staffNum);
     }
 
@@ -71,7 +71,7 @@ public class MyPageController {
             @ApiResponse(code = 200, message = "success-remove // not-exits-staff-info")
     })
     @DeleteMapping("/admin/{staff-num}")
-    public HttpMessage remove(@PathVariable("staff-num") Long staffNum){
+    public HttpBodyMessage remove(@PathVariable("staff-num") Long staffNum){
         return service.remove(staffNum);
     }
 }

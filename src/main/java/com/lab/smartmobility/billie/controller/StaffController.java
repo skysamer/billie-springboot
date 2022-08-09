@@ -2,7 +2,7 @@ package com.lab.smartmobility.billie.controller;
 
 import com.lab.smartmobility.billie.config.JwtTokenProvider;
 import com.lab.smartmobility.billie.dto.staff.*;
-import com.lab.smartmobility.billie.entity.HttpMessage;
+import com.lab.smartmobility.billie.entity.HttpBodyMessage;
 import com.lab.smartmobility.billie.entity.Mail;
 import com.lab.smartmobility.billie.entity.Staff;
 import com.lab.smartmobility.billie.service.StaffService;
@@ -39,11 +39,11 @@ public class StaffController {
             @ApiResponse(code = 200, message = "not equal staff info // send email token")
     })
     @PostMapping("/send-email-token")
-    public HttpMessage sendEmailToken(@RequestBody EmailForm emailForm){
+    public HttpBodyMessage sendEmailToken(@RequestBody EmailForm emailForm){
         if(staffService.sendEmailToken(emailForm.getEmail())==9999){
-            return new HttpMessage("fail", "not equal staff info");
+            return new HttpBodyMessage("fail", "not equal staff info");
         }
-        return new HttpMessage("success", "send email token");
+        return new HttpBodyMessage("success", "send email token");
     }
 
     @ApiOperation(value = "이메일 토큰 검증")
@@ -51,14 +51,14 @@ public class StaffController {
             @ApiResponse(code = 200, message = "not equal email token // equal token // time out")
     })
     @PostMapping("/verify-email-token")
-    public HttpMessage verifyEmailToken(@RequestBody EmailTokenForm emailTokenForm){
+    public HttpBodyMessage verifyEmailToken(@RequestBody EmailTokenForm emailTokenForm){
         int isVerified=staffService.verifyEmailToken(emailTokenForm);
         if(isVerified==9999){
-            return new HttpMessage("fail", "not equal email token");
+            return new HttpBodyMessage("fail", "not equal email token");
         }else if(isVerified==500){
-            return new HttpMessage("fail", "time out");
+            return new HttpBodyMessage("fail", "time out");
         }
-        return new HttpMessage("success", "equal token");
+        return new HttpBodyMessage("success", "equal token");
     }
 
 
@@ -67,7 +67,7 @@ public class StaffController {
             @ApiResponse(code = 200, message = "exists join info // success sign up // not verified")
     })
     @PostMapping(value = "/sign-up", produces = MediaType.APPLICATION_JSON_VALUE)
-    public HttpMessage joinIn(@RequestBody SignUpForm signUpForm) {
+    public HttpBodyMessage joinIn(@RequestBody SignUpForm signUpForm) {
         return staffService.joinIn(signUpForm);
     }
 
@@ -98,14 +98,14 @@ public class StaffController {
 
     @ApiOperation(value = "비밀번호 찾기")
     @PostMapping(value = "/findPassword", produces = MediaType.APPLICATION_JSON_VALUE)
-    public HttpMessage findPassword(@RequestBody Mail mail){
+    public HttpBodyMessage findPassword(@RequestBody Mail mail){
         int initializationPassword= staffService.findPassword(mail.getAddress());
 
         if(initializationPassword==0){
-            return new HttpMessage("fail", "존재하지 않는 이메일입니다.");
+            return new HttpBodyMessage("fail", "존재하지 않는 이메일입니다.");
         }
         else{
-            return new HttpMessage("success", "초기화된 비밀번호가 귀하의 이메일로 발송되었습니다.");
+            return new HttpBodyMessage("success", "초기화된 비밀번호가 귀하의 이메일로 발송되었습니다.");
         }
     }
 

@@ -1,7 +1,6 @@
 package com.lab.smartmobility.billie.controller;
 
-import com.lab.smartmobility.billie.dto.NotificationListForm;
-import com.lab.smartmobility.billie.entity.HttpMessage;
+import com.lab.smartmobility.billie.entity.HttpBodyMessage;
 import com.lab.smartmobility.billie.entity.Notification;
 import com.lab.smartmobility.billie.service.NotificationService;
 import io.swagger.annotations.Api;
@@ -28,13 +27,13 @@ public class NotificationController {
 
     @GetMapping("/get/{notification-num}")
     @ApiOperation(value = "개별 알림 확인")
-    public HttpMessage updateIsRead(@PathVariable("notification-num") Long notificationNum){
+    public HttpBodyMessage updateIsRead(@PathVariable("notification-num") Long notificationNum){
         int isReadCheck= notificationService.updateIsRead(notificationNum);
 
         if(isReadCheck==9999){
-            return new HttpMessage("fail", "서버오류");
+            return new HttpBodyMessage("fail", "서버오류");
         }
-        return new HttpMessage("success", "성공");
+        return new HttpBodyMessage("success", "성공");
     }
 
 }

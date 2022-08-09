@@ -1,7 +1,7 @@
 package com.lab.smartmobility.billie.service.traffic;
 
 import com.lab.smartmobility.billie.dto.traffic.TrafficCardApplyDTO;
-import com.lab.smartmobility.billie.entity.HttpMessage;
+import com.lab.smartmobility.billie.entity.HttpBodyMessage;
 import com.lab.smartmobility.billie.entity.Staff;
 import com.lab.smartmobility.billie.entity.TrafficCard;
 import com.lab.smartmobility.billie.entity.TrafficCardReservation;
@@ -123,21 +123,21 @@ public class TrafficCardReservationService {
     }
 
     /*관리자의 대여 신청 삭제*/
-    public HttpMessage removeReservationByAdmin(Long reservationNum){
+    public HttpBodyMessage removeReservationByAdmin(Long reservationNum){
         TrafficCardReservation trafficCardReservation = reservationRepository.findByReservationNum(reservationNum);
         if(trafficCardReservation.getReturnStatus()==1){
-            return new HttpMessage("fail", "refund-processing-is-in-progress");
+            return new HttpBodyMessage("fail", "refund-processing-is-in-progress");
         }
 
         reservationRepository.delete(trafficCardReservation);
-        return new HttpMessage("success", "success-remove");
+        return new HttpBodyMessage("success", "success-remove");
     }
 
     /*관리자의 대여 신청 내역 수정*/
-    public HttpMessage modifyReservationInfoByAdmin(Long reservationNum, TrafficCardApplyDTO trafficCardApplyDTO){
+    public HttpBodyMessage modifyReservationInfoByAdmin(Long reservationNum, TrafficCardApplyDTO trafficCardApplyDTO){
         TrafficCardReservation trafficCardReservation = reservationRepository.findByReservationNum(reservationNum);
         if(trafficCardReservation.getReturnStatus()==1){
-            return new HttpMessage("fail", "refund-processing-is-in-progress");
+            return new HttpBodyMessage("fail", "refund-processing-is-in-progress");
         }
 
         TrafficCard trafficCard=cardRepository.findByCardNum(trafficCardApplyDTO.getCardNum());
@@ -146,13 +146,13 @@ public class TrafficCardReservationService {
         LocalDateTime returnedAt = dateTimeUtil.combineDateAndTime(trafficCardApplyDTO.getExpectedReturnDate(), trafficCardApplyDTO.getExpectedReturnTime());
 
         if(checkReservationIsDuplicate(reservationNum, rentedAt, returnedAt, trafficCard)){
-            return new HttpMessage("fail", "already-reservation");
+            return new HttpBodyMessage("fail", "already-reservation");
         }
 
         modelMapper.map(trafficCardApplyDTO, trafficCardReservation);
         trafficCardReservation.updateReservationInfo(trafficCard, rentedAt, returnedAt);
         reservationRepository.save(trafficCardReservation);
-        return new HttpMessage("success", "success-modify");
+        return new HttpBodyMessage("success", "success-modify");
     }
 
     /*금일 나의 교통카드*/

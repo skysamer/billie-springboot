@@ -2,7 +2,7 @@ package com.lab.smartmobility.billie.controller.vehicle;
 
 import com.lab.smartmobility.billie.dto.vehicle.NonBorrowableVehicle;
 import com.lab.smartmobility.billie.dto.vehicle.VehicleDTO;
-import com.lab.smartmobility.billie.entity.HttpMessage;
+import com.lab.smartmobility.billie.entity.HttpBodyMessage;
 import com.lab.smartmobility.billie.entity.Vehicle;
 import com.lab.smartmobility.billie.service.vehicle.VehicleService;
 import io.swagger.annotations.*;
@@ -49,11 +49,11 @@ public class VehicleController {
     @ApiResponses({
             @ApiResponse(code = 200, message = "수정 성공 or 수정 실패")
     })
-    public HttpMessage modifyVehicleInfo(@RequestBody Vehicle vehicle){
+    public HttpBodyMessage modifyVehicleInfo(@RequestBody Vehicle vehicle){
         if(service.modifyVehicleInfo(vehicle)==9999){
-            return new HttpMessage("fail", "수정 실패");
+            return new HttpBodyMessage("fail", "수정 실패");
         }
-        return new HttpMessage("success", "수정 성공");
+        return new HttpBodyMessage("success", "수정 성공");
     }
 
     @DeleteMapping("/{vehicle-num}")
@@ -61,11 +61,11 @@ public class VehicleController {
     @ApiResponses({
             @ApiResponse(code = 200, message = "삭제 성공 or 삭제 실패")
     })
-    public HttpMessage removeVehicleInfo(@PathVariable("vehicle-num") Long vehicleNum){
+    public HttpBodyMessage removeVehicleInfo(@PathVariable("vehicle-num") Long vehicleNum){
         if(service.removeVehicleInfo(vehicleNum)==9999){
-            return new HttpMessage("fail", "삭제 실패");
+            return new HttpBodyMessage("fail", "삭제 실패");
         }
-        return new HttpMessage("success", "삭제 성공");
+        return new HttpBodyMessage("success", "삭제 성공");
     }
 
     @PutMapping("/discard/{vehicle-num}")
@@ -73,12 +73,12 @@ public class VehicleController {
     @ApiResponses({
             @ApiResponse(code = 200, message = "이미 폐기된 차량입니다. or 폐기 성공")
     })
-    public HttpMessage discardVehicle(@PathVariable("vehicle-num") Long vehicleNum,
-                                      @ApiParam(value = "'reason' : '폐기 사유'") @RequestBody HashMap<String, String> reason){
+    public HttpBodyMessage discardVehicle(@PathVariable("vehicle-num") Long vehicleNum,
+                                          @ApiParam(value = "'reason' : '폐기 사유'") @RequestBody HashMap<String, String> reason){
         if(service.discardVehicle(vehicleNum, reason)==500){
-            return new HttpMessage("fail", "이미 폐기된 차량입니다.");
+            return new HttpBodyMessage("fail", "이미 폐기된 차량입니다.");
         }
-        return new HttpMessage("success", "폐기 성공");
+        return new HttpBodyMessage("success", "폐기 성공");
     }
 
     @GetMapping("/user/not-borrow/{rented-at}/{returned-at}")

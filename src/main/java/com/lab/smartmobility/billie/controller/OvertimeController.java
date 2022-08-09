@@ -1,7 +1,7 @@
 package com.lab.smartmobility.billie.controller;
 
 import com.lab.smartmobility.billie.dto.ApplyOvertimeForm;
-import com.lab.smartmobility.billie.entity.HttpMessage;
+import com.lab.smartmobility.billie.entity.HttpBodyMessage;
 import com.lab.smartmobility.billie.entity.Overtime;
 import com.lab.smartmobility.billie.service.OvertimeService;
 import io.swagger.annotations.Api;
@@ -24,17 +24,17 @@ public class OvertimeController {
 
     @GetMapping("/count/{staff-num}")
     @ApiOperation(value = "나의 이번달 추가근무 시간")
-    public HttpMessage getMyOvertimeCount(@PathVariable("staff-num") Long staffNum){
-        return new HttpMessage("success", service.getMyOvertimeCount(staffNum));
+    public HttpBodyMessage getMyOvertimeCount(@PathVariable("staff-num") Long staffNum){
+        return new HttpBodyMessage("success", service.getMyOvertimeCount(staffNum));
     }
 
     @PostMapping("/register")
     @ApiOperation(value = "추가근무 신청")
-    public HttpMessage registerOvertime(@RequestBody ApplyOvertimeForm applyOvertimeForm){
+    public HttpBodyMessage registerOvertime(@RequestBody ApplyOvertimeForm applyOvertimeForm){
         if(service.applyOvertime(applyOvertimeForm)==9999){
-            return new HttpMessage("fail", "추가근무 신청 실패");
+            return new HttpBodyMessage("fail", "추가근무 신청 실패");
         }
-        return new HttpMessage("success", "추가근무 신청 성공");
+        return new HttpBodyMessage("success", "추가근무 신청 성공");
     }
 
     @GetMapping("/apply-list/{staff-num}/{start-date}/{end-date}/{approval-status}")
@@ -55,8 +55,8 @@ public class OvertimeController {
 
     @PutMapping("/my/{overtime-num}")
     @ApiOperation(value = "나의 추가근무 신청 내역 수정")
-    public HttpMessage modifyMyApply(@PathVariable("overtime-num") Long overtimeNum,
-                                     @RequestBody ApplyOvertimeForm applyOvertimeForm){
-        return new HttpMessage();
+    public HttpBodyMessage modifyMyApply(@PathVariable("overtime-num") Long overtimeNum,
+                                         @RequestBody ApplyOvertimeForm applyOvertimeForm){
+        return new HttpBodyMessage();
     }
 }

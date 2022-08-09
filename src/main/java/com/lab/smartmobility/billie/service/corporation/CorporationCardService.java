@@ -70,18 +70,18 @@ public class CorporationCardService {
     }
 
     /*법인카드 정보 삭제*/
-    public HttpMessage remove(Long cardId){
+    public HttpBodyMessage remove(Long cardId){
         CorporationCard corporationCard=cardRepository.findByCardId(cardId);
         if(corporationCard==null){
-            return new HttpMessage("fail", "not-exist-card-info");
+            return new HttpBodyMessage("fail", "not-exist-card-info");
         }
 
         try{
             cardRepository.delete(corporationCard);
         }catch (Exception e){
             log.error(e);
-            return new HttpMessage("fail", "fail-remove-card");
+            return new HttpBodyMessage("fail", "fail-remove-card");
         }
-        return new HttpMessage("success", "success-remove-card");
+        return new HttpBodyMessage("success", "success-remove-card");
     }
 }

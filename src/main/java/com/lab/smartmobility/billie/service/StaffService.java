@@ -2,7 +2,7 @@ package com.lab.smartmobility.billie.service;
 
 import com.lab.smartmobility.billie.config.CommonEncoder;
 import com.lab.smartmobility.billie.dto.staff.*;
-import com.lab.smartmobility.billie.entity.HttpMessage;
+import com.lab.smartmobility.billie.entity.HttpBodyMessage;
 import com.lab.smartmobility.billie.entity.Staff;
 import com.lab.smartmobility.billie.repository.StaffRepository;
 import com.lab.smartmobility.billie.repository.StaffRepositoryImpl;
@@ -11,7 +11,6 @@ import lombok.RequiredArgsConstructor;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -22,7 +21,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Transactional
@@ -94,12 +92,12 @@ public class StaffService implements UserDetailsService {
     }
 
     /*회원가입*/
-    public HttpMessage joinIn(SignUpForm signUpForm) {
+    public HttpBodyMessage joinIn(SignUpForm signUpForm) {
         Staff staff=staffRepository.findByEmail(signUpForm.getEmail());
         if(staff.getPasswordToCheckMatch() != null && staff.getRole() != null){
-            return new HttpMessage("fail", "exists join info");
+            return new HttpBodyMessage("fail", "exists join info");
         }else if(staff.getIsVerified() == 0){
-            return new HttpMessage("fail", "not verified");
+            return new HttpBodyMessage("fail", "not verified");
         }
 
         if (staff.getDepartment().equals("관리부") || staff.getStaffNum().equals(4L) || staff.getRank().equals("대표")) {
@@ -112,7 +110,7 @@ public class StaffService implements UserDetailsService {
 
         staff.setPassword(passwordEncoder.encode(signUpForm.getPassword()));
         staffRepository.save(staff);
-        return new HttpMessage("success", "success sign up");
+        return new HttpBodyMessage("success", "success sign up");
     }
 
     /*비밀번호 찾기*/

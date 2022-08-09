@@ -1,7 +1,7 @@
 package com.lab.smartmobility.billie.service;
 
 import com.lab.smartmobility.billie.dto.staff.StaffInfoForm;
-import com.lab.smartmobility.billie.entity.HttpMessage;
+import com.lab.smartmobility.billie.entity.HttpBodyMessage;
 import com.lab.smartmobility.billie.entity.Staff;
 import com.lab.smartmobility.billie.repository.StaffRepository;
 import com.lab.smartmobility.billie.repository.StaffRepositoryImpl;
@@ -31,46 +31,46 @@ public class MyPageService {
     }
 
     /*신규직원 추가*/
-    public HttpMessage registerNewStaff(StaffInfoForm staffInfoForm){
+    public HttpBodyMessage registerNewStaff(StaffInfoForm staffInfoForm){
         Staff newStaff = modelMapper.map(staffInfoForm, Staff.class);
         staffRepository.save(newStaff);
-        return new HttpMessage("success", "success-register");
+        return new HttpBodyMessage("success", "success-register");
     }
 
     /*직원 정보 수정*/
-    public HttpMessage modifyStaffInfo(Long staffNum, StaffInfoForm staffInfoForm){
+    public HttpBodyMessage modifyStaffInfo(Long staffNum, StaffInfoForm staffInfoForm){
         Staff staff = staffRepository.findByStaffNum(staffNum);
         if(staff == null){
-            return new HttpMessage("success", "not-exits-staff-info");
+            return new HttpBodyMessage("success", "not-exits-staff-info");
         }
 
         staffInfoForm.setStaffNum(staffNum);
         modelMapper.map(staffInfoForm, staff);
 
         staffRepository.save(staff);
-        return new HttpMessage("success", "success-modify");
+        return new HttpBodyMessage("success", "success-modify");
     }
 
     /*퇴사처리*/
-    public HttpMessage resign(Long staffNum){
+    public HttpBodyMessage resign(Long staffNum){
         Staff retiredStaff = staffRepository.findByStaffNum(staffNum);
         if(retiredStaff == null){
-            return new HttpMessage("success", "not-exits-staff-info");
+            return new HttpBodyMessage("success", "not-exits-staff-info");
         }
 
         retiredStaff.resign(1);
         staffRepository.save(retiredStaff);
-        return new HttpMessage("success", "success-resign");
+        return new HttpBodyMessage("success", "success-resign");
     }
 
     /*정보삭제*/
-    public HttpMessage remove(Long staffNum){
+    public HttpBodyMessage remove(Long staffNum){
         Staff staff = staffRepository.findByStaffNum(staffNum);
         if(staff == null){
-            return new HttpMessage("success", "not-exits-staff-info");
+            return new HttpBodyMessage("success", "not-exits-staff-info");
         }
 
         staffRepository.delete(staff);
-        return new HttpMessage("success", "success-remove");
+        return new HttpBodyMessage("success", "success-remove");
     }
 }

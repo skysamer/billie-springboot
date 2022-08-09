@@ -55,7 +55,6 @@ public class VehicleReservation {
 
     @ManyToOne
     @JoinColumn(name = "staff_num", referencedColumnName = "staff_num")
-    @ApiModelProperty(value = "대여자 정보")
     private Staff staff;
 
     public void modifyRentInfoByAdmin(Vehicle vehicle, LocalDateTime rentedAt, LocalDateTime returnedAt){

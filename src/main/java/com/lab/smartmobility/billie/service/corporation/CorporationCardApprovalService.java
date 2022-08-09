@@ -4,7 +4,7 @@ import com.lab.smartmobility.billie.dto.NotificationEventDTO;
 import com.lab.smartmobility.billie.dto.TotalCount;
 import com.lab.smartmobility.billie.dto.corporation.ApprovalCardUseForm;
 import com.lab.smartmobility.billie.dto.corporation.CompanionCardUseForm;
-import com.lab.smartmobility.billie.entity.HttpMessage;
+import com.lab.smartmobility.billie.entity.HttpBodyMessage;
 import com.lab.smartmobility.billie.entity.Staff;
 import com.lab.smartmobility.billie.entity.corporation.Application;
 import com.lab.smartmobility.billie.entity.corporation.CorporationCard;
@@ -50,7 +50,7 @@ public class CorporationCardApprovalService {
     }
 
     /*부서장의 카드 사용 승인*/
-    public HttpMessage approveCardUseByManager(List<ApprovalCardUseForm> approvalCardUseForms){
+    public HttpBodyMessage approveCardUseByManager(List<ApprovalCardUseForm> approvalCardUseForms){
         try{
             for(ApprovalCardUseForm approvalCardUseForm : approvalCardUseForms){
                 Application application=applicationRepository.findByApplicationId(approvalCardUseForm.getApplicationId());
@@ -69,13 +69,13 @@ public class CorporationCardApprovalService {
             }
         }catch (Exception e){
             log.error(e);
-            return new HttpMessage("fail", "fail-approve");
+            return new HttpBodyMessage("fail", "fail-approve");
         }
-        return new HttpMessage("success", "success-approve");
+        return new HttpBodyMessage("success", "success-approve");
     }
 
     /*카드 사용 반려*/
-    public HttpMessage rejectCardUse(List<CompanionCardUseForm> companionCardUseForms){
+    public HttpBodyMessage rejectCardUse(List<CompanionCardUseForm> companionCardUseForms){
         try{
             for(CompanionCardUseForm companionCardUseForm : companionCardUseForms){
                 Application application=applicationRepository.findByApplicationId(companionCardUseForm.getApplicationId());
@@ -93,9 +93,9 @@ public class CorporationCardApprovalService {
             }
         }catch (Exception e){
             log.error(e);
-            return new HttpMessage("fail", "fail-reject");
+            return new HttpBodyMessage("fail", "fail-reject");
         }
-        return new HttpMessage("success", "success-reject");
+        return new HttpBodyMessage("success", "success-reject");
     }
 
     /*관리자의 요청 관리 목록 조회*/
@@ -109,7 +109,7 @@ public class CorporationCardApprovalService {
     }
 
     /*관리자의 최종 사용 승인*/
-    public HttpMessage approveCardUseByAdmin(List<ApprovalCardUseForm> approvalCardUseForms){
+    public HttpBodyMessage approveCardUseByAdmin(List<ApprovalCardUseForm> approvalCardUseForms){
         for(ApprovalCardUseForm approvalCardUseForm : approvalCardUseForms){
             Application toBeApproveApplication = applicationRepository.findByApplicationId(approvalCardUseForm.getApplicationId());
             CorporationCard card = cardRepository.findByCardNameAndCompany(approvalCardUseForm.getCardName(), approvalCardUseForm.getCompany());
@@ -142,7 +142,7 @@ public class CorporationCardApprovalService {
             applicationRepository.save(toBeApproveApplication);
             applicationEventPublisher.publishEvent(notificationEvent);
         }
-        return new HttpMessage("success", "success-final-approve");
+        return new HttpBodyMessage("success", "success-final-approve");
     }
 
     /*시간대가 겹치는지 체크*/
