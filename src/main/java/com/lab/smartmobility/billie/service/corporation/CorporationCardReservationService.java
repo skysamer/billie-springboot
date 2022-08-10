@@ -1,6 +1,5 @@
 package com.lab.smartmobility.billie.service.corporation;
 
-import com.lab.smartmobility.billie.dto.NotificationEventDTO;
 import com.lab.smartmobility.billie.dto.TotalCount;
 import com.lab.smartmobility.billie.dto.corporation.ApplyCorporationCardForm;
 import com.lab.smartmobility.billie.entity.HttpBodyMessage;
@@ -13,7 +12,6 @@ import com.lab.smartmobility.billie.util.NotificationSender;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.logging.Log;
 import org.modelmapper.ModelMapper;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,7 +30,6 @@ public class CorporationCardReservationService {
     private final NotificationSender notificationSender;
     private final DateTimeUtil dateTimeUtil;
 
-    private final ApplicationEventPublisher applicationEventPublisher;
     private final ModelMapper modelMapper;
     private final Log log;
 
@@ -54,13 +51,9 @@ public class CorporationCardReservationService {
             application.updateApprovalStatus('t');
         }
 
-        NotificationEventDTO notificationEvent = NotificationEventDTO.builder()
-                .requester(requester.getName()).receiver(approval.getName())
-                .approvalStatus(application.getApprovalStatus()).type("corporation").approval(approval)
-                .build();
         try{
             applicationRepository.save(application);
-            applicationEventPublisher.publishEvent(notificationEvent);
+            notificationSender.sendNotification("corporation", approval, 1);
         }catch (Exception e){
             log.error("fail : "+e);
             return new HttpBodyMessage("fail", "fail-application");
@@ -80,14 +73,9 @@ public class CorporationCardReservationService {
             application.updateApprovalStatus('t');
         }
 
-        NotificationEventDTO notificationEvent = NotificationEventDTO.builder()
-                .requester(requester.getName()).receiver(approval.getName())
-                .approvalStatus(application.getApprovalStatus()).type("corporation").approval(approval)
-                .build();
-
         try{
             applicationRepository.save(application);
-            applicationEventPublisher.publishEvent(notificationEvent);
+            notificationSender.sendNotification("corporation", approval, 1);
         }catch (Exception e){
             log.error("fail : "+e);
             return new HttpBodyMessage("fail", "fail-application");

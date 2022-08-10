@@ -10,9 +10,9 @@ import com.lab.smartmobility.billie.entity.corporation.Application;
 import com.lab.smartmobility.billie.entity.corporation.CorporationCard;
 import com.lab.smartmobility.billie.repository.StaffRepository;
 import com.lab.smartmobility.billie.repository.corporation.*;
+import com.lab.smartmobility.billie.util.NotificationSender;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.logging.Log;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,11 +29,11 @@ public class CorporationCardApprovalService {
     private final ApplicationRepository applicationRepository;
     private final StaffRepository staffRepository;
     private final ApplicationRepositoryImpl applicationRepositoryImpl;
-
-    private final ApplicationEventPublisher applicationEventPublisher;
+    private final NotificationSender notificationSender;
     private final Log log;
 
     private static final Long ADMIN_ID = 4L;
+    private static final String NOTIFICATION_DOMAIN_TYPE = "corporation";
 
     /*부서장의 요청 관리 목록 조회*/
     public List<Application> getListOfApprovalsRequestByManager(Long managerNum, String cardName, String baseYear, int disposalInfo, Pageable pageable){
@@ -55,17 +55,10 @@ public class CorporationCardApprovalService {
             for(ApprovalCardUseForm approvalCardUseForm : approvalCardUseForms){
                 Application application=applicationRepository.findByApplicationId(approvalCardUseForm.getApplicationId());
                 application.approveByManager('t');
-
-                Staff requester = application.getStaff();
                 Staff admin = staffRepository.findByStaffNum(ADMIN_ID);
 
-                NotificationEventDTO notificationEvent = NotificationEventDTO.builder()
-                        .requester(requester.getName()).receiver(admin.getName())
-                        .approvalStatus(application.getApprovalStatus()).approval(admin)
-                        .build();
-
                 applicationRepository.save(application);
-                applicationEventPublisher.publishEvent(notificationEvent);
+                notificationSender.sendNotification(NOTIFICATION_DOMAIN_TYPE, admin, 1);
             }
         }catch (Exception e){
             log.error(e);
@@ -80,16 +73,10 @@ public class CorporationCardApprovalService {
             for(CompanionCardUseForm companionCardUseForm : companionCardUseForms){
                 Application application=applicationRepository.findByApplicationId(companionCardUseForm.getApplicationId());
                 application.reject('c', companionCardUseForm.getReason());
-
                 Staff requester = application.getStaff();
 
-                NotificationEventDTO notificationEvent = NotificationEventDTO.builder()
-                        .requester(requester.getName()).receiver(requester.getName())
-                        .approvalStatus(application.getApprovalStatus()).type("corporation").approval(requester)
-                        .build();
-
                 applicationRepository.save(application);
-                applicationEventPublisher.publishEvent(notificationEvent);
+                notificationSender.sendNotification(NOTIFICATION_DOMAIN_TYPE, requester, 0);
             }
         }catch (Exception e){
             log.error(e);
@@ -116,13 +103,9 @@ public class CorporationCardApprovalService {
             if(card == null){
                 toBeApproveApplication.approveExpenseByAdmin(1, 'f');
                 Staff requester = toBeApproveApplication.getStaff();
-                NotificationEventDTO notificationEvent = NotificationEventDTO.builder()
-                        .requester(requester.getName()).receiver(requester.getName())
-                        .approvalStatus(toBeApproveApplication.getApprovalStatus()).type("corporation").approval(requester)
-                        .build();
 
                 applicationRepository.save(toBeApproveApplication);
-                applicationEventPublisher.publishEvent(notificationEvent);
+                notificationSender.sendNotification(NOTIFICATION_DOMAIN_TYPE, requester, 0);
                 continue;
             }
 
@@ -132,15 +115,10 @@ public class CorporationCardApprovalService {
                 throw new RuntimeException();
             }
             toBeApproveApplication.approveCorporationByAdmin(card, 'f');
-
             Staff requester = toBeApproveApplication.getStaff();
-            NotificationEventDTO notificationEvent = NotificationEventDTO.builder()
-                    .requester(requester.getName()).receiver(requester.getName())
-                    .approvalStatus(toBeApproveApplication.getApprovalStatus()).type("corporation").approval(requester)
-                    .build();
 
             applicationRepository.save(toBeApproveApplication);
-            applicationEventPublisher.publishEvent(notificationEvent);
+            notificationSender.sendNotification(NOTIFICATION_DOMAIN_TYPE, requester, 0);
         }
         return new HttpBodyMessage("success", "success-final-approve");
     }

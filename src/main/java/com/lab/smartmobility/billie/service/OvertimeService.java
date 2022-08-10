@@ -59,7 +59,6 @@ public class OvertimeService {
         Notification notification=Notification.builder()
                 .type("overtime")
                 .createdAt(LocalDateTime.now())
-                .readAt(0)
                 .build();
     }
 

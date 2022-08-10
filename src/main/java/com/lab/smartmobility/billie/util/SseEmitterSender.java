@@ -14,18 +14,18 @@ import static com.lab.smartmobility.billie.controller.SseController.SSE_EMITTERS
 @RequiredArgsConstructor
 public class SseEmitterSender {
     private final NotificationRepository notificationRepository;
-    private final Log log= LogFactory.getLog(getClass());
+    private final Log log = LogFactory.getLog(getClass());
 
     public void sendSseEmitter(Staff staff, Notification notification){
-        log.info("sse-start");
+        notificationRepository.save(notification);
+
         if(SSE_EMITTERS.containsKey(staff.getEmail())){
             SseEmitter sseEmitter= SSE_EMITTERS.get(staff.getEmail());
-            log.info(staff.getEmail());
             try{
                 sseEmitter.send(SseEmitter.event().name("notification").data(notification));
                 log.info("success");
             }catch (Exception e){
-                e.printStackTrace();
+                log.error(e.getMessage());
                 SSE_EMITTERS.remove(staff.getEmail());
             }
         }

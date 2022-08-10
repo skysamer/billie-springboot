@@ -41,7 +41,7 @@ public class VacationApplicationService {
         Vacation vacation = modelMapper.map(vacationApplicationForm, Vacation.class);
 
         insertVacationEntity(applicant, vacation);
-        notificationSender.sendVacationNotification(applicant, approval, vacation);
+        notificationSender.sendNotification("vacation", approval, 1);
         return new HttpBodyMessage("success", "휴가 신청 성공");
     }
 

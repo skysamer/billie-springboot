@@ -10,7 +10,6 @@ import java.util.List;
 
 @Transactional(readOnly = true)
 public interface NotificationRepository extends JpaRepository<Notification, Long> {
-    List<Notification> findAllByReceiverAndReadAt(String receiver, int readAt);
-    //boolean existsByStaffAndReadAt(Staff staff, int readAt);
-    Notification findByNotificationNum(Long notificationNum);
+    List<Notification> findAllByReceiver(String receiver);
+    void deleteByReceiver(String receiver);
 }
