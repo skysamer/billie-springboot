@@ -1,16 +1,15 @@
 package com.lab.smartmobility.billie.dto.announcement;
 
+import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
 
-import javax.persistence.Column;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 @Getter
+@ApiModel(value = "공지 및 내규 상세 조회 폼")
 public class AnnouncementDetailsForm {
     @ApiModelProperty(value = "번호")
     private Long id;

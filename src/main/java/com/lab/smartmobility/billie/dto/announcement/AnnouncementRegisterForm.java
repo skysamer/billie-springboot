@@ -1,11 +1,13 @@
 package com.lab.smartmobility.billie.dto.announcement;
 
+import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 
 import javax.validation.constraints.NotNull;
 
 @Getter
+@ApiModel(value = "공지 및 내규 등록/수정 폼")
 public class AnnouncementRegisterForm {
     @ApiModelProperty(value = "종류")
     @NotNull(message="해당 값은 null 일 수 없습니다.")

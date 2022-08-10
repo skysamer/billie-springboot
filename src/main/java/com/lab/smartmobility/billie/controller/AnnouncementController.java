@@ -47,7 +47,7 @@ public class AnnouncementController {
     })
     @PostMapping("/admin")
     public ResponseEntity<HttpBodyMessage> register(@Valid @RequestPart("announcement") AnnouncementRegisterForm announcementRegisterForm,
-                                                    @Nullable @RequestPart("file") List<MultipartFile> attachments){
+                                                    @Nullable @RequestPart(value = "file", required = false) List<MultipartFile> attachments){
         HttpBodyMessage httpBodyMessage = service.register(announcementRegisterForm, attachments);
         return new ResponseEntity<>(httpBodyMessage, HttpStatus.OK);
     }
