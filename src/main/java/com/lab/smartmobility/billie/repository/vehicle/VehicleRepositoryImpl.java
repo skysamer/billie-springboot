@@ -1,7 +1,12 @@
 package com.lab.smartmobility.billie.repository.vehicle;
 
 import com.lab.smartmobility.billie.dto.vehicle.NonBorrowableVehicle;
+import com.lab.smartmobility.billie.entity.QVehicle;
+import com.lab.smartmobility.billie.entity.QVehicleReservation;
 import com.querydsl.core.types.Projections;
+import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.core.types.dsl.Expressions;
+import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.logging.Log;
@@ -21,15 +26,22 @@ public class VehicleRepositoryImpl {
     private final Log log;
     private final JPAQueryFactory jpaQueryFactory;
 
-    public List<NonBorrowableVehicle> getNonBorrowableVehicleList(LocalDateTime rentedAt, LocalDateTime returnedAt){
+    public List<NonBorrowableVehicle> getNonBorrowableVehicleList(LocalDateTime rentedAt, LocalDateTime returnedAt, Long rentNum){
         return jpaQueryFactory
                 .select(Projections.fields(NonBorrowableVehicle.class, vehicle.vehicleName))
                 .from(vehicleReservation)
                 .innerJoin(vehicle)
                 .on(vehicleReservation.vehicle.vehicleNum.eq(vehicle.vehicleNum))
-                .where(vehicleReservation.rentedAt.before(returnedAt)
-                        .and(vehicleReservation.returnedAt.after(rentedAt)))
+                .where(Expressions.asBoolean(true).isTrue()
+                        .and(rentNumNe(rentNum))
+                        .and(vehicleReservation.rentedAt.before(returnedAt))
+                        .and(vehicleReservation.returnedAt.after(rentedAt))
+                )
                 .groupBy(vehicle.vehicleName)
                 .fetch();
+    }
+
+    private BooleanExpression rentNumNe(Long rentNum){
+        return rentNum == -1 ? null : vehicleReservation.rentNum.ne(rentNum);
     }
 }

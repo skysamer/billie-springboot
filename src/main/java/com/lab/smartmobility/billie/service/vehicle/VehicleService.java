@@ -101,8 +101,8 @@ public class VehicleService {
     }
 
     /*해당 날짜에 예약이 불가능한 차량 목록 조회*/
-    public List<NonBorrowableVehicle> getBorrowableVehicleList(LocalDateTime rentedAt, LocalDateTime returnedAt){
-        return vehicleRepositoryImpl.getNonBorrowableVehicleList(rentedAt, returnedAt);
+    public List<NonBorrowableVehicle> getBorrowableVehicleList(LocalDateTime rentedAt, LocalDateTime returnedAt, Long rentNum){
+        return vehicleRepositoryImpl.getNonBorrowableVehicleList(rentedAt, returnedAt, rentNum);
     }
 
 }

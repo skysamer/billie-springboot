@@ -13,6 +13,7 @@ import com.lab.smartmobility.billie.repository.announcement.AnnouncementReposito
 import com.lab.smartmobility.billie.repository.announcement.AnnouncementRepositoryImpl;
 import com.lab.smartmobility.billie.repository.announcement.AnnouncementStaffLikeRepository;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.logging.Log;
 import org.modelmapper.ModelMapper;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -22,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;

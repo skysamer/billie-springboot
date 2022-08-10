@@ -89,16 +89,19 @@ public class TrafficCardController {
 
     @ApiOperation(value = "해당 날짜에 대여가 불가능한 카드 목록 조회")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "vacation-id", value = "각 휴가 데이터의 고유 시퀀스")
+            @ApiImplicitParam(name = "rented-at", value = "대여 시작 시간 (yyyy-MM-dd hh:mm)"),
+            @ApiImplicitParam(name = "returned-at", value = "대여 종료 시간 (yyyy-MM-dd hh:mm)"),
+            @ApiImplicitParam(name = "reservation-num", value = "예약 번호 (신규 예약은 -1)")
     })
     @ApiResponses({
             @ApiResponse(code = 200, message = "조회성공"),
             @ApiResponse(code = 404, message = "모든 카드 대여 가능")
     })
-    @GetMapping("/user/not-borrow/{rented-at}/{returned-at}")
+    @GetMapping("/user/not-borrow/{rented-at}/{returned-at}/{reservation-num}")
     public ResponseEntity<List<NonBorrowableTrafficCard>> getNonBorrowableCardList(@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm") @PathVariable("rented-at") LocalDateTime rentedAt,
-                                                                                   @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm") @PathVariable("returned-at") LocalDateTime returnedAt){
-        List<NonBorrowableTrafficCard> nonBorrowableTrafficCardList = service.getNonBorrowableCardList(rentedAt, returnedAt);
+                                                                                   @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm") @PathVariable("returned-at") LocalDateTime returnedAt,
+                                                                                   @PathVariable("reservation-num") Long reservationNum){
+        List<NonBorrowableTrafficCard> nonBorrowableTrafficCardList = service.getNonBorrowableCardList(rentedAt, returnedAt, reservationNum);
         if(nonBorrowableTrafficCardList.size() == 0){
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }

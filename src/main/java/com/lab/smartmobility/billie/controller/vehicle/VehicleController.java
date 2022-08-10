@@ -81,10 +81,11 @@ public class VehicleController {
         return new HttpBodyMessage("success", "폐기 성공");
     }
 
-    @GetMapping("/user/not-borrow/{rented-at}/{returned-at}")
+    @GetMapping("/user/not-borrow/{rented-at}/{returned-at}/{rent-num}")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "rented-at", value = "대여 시작 시간 (yyyy-MM-dd hh:mm)"),
-            @ApiImplicitParam(name = "returned-at", value = "대여 종료 시간 (yyyy-MM-dd hh:mm)")
+            @ApiImplicitParam(name = "returned-at", value = "대여 종료 시간 (yyyy-MM-dd hh:mm)"),
+            @ApiImplicitParam(name = "rent-num", value = "예약 번호 (신규 예약은 -1)")
     })
     @ApiOperation(value = "해당 예약 날짜에 빌릴수 없는 차량 목록 조회")
     @ApiResponses({
@@ -92,8 +93,9 @@ public class VehicleController {
             @ApiResponse(code = 404, message = "모든 차량 대여 가능")
     })
     public ResponseEntity<List<NonBorrowableVehicle>> getNonBorrowableVehicleList(@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm") @PathVariable("rented-at") LocalDateTime rentedAt,
-                                                                                  @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm") @PathVariable("returned-at") LocalDateTime returnedAt){
-        List<NonBorrowableVehicle> nonBorrowableVehicleList = service.getBorrowableVehicleList(rentedAt, returnedAt);
+                                                                                  @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm") @PathVariable("returned-at") LocalDateTime returnedAt,
+                                                                                  @PathVariable("rent-num") Long rentNum){
+        List<NonBorrowableVehicle> nonBorrowableVehicleList = service.getBorrowableVehicleList(rentedAt, returnedAt, rentNum);
         if(nonBorrowableVehicleList.size() == 0){
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }

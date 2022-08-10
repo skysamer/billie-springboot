@@ -88,7 +88,7 @@ public class TrafficCardService {
     }
 
     /*대여할 수 없는 카드 목록 조회*/
-    public List<NonBorrowableTrafficCard> getNonBorrowableCardList(LocalDateTime rentedAt, LocalDateTime returnedAt){
-        return cardRepositoryImpl.getNonBorrowableVehicleList(rentedAt, returnedAt);
+    public List<NonBorrowableTrafficCard> getNonBorrowableCardList(LocalDateTime rentedAt, LocalDateTime returnedAt, Long reservationNum){
+        return cardRepositoryImpl.getNonBorrowableVehicleList(rentedAt, returnedAt, reservationNum);
     }
 }

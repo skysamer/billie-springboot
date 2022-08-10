@@ -3,6 +3,8 @@ package com.lab.smartmobility.billie.repository.traffic;
 import com.lab.smartmobility.billie.dto.traffic.NonBorrowableTrafficCard;
 import com.lab.smartmobility.billie.dto.vehicle.NonBorrowableVehicle;
 import com.querydsl.core.types.Projections;
+import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.logging.Log;
@@ -22,15 +24,21 @@ public class TrafficCardRepositoryImpl {
     private final Log log;
     private final JPAQueryFactory jpaQueryFactory;
 
-    public List<NonBorrowableTrafficCard> getNonBorrowableVehicleList(LocalDateTime rentedAt, LocalDateTime returnedAt){
+    public List<NonBorrowableTrafficCard> getNonBorrowableVehicleList(LocalDateTime rentedAt, LocalDateTime returnedAt, Long reservationNum){
         return jpaQueryFactory
                 .select(Projections.fields(NonBorrowableTrafficCard.class, trafficCard.cardNum))
                 .from(trafficCardReservation)
                 .innerJoin(trafficCard)
                 .on(trafficCardReservation.trafficCard.cardNum.eq(trafficCard.cardNum))
-                .where(trafficCardReservation.rentedAt.before(returnedAt)
+                .where(Expressions.asBoolean(true).isTrue()
+                        .and(reservationNumNe(reservationNum))
+                        .and(trafficCardReservation.rentedAt.before(returnedAt))
                         .and(trafficCardReservation.returnedAt.after(rentedAt)))
                 .groupBy(trafficCard.cardNum)
                 .fetch();
+    }
+
+    private BooleanExpression reservationNumNe(Long reservationNum){
+        return reservationNum == -1 ? null : trafficCardReservation.reservationNum.ne(reservationNum);
     }
 }
