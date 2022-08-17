@@ -13,6 +13,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @Api(tags = {"휴가 신청 api"})
 @RequiredArgsConstructor
 @RequestMapping("/vacation/*")
@@ -24,7 +26,7 @@ public class VacationApplicationController {
     @ApiOperation(value = "휴가 신청")
     @ApiResponses({
             @ApiResponse(code = 200, message = "휴가 신청 성공"),
-            @ApiResponse(code = 400, message = "이전 날짜로 신청할 수 없습니다")
+            @ApiResponse(code = 400, message = "이전 날짜로 신청할 수 없습니다 // 휴가 개수를 모두 소진했습니다")
     })
     @PostMapping("/user/apply")
     public ResponseEntity<HttpBodyMessage> apply(@RequestBody VacationApplicationForm vacationApplicationForm){
@@ -77,5 +79,20 @@ public class VacationApplicationController {
         return new ResponseEntity<>(vacation, HttpStatus.OK);
     }
 
-
+    @ApiOperation(value = "나의 최근 휴가 신청 내역 조회")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "staff-num", value = "직원 고유 번호")
+    })
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "조회성공"),
+            @ApiResponse(code = 404, message = "조건에 맞는 데이터 없음")
+    })
+    @GetMapping("/user/application/recent/{staff-num}")
+    public ResponseEntity<List<Vacation>> getMyRecentApplication(@PathVariable("staff-num") Long staffNum){
+        List<Vacation> myRecentVacationList = service.getMyRecentApplication(staffNum);
+        if(myRecentVacationList.size() == 0){
+            return new ResponseEntity<>(myRecentVacationList, HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(myRecentVacationList, HttpStatus.OK);
+    }
 }

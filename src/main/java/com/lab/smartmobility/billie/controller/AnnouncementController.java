@@ -42,35 +42,37 @@ public class AnnouncementController {
 
     @ApiOperation(value = "게시글 등록")
     @ApiResponses({
-            @ApiResponse(code = 200, message = "게시글 등록 성공"),
+            @ApiResponse(code = 201, message = "게시글 등록 성공"),
             @ApiResponse(code = 400, message = "요청값은 null일 수 없습니다"),
     })
     @PostMapping("/admin")
     public ResponseEntity<HttpBodyMessage> register(@Valid @RequestPart("announcement") AnnouncementRegisterForm announcementRegisterForm,
                                                     @Nullable @RequestPart(value = "file", required = false) List<MultipartFile> attachments){
         HttpBodyMessage httpBodyMessage = service.register(announcementRegisterForm, attachments);
-        return new ResponseEntity<>(httpBodyMessage, HttpStatus.OK);
+        return new ResponseEntity<>(httpBodyMessage, HttpStatus.CREATED);
     }
 
     @ApiOperation(value = "게시글 목록 조회")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "type", value = "종류"),
+            @ApiImplicitParam(name = "date", value = "연월 (yyyy-MM, 전체는 all)"),
             @ApiImplicitParam(name = "keyword", value = "검색어"),
             @ApiImplicitParam(name = "page", value = "페이지"),
             @ApiImplicitParam(name = "size", value = "게시글 수")
     })
     @ApiResponses({
             @ApiResponse(code = 200, message = "조회 성공"),
-            @ApiResponse(code = 404, message = "조건에 맞는 데이터 없음")
+            @ApiResponse(code = 204, message = "조건에 맞는 데이터 없음")
     })
-    @GetMapping("/user/{type}/{keyword}/{page}/{size}")
+    @GetMapping("/user/{type}/{date}/{keyword}/{page}/{size}")
     public ResponseEntity<PageResult<Announcement>> getAnnouncementList(@PathVariable String type,
+                                                        @PathVariable String date,
                                                         @PathVariable String keyword,
                                                         @PathVariable Integer page,
                                                         @PathVariable Integer size){
-        PageResult<Announcement> pageResult = service.getAnnouncementList(type, keyword, PageRequest.of(page, size));
+        PageResult<Announcement> pageResult = service.getAnnouncementList(type, date, keyword, PageRequest.of(page, size));
         if(pageResult.getCount() == 0){
-            return new ResponseEntity<>(pageResult, HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(pageResult, HttpStatus.NO_CONTENT);
         }
         return new ResponseEntity<>(pageResult, HttpStatus.OK);
     }
@@ -123,7 +125,7 @@ public class AnnouncementController {
     })
     @ApiResponses({
             @ApiResponse(code = 200, message = "게시글 삭제 성공"),
-            @ApiResponse(code = 404, message = "게시글을 찾을 수 없음")
+            @ApiResponse(code = 400, message = "해당하는 게시글을 찾을 수 없음")
     })
     @DeleteMapping("/admin/{id}")
     public ResponseEntity<HttpBodyMessage> remove(@PathVariable Long id){
@@ -176,5 +178,39 @@ public class AnnouncementController {
     public ResponseEntity<MainAnnouncementCountDTO> countMainAnnouncement(){
         MainAnnouncementCountDTO mainAnnouncementCount = service.countMain();
         return new ResponseEntity<>(mainAnnouncementCount, HttpStatus.OK);
+    }
+
+    @ApiOperation(value = "이전글 조회")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "id", value = "번호"),
+    })
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "조회 성공"),
+            @ApiResponse(code = 204, message = "이전글이 존재하지 않음")
+    })
+    @GetMapping("/user/prev/{id}")
+    public ResponseEntity<AnnouncementDetailsForm> movePrev(@PathVariable Long id){
+        AnnouncementDetailsForm announcement = service.movePrev(id);
+        if(announcement == null){
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+        return new ResponseEntity<>(announcement, HttpStatus.OK);
+    }
+
+    @ApiOperation(value = "다음글 조회")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "id", value = "번호"),
+    })
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "조회 성공"),
+            @ApiResponse(code = 204, message = "다음글이 존재하지 않음")
+    })
+    @GetMapping("/user/next/{id}")
+    public ResponseEntity<AnnouncementDetailsForm> moveNext(@PathVariable Long id){
+        AnnouncementDetailsForm announcement = service.moveNext(id);
+        if(announcement == null){
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+        return new ResponseEntity<>(announcement, HttpStatus.OK);
     }
 }

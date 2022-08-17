@@ -1,5 +1,6 @@
 package com.lab.smartmobility.billie.dto.announcement;
 
+import com.lab.smartmobility.billie.entity.Attachment;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
@@ -36,9 +37,9 @@ public class AnnouncementDetailsForm {
     private LocalDateTime modifiedAt;
 
     @ApiModelProperty(value = "첨부파일 정보 (uuid가 포함된 파일이름)")
-    private final List<String> filenameList = new ArrayList<>();
+    private final List<String> filename = new ArrayList<>();
 
-    public void setFilenameList(List<String> filenameList){
-        this.filenameList.addAll(filenameList);
+    public void addFilename(List<String> filename){
+        this.filename.addAll(filename);
     }
 }

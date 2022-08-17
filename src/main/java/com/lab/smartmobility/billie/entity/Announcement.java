@@ -38,10 +38,6 @@ public class Announcement extends BaseTimeEntity{
         this.isMain = 0;
     }
 
-    public void plusViews(){
-        this.views++;
-    }
-
     public void plusLike(){
         this.likes++;
     }

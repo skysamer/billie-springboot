@@ -49,8 +49,8 @@ public class VehicleReturnService {
     /*차량 반납 신청*/
     public int returnVehicle(VehicleReturnDTO vehicleReturnDTO){
         try{
-            changeVehicleInfo(vehicleReturnDTO);
-            updateReturnInfo(vehicleReturnDTO);
+            modifyVehicleInfo(vehicleReturnDTO);
+            modifyReservationInfo(vehicleReturnDTO);
         }catch (Exception e){
             e.printStackTrace();
             return 9999;
@@ -98,14 +98,14 @@ public class VehicleReturnService {
     }
 
     /*반납 시 차량 정보 업데이트*/
-    private void changeVehicleInfo(VehicleReturnDTO vehicleReturnDTO) {
+    private void modifyVehicleInfo(VehicleReturnDTO vehicleReturnDTO) {
         Vehicle vehicle = vehicleRepository.findByVehicleNum(vehicleRepository.findByVehicleName(vehicleReturnDTO.getVehicleName()).getVehicleNum());
         vehicle.update(0, vehicleReturnDTO.getParkingLoc(), vehicleReturnDTO.getDistanceDriven());
         vehicleRepository.save(vehicle);
     }
 
-    /*반납 정보 업데이트*/
-    private void updateReturnInfo(VehicleReturnDTO vehicleReturnDTO) {
+    /*예약 정보 반납 상태로 업데이트*/
+    private void modifyReservationInfo(VehicleReturnDTO vehicleReturnDTO) {
         VehicleReservation updatedReturnInfo=reservationRepository.findByRentNum(vehicleReturnDTO.getRentNum());
         LocalDateTime returnedAt = dateTimeUtil.combineDateAndTime(vehicleReturnDTO.getDateOfReturn(), vehicleReturnDTO.getTimeOfReturn());
 
@@ -121,8 +121,8 @@ public class VehicleReturnService {
             return reservationRepositoryImpl.findAll(vehicle, disposalInfo, pageRequest);
         }
 
-        LocalDateTime startDateTime= dateTimeUtil.getStartDateTime(baseDate);
-        LocalDateTime endDateTime= dateTimeUtil.getEndDateTime(baseDate);
+        LocalDateTime startDateTime = dateTimeUtil.getStartDateTime(baseDate);
+        LocalDateTime endDateTime = dateTimeUtil.getEndDateTime(baseDate);
         return reservationRepositoryImpl.findAll(vehicle, startDateTime, endDateTime, disposalInfo, pageRequest);
     }
 
@@ -132,8 +132,8 @@ public class VehicleReturnService {
         if(baseDate.equals("all")){
             return reservationRepositoryImpl.countByReturnStatus(vehicle, disposalInfo);
         }
-        LocalDateTime startDateTime= dateTimeUtil.getStartDateTime(baseDate);
-        LocalDateTime endDateTime= dateTimeUtil.getEndDateTime(baseDate);
+        LocalDateTime startDateTime = dateTimeUtil.getStartDateTime(baseDate);
+        LocalDateTime endDateTime = dateTimeUtil.getEndDateTime(baseDate);
 
         return reservationRepositoryImpl.countByReturnStatus(vehicle, startDateTime, endDateTime, disposalInfo);
     }

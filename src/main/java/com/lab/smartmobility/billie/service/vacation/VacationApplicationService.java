@@ -18,6 +18,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.time.Period;
+import java.util.List;
 
 @Service
 @Transactional
@@ -37,12 +39,22 @@ public class VacationApplicationService {
             return new HttpBodyMessage("fail", "이전 날짜로 신청할 수 없습니다");
         }
         Staff applicant = staffRepository.findByStaffNum(vacationApplicationForm.getStaffNum());
+        int vacationRequestCount = 0;
+        if(applicant.getVacationCount() == 0){
+            return new HttpBodyMessage("fail", "휴가 개수를 모두 소진했습니다");
+        }
+
         Staff approval = assigneeToApprover.assignApproval(applicant);
         Vacation vacation = modelMapper.map(vacationApplicationForm, Vacation.class);
 
         insertVacationEntity(applicant, vacation);
         notificationSender.sendNotification("vacation", approval, 1);
         return new HttpBodyMessage("success", "휴가 신청 성공");
+    }
+
+    private int calculateVacationRequestCount(VacationApplicationForm vacationApplicationForm){
+        return Period.between(vacationApplicationForm.getStartDate(), vacationApplicationForm.getEndDate()).getDays() == 0 ? 0
+                : Period.between(vacationApplicationForm.getStartDate(), vacationApplicationForm.getEndDate()).getDays();
     }
 
     private boolean isEarlierDate(LocalDate startDate){
@@ -62,6 +74,12 @@ public class VacationApplicationService {
     /*나의 휴가 신청 내역 상세 조회*/
     public Vacation getMyApplication(Long vacationId){
         return vacationRepository.findByVacationId(vacationId);
+    }
+
+    /*나의 최근 휴가 신청 내역*/
+    public List<Vacation> getMyRecentApplication(Long staffNum) {
+        Staff staff = staffRepository.findByStaffNum(staffNum);
+        return vacationRepository.findTop4ByStaffOrderByStartDate(staff);
     }
 
     // TODO 휴가 신청 내역 수정

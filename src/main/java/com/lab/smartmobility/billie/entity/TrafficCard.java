@@ -48,4 +48,9 @@ public class TrafficCard {
     public void rent(int rentalStatus){
         this.rentalStatus = rentalStatus;
     }
+
+    public void returnCard(int balance){
+        this.rentalStatus = 0;
+        this.balance = balance;
+    }
 }

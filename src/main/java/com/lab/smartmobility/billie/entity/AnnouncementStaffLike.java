@@ -1,14 +1,9 @@
 package com.lab.smartmobility.billie.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
-
 import javax.persistence.*;
 
-@Getter @Builder
-@AllArgsConstructor @NoArgsConstructor
+@Getter
 @Entity @Table(name = "tbl_announcement_staff_like")
 public class AnnouncementStaffLike {
     @Id
@@ -19,4 +14,9 @@ public class AnnouncementStaffLike {
 
     @Column(name = "announcement_id")
     private Long announcementId;
+
+    public AnnouncementStaffLike(String email, Long announcementId){
+        this.email = email;
+        this.announcementId = announcementId;
+    }
 }

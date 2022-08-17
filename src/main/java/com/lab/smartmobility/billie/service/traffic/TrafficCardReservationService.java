@@ -34,15 +34,14 @@ public class TrafficCardReservationService {
     public int applyCardRental(TrafficCardApplyDTO trafficCardApplyDTO){
         try {
             TrafficCard trafficCard=cardRepository.findByCardNum(trafficCardApplyDTO.getCardNum());
-            log.info(trafficCard.toString());
             Staff renderInfo=staffRepository.findByStaffNum(trafficCardApplyDTO.getStaffNum());
+
             LocalDateTime rentedAt = dateTimeUtil.combineDateAndTime(trafficCardApplyDTO.getDateOfRental(), trafficCardApplyDTO.getTimeOfRental());
             LocalDateTime returnedAt = dateTimeUtil.combineDateAndTime(trafficCardApplyDTO.getExpectedReturnDate(), trafficCardApplyDTO.getExpectedReturnTime());
 
             if(LocalDateTime.now().isAfter(rentedAt)){
                 return 400;
             }
-
             if(checkReservationIsDuplicate(-1L, rentedAt, returnedAt, trafficCard)){
                 return 500;
             }

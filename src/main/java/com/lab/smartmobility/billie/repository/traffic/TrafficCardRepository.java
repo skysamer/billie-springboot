@@ -13,12 +13,4 @@ import org.springframework.transaction.annotation.Transactional;
 public interface TrafficCardRepository extends JpaRepository<TrafficCard, Long> {
     TrafficCard findByCardNum(Long cardNum);
     void deleteByCardNum(Long cardNum);
-
-    @Modifying
-    @Query(value = "UPDATE TrafficCard set balance = :balance where card_num = :cardNum")
-    void changeBalance(@Param("balance") int balance, @Param("cardNum") Long cardNum) throws Exception;
-
-    @Modifying
-    @Query(value = "UPDATE TrafficCard set rental_status = :rentalStatus where card_num = :cardNum")
-    void changeRentalStatus(@Param("rentalStatus") int rentalStatus, @Param("cardNum") Long cardNum) throws Exception;
 }

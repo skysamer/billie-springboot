@@ -41,21 +41,30 @@ public class TrafficCardReturnService {
     public int applyCardReturn(ReturnTrafficCardDTO returnTrafficCard){
         LocalDateTime returnedAt = dateTimeUtil.combineDateAndTime(returnTrafficCard.getDateOfReturn(), returnTrafficCard.getTimeOfReturn());
         try{
-            if(cardRepository.findByCardNum(returnTrafficCard.getCardNum())==null){
+            if(cardRepository.findByCardNum(returnTrafficCard.getCardNum()) == null){
                 throw new AccessDeniedException("error");
             }
-            cardRepository.changeRentalStatus(0, returnTrafficCard.getCardNum());
-            cardRepository.changeBalance(returnTrafficCard.getBalance(), returnTrafficCard.getCardNum());
 
-            TrafficCardReservation updatedCardReservationInfo=reservationRepository.findByReservationNum(returnTrafficCard.getReservationNum());
-            modelMapper.map(returnTrafficCard, updatedCardReservationInfo);
-            updatedCardReservationInfo.update(1, returnedAt, returnTrafficCard.getBalance());
-            reservationRepository.save(updatedCardReservationInfo);
+            returnCard(returnTrafficCard);
+            modifyCardReservationInfo(returnTrafficCard, returnedAt);
             return 0;
         }catch (Exception e){
             e.printStackTrace();
             return 9999;
         }
+    }
+
+    private void returnCard(ReturnTrafficCardDTO returnTrafficCard){
+        TrafficCard usedTrafficCard = cardRepository.findByCardNum(returnTrafficCard.getCardNum());
+        usedTrafficCard.returnCard(returnTrafficCard.getBalance());
+        cardRepository.save(usedTrafficCard);
+    }
+
+    private void modifyCardReservationInfo(ReturnTrafficCardDTO returnTrafficCard, LocalDateTime returnedAt){
+        TrafficCardReservation updatedCardReservationInfo = reservationRepository.findByReservationNum(returnTrafficCard.getReservationNum());
+        modelMapper.map(returnTrafficCard, updatedCardReservationInfo);
+        updatedCardReservationInfo.update(1, returnedAt, returnTrafficCard.getBalance());
+        reservationRepository.save(updatedCardReservationInfo);
     }
 
     /*교통카드 반납 목록 조회*/

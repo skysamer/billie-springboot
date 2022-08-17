@@ -26,7 +26,7 @@ import java.util.List;
 @RequestMapping("/traffic-card")
 public class TrafficCardReturnController {
     private final TrafficCardReturnService service;
-    private final Log log= LogFactory.getLog(getClass());
+    private final Log log = LogFactory.getLog(getClass());
 
     @PostMapping("/apply-return")
     @ApiOperation(value = "교통카드 반납 신청")

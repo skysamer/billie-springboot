@@ -13,7 +13,6 @@ import com.lab.smartmobility.billie.repository.announcement.AnnouncementReposito
 import com.lab.smartmobility.billie.repository.announcement.AnnouncementRepositoryImpl;
 import com.lab.smartmobility.billie.repository.announcement.AnnouncementStaffLikeRepository;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.logging.Log;
 import org.modelmapper.ModelMapper;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -23,8 +22,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
-import java.nio.file.Files;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -50,7 +47,6 @@ public class AnnouncementService {
 
         Announcement announcement = modelMapper.map(announcementRegisterForm, Announcement.class);
         announcementRepository.save(announcement);
-
         if(attachments != null){
             Announcement savedAnnouncement = announcementRepository.findFirstByOrderByIdDesc();
             uploadFiles(attachments, savedAnnouncement);
@@ -93,36 +89,18 @@ public class AnnouncementService {
     }
 
     /*게시글 목록 조회*/
-    public PageResult<Announcement> getAnnouncementList(String type, String keyword, Pageable pageable){
-        return announcementRepositoryImpl.getAnnouncementPaging(type, keyword, pageable);
+    public PageResult<Announcement> getAnnouncementList(String type, String date, String keyword, Pageable pageable){
+        return announcementRepositoryImpl.getAnnouncementPaging(type, date, keyword, pageable);
     }
 
     /*게시글 상세 조회*/
     public AnnouncementDetailsForm getAnnouncement(Long id){
-        Announcement announcement = announcementRepository.findById(id).orElse(null);
+        AnnouncementDetailsForm announcement = announcementRepositoryImpl.getAnnouncement(id);
         if(announcement == null){
             return null;
         }
-        plusViews(announcement);
-        return setAttachmentList(announcement);
-    }
-
-    /*첨부파일 정보 설정*/
-    private AnnouncementDetailsForm setAttachmentList(Announcement announcement){
-        List<Attachment> attachmentList = attachmentRepository.findByAnnouncement(announcement);
-        List<String> filenameList = new ArrayList<>();
-        for(Attachment attachment : attachmentList){
-            filenameList.add(attachment.getFilename());
-        }
-        AnnouncementDetailsForm announcementDetailsForm = modelMapper.map(announcement, AnnouncementDetailsForm.class);
-        announcementDetailsForm.setFilenameList(filenameList);
-        return announcementDetailsForm;
-    }
-
-    /*조회수 증가*/
-    private void plusViews(Announcement announcement){
-        announcement.plusViews();
-        announcementRepository.save(announcement);
+        announcementRepositoryImpl.updateViewsCount(id);
+        return announcement;
     }
 
     /*게시글 삭제*/
@@ -131,7 +109,7 @@ public class AnnouncementService {
             announcementRepository.deleteById(id);
             return new HttpBodyMessage("success", "게시글 삭제 성공");
         }catch (EmptyResultDataAccessException e){
-            return new HttpBodyMessage("fail", "게시글을 찾을 수 없음");
+            return new HttpBodyMessage("fail", "해당하는 게시글을 찾을 수 없음");
         }
     }
 
@@ -185,8 +163,7 @@ public class AnnouncementService {
         announcement.plusLike();
         announcementRepository.save(announcement);
 
-        AnnouncementStaffLike announcementStaffLike = AnnouncementStaffLike.builder()
-                .announcementId(announcementId).email(email).build();
+        AnnouncementStaffLike announcementStaffLike = new AnnouncementStaffLike(email, announcementId);
         announcementStaffLikeRepository.save(announcementStaffLike);
     }
 
@@ -194,5 +171,25 @@ public class AnnouncementService {
     public MainAnnouncementCountDTO countMain(){
         long count = announcementRepository.countByIsMain(1);
         return new MainAnnouncementCountDTO(count);
+    }
+
+    /*이전글 이동*/
+    public AnnouncementDetailsForm movePrev(Long id){
+        AnnouncementDetailsForm announcement = announcementRepositoryImpl.movePrev(id);
+        if(announcement == null){
+            return null;
+        }
+        announcementRepositoryImpl.updateViewsCount(id);
+        return announcement;
+    }
+
+    /*다음글 이동*/
+    public AnnouncementDetailsForm moveNext(Long id){
+        AnnouncementDetailsForm announcement = announcementRepositoryImpl.moveNext(id);
+        if(announcement == null){
+            return null;
+        }
+        announcementRepositoryImpl.updateViewsCount(id);
+        return announcement;
     }
 }

@@ -25,7 +25,7 @@ public class Attachment {
     @ApiModelProperty(value = "파일경로")
     private String filepath;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "announcement_id")
     private Announcement announcement;
 

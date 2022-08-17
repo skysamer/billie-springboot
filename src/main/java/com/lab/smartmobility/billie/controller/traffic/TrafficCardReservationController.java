@@ -21,7 +21,7 @@ import java.util.List;
 @RequestMapping("/traffic-card")
 public class TrafficCardReservationController {
     private final TrafficCardReservationService service;
-    private final Log log= LogFactory.getLog(getClass());
+    private final Log log;
 
     @PostMapping("/apply-rental")
     @ApiOperation(value = "교통카드 대여 신청")
