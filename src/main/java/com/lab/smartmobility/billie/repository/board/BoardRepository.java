@@ -1,4 +1,4 @@
-package com.lab.smartmobility.billie.repository;
+package com.lab.smartmobility.billie.repository.board;
 
 import com.lab.smartmobility.billie.entity.Board;
 import org.springframework.data.jpa.repository.JpaRepository;

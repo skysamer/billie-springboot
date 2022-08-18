@@ -54,7 +54,7 @@ public class AnnouncementController {
 
     @ApiOperation(value = "게시글 목록 조회")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "type", value = "종류"),
+            @ApiImplicitParam(name = "type", value = "종류 (전체는 all)"),
             @ApiImplicitParam(name = "date", value = "연월 (yyyy-MM, 전체는 all)"),
             @ApiImplicitParam(name = "keyword", value = "검색어"),
             @ApiImplicitParam(name = "page", value = "페이지"),

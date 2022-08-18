@@ -5,6 +5,8 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @ApiModel(value = "자유게시판 엔티티")
@@ -25,7 +27,12 @@ public class Board extends BaseTimeEntity{
     private long views;
 
     @ApiModelProperty(value = "댓글 수")
+    @Column(name = "reply_cnt")
     private int replyCnt;
+
+    @ApiModelProperty(value = "0: 실명, 1: 익명")
+    @Column(name = "is_anonymous")
+    private int isAnonymous;
 
     @ApiModelProperty(value = "좋아요 수")
     private long likes;
@@ -34,7 +41,22 @@ public class Board extends BaseTimeEntity{
     @JoinColumn(name = "staff_num")
     private Staff staff;
 
+    @OneToMany(mappedBy = "board", orphanRemoval = true)
+    private List<Reply> replyList = new ArrayList<>();
+
     public void setStaff(Staff staff) {
         this.staff = staff;
+    }
+
+    public void plusReplyCnt(){
+        this.replyCnt++;
+    }
+
+    public void plusLikes(){
+        this.likes++;
+    }
+
+    public void minusLikes(){
+        this.likes--;
     }
 }
