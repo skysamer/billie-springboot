@@ -1,4 +1,4 @@
-# :pushpin: 사내 전사관리 시스템 'Billie' (ReadMe 1차 작성)
+# :pushpin: 사내 전사관리 시스템 'Billie'
 > 사내 전사관리 시스템 REST API 개발
 > http://www.billie.work  
 > [사용자 메뉴얼](http://www.billie.work/manual)
@@ -15,7 +15,7 @@
 ## 2. 사용 기술
 #### `Back-end`
   - Java 11
-  - Spring Boot 2.6.2
+  - Spring Boot 2.6.x
   - Gradle
   - Spring Data JPA
   - QueryDSL
@@ -362,7 +362,6 @@ public class NotificationEventHandler {
 	
 
 ## 8. 2차 개발 및 추후 리팩토링 시 고려사항
-- 테스트 코드 작성
 - api 반환타입을 ResponseEntity로 설정
 - 세밀한 트랜잭션 관리 (서비스 단으로 트랜잭션 이관 및 리포지토리를 readonly 설정)
 - 가독성이 떨어지는 경우, 쿼리메소드를 지양하고 queryDSL 고려
