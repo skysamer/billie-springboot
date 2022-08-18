@@ -1,21 +1,7 @@
 # :pushpin: 사내 전사관리 시스템 'Billie' (ReadMe 1차 작성)
 > 사내 전사관리 시스템 REST API 개발
 > http://www.billie.work  
-> [공식 api 설계 문서](http://59.6.99.141:8080/billie/swagger-ui/index.html#/)
-
-</br>
-
-# :pushpin: 빠른예약탭소개
-<img width="700" alt="erd 수정" src="https://user-images.githubusercontent.com/73572543/175220074-a3e6636b-fa37-43e5-8203-e27d94f1aedf.gif">
-
-# :pushpin: 차량예약방법
-<img width="700" alt="erd 수정" src="https://user-images.githubusercontent.com/73572543/175220210-4d2e889a-2dac-42dd-8cfa-236a759d3ed7.gif">
-
-# :pushpin: 관리자 반납 이력 관리
-<img width="700" alt="erd 수정" src="https://user-images.githubusercontent.com/73572543/175220398-4ef44680-4ad6-4b54-b194-ac4d777ed904.gif">
-
-# :pushpin: 법인카드 관리자의 요청 승인 및 반려
-<img width="700" alt="erd 수정" src="https://user-images.githubusercontent.com/73572543/175220586-0fe18953-4254-406e-adb6-620fc6d60808.gif">
+> [사용자 메뉴얼](http://www.billie.work/manual)
 
 </br>
 
