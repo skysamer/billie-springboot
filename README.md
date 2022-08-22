@@ -92,7 +92,7 @@
 ### 4.7 중복시간체크
   - **신규예약시간이 기존예약시간과 겹치는지 체크하는 로직** :pushpin: [코드 확인](https://github.com/skysamer/billie-springboot/blob/master/src/main/java/com/lab/smartmobility/billie/service/VehicleService.java)
     - 신규 예약 시간이 기존 예약시간과 겹치는 경우 예약을 금지시켜야 했습니다.
-    - 중복기간은 총 4가지의 케이스로 구분 할 수 있었습니다.
+    - 중복이되는 케이스는 총 4가지로 구분 할 수 있었습니다.
       1. 시작 ~ 종료 안에 :시작, :종료가 포함되는 경우
       2. 시작 ~ 종료 안에 :시작이 포함되는 경우
       3. 시작 ~ 종료 안에 :종료가 포함되는 경우
