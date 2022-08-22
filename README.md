@@ -142,7 +142,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
 
 </br>
 
-### 5.3. 동적으로 조건을 검색해야 하는 
+### 5.3. 동적으로 조건을 검색해야 하는 문제
 - 법인카드의 반납이력 목록의 경우, 날짜(연/월), 해당 카드, 폐기된 카드 정보 포함 여부 등을 동적으로 조건절에 추가하여 데이터를 뿌려야 했습니다.
 - 이에 QueryDSL과 BooleanExpression을 반환하는 메서드를 생성하여 동적으로 쿼리에 조건절을 추가하도록 했습니다.
 - Projections 객체를 활용하여 데이터를 반납이력 폼에 맞게 추출했습니다.
