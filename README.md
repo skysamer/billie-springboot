@@ -36,6 +36,10 @@
 
 간편하게 웹 어플리케이션에서 차량 및 교통카드 등을 예약하고 반납할 수 있는 플랫폼을 개발했습니다.
 
+<details>
+<summary><b>핵심 기능 설명 펼치기</b></summary>
+<div markdown="1">
+
 ### 4.1. Spring Security와 JWT를 활용한 로그인 및 회원가입
 - **jwt 토큰 생성** :pushpin: [코드 확인](https://github.com/skysamer/billie-springboot/blob/master/src/main/java/com/lab/smartmobility/billie/config/JwtTokenProvider.java)
   
@@ -50,36 +54,14 @@
   - 로그인이 필요한 api를 요청할 경우, GenericFilterBean을 상속받은 jwtFilter클래스에서 토큰을 검증합니다.
   - 토큰이 유효할경우, 토큰에서 사용자정보를 추출하여 SecurityContextHolder 객체에 인증정보를 저장합니다.
   
-  
-### 4.2. Spring Scheduler를 활용한 대여상태 변경 기능
-- **대여상태 변경 기능** :pushpin: [코드 확인](https://github.com/skysamer/billie-springboot/blob/master/src/main/java/com/lab/smartmobility/billie/task/VehicleScheduler.java)
-  
-  - 차량 및 교통카드는 매 30분 단위로 예약할 수 있습니다.
-  - 따라서 30분 단위로 동작하는 스케줄러를 등록하여 30분마다 해당시각에 예약정보가 존재하는 경우, 차량 및 교통카드의 대여상태를 변경하는 기능을 추가했습니다.
-  
-  
-### 4.3. 승인기능
+### 4.2. 승인기능
 - **부서장과 관리자의 법인카드 사용 승인 기능** :pushpin: [코드 확인](https://github.com/skysamer/billie-springboot/blob/master/src/main/java/com/lab/smartmobility/billie/service/CorporationCardService.java)
   - 법인카드는 일반직원이 함부로 사용할 수 없습니다. 반드시 부서장 및 관리부의 승인을 받아야합니다.
   - 법인카드 사용을 신청할 경우, 자신이 속한 부서의 부서장에게 승인요청 및 실시간 알림이 전송됩니다.
   - 부서장이 사용을 승인할 경우 다시 관리부에게 승인 요청이 전송되고, 관리부가 최종적으로 승인하면 승인 플로우가 종료되고 예약 일정에 노출됩니다.
   - 부서장이 신청하면 바로 관리부에게 승인요청이 전송됩니다. 
-
-
-### 4.4. 실시간 알림기능
-- **승인 요청 시, 실시간 알림 기능** :pushpin: [코드 확인](https://github.com/skysamer/billie-springboot/blob/master/src/main/java/com/lab/smartmobility/billie/util/SseEmitterSender.java)
-  - 실시간 알림의 경우, 프론트엔드에서 일방적으로 수신하면 되었기에 일반적인 웹소켓보다는 실시간 단방향 통신인 SSE(server-sent-event) 기능을 활용했습니다.
-  - 우선 로그인 시, 반환받은 토큰을 사용하여 서버 sse를 구독합니다.
-  - 유저의 pk값을 활용하여 SseEmitter 객체를 저장합니다.
-  - 이후 실시간 알림전송이 필요한 로직에서 SseEmitter.send() 메서드를 활용하여 실시간 알림 메시지를 전송합니다.
   
-### 4.5. 동적 조건 검색
-- **QueryDSL을 활용한 동적 조건 검색 기능** :pushpin: [코드 확인](https://github.com/skysamer/billie-springboot/blob/master/src/main/java/com/lab/smartmobility/billie/repository/corporation/CorporationReturnRepositoryImpl.java)
-  - 법인카드의 반납이력 목록의 경우, 날짜(연/월), 해당 카드, 폐기된 카드 정보 포함 여부 등을 동적으로 조건절에 추가하여 데이터를 뿌려야 했습니다.
-  - 이에 QueryDSL과 BooleanExpression을 반환하는 메서드를 생성하여 동적으로 쿼리에 조건절을 추가하도록 했습니다.
-  - Projections 객체를 활용하여 데이터를 반납이력 폼에 맞게 추출했습니다.
-  
-### 4.6 구글 SMTP 이메일 전송
+### 4.3 구글 SMTP 이메일 전송
 - **비밀번호 초기화 기능** :pushpin: [코드 확인](https://github.com/skysamer/billie-springboot/blob/master/src/main/java/com/lab/smartmobility/billie/service/StaffService.java)
   - 비밀번호를 잊어버렸을 경우, 랜덤하게 10자리 문자열을 생성하여 비밀번호를 초기화 해주고 javaMailSender로 임의의 문자열을 전송하는 기능을 구현했습니다.
   
@@ -88,31 +70,12 @@
   - 관리부에서 직원을 등록할 수 있는 폼을 만든 다음, 거기에 각 직원의 이메일 정보를 입력하도록 했습니다.
   - 이때 입력된 이메일로 UUID로 만든 임의의 문자열 토큰을 전송하여 직원 확인 및 이메일을 인증하는 로직을 구현했습니다.
   - 이때 생성시간을 저장하여 10분 이내로 인증하지 않으면 인증에 실패하도록 했습니다.
-  
-### 4.7 중복시간체크
-  - **신규예약시간이 기존예약시간과 겹치는지 체크하는 로직** :pushpin: [코드 확인](https://github.com/skysamer/billie-springboot/blob/master/src/main/java/com/lab/smartmobility/billie/service/VehicleService.java)
-    - 신규 예약 시간이 기존 예약시간과 겹치는 경우 예약을 금지시켜야 했습니다.
-    - 중복이되는 케이스는 총 4가지로 구분 할 수 있었습니다.
-      1. 시작 ~ 종료 안에 :시작, :종료가 포함되는 경우
-      2. 시작 ~ 종료 안에 :시작이 포함되는 경우
-      3. 시작 ~ 종료 안에 :종료가 포함되는 경우
-      4. 시작 ~ 종료 를 :시작, :종료가 포함하는 경우
-    - 기존에는 위 케이스를 모두 or로 묶어서 관리했지만, 하나의 코드로 해결이 가능하다는 것을 알았습니다.
- ~~~sql
-  
-SELECT
-	count(*) cnt
-FROM
-	`table`
-WHERE
-	`start` < :end
-	AND
-	`end` > :start
-  
-~~~
 
-    - 따라서 위의 쿼리문을 쿼리메소드 및 QueryDSL로 변환하여 처리했습니다.  
+</div>
+</details>
 
+</br>
+  
 
 ## 5. 트러블 슈팅
 ### 5.1. 프론트엔드와 통신 시 Cors 오류
@@ -177,12 +140,60 @@ public class WebMvcConfig implements WebMvcConfigurer {
 </div>
 </details>
 
+</br>
+
+### 5.3. 동적으로 조건을 검색해야 하는 문제
+- 법인카드의 반납이력 목록의 경우, 날짜(연/월), 해당 카드, 폐기된 카드 정보 포함 여부 등을 동적으로 조건절에 추가하여 데이터를 뿌려야 했습니다.
+- 이에 QueryDSL과 BooleanExpression을 반환하는 메서드를 생성하여 동적으로 쿼리에 조건절을 추가하도록 했습니다.
+- Projections 객체를 활용하여 데이터를 반납이력 폼에 맞게 추출했습니다.
+
+### 5.4. 예약시간이 중복되는 경우를 체크해야 하는 문제
+- 신규 예약 시간이 기존 예약시간과 겹치는 경우 예약을 금지시켜야 했습니다.
+- 중복이되는 케이스는 총 4가지로 구분 할 수 있었습니다.  
+      1. 시작 ~ 종료 안에 :시작, :종료가 포함되는 경우  
+      2. 시작 ~ 종료 안에 :시작이 포함되는 경우  
+      3. 시작 ~ 종료 안에 :종료가 포함되는 경우  
+      4. 시작 ~ 종료 를 :시작, :종료가 포함하는 경우  
+- 사실 위 4가지는 '시작이 :종료보다 작고 종료는 :시작보다 큰 경우'로 통일됩니다.
+- 따라서 다음의 sql 쿼리를 작성하여 중복예약시간을 체크하는 로직을 추가했습니다.
+
+<details>
+<summary><b>코드</b></summary>
+<div markdown="1">
+
+~~~sql
+  
+SELECT
+	count(*) cnt
+FROM
+	`table`
+WHERE
+	`start` < :end
+	AND
+	`end` > :start
+  
+~~~
+
+</div>
+</details>
 
 </br>
+	
+### 5.5. 지속적이고 실시간으로 도메인의 대여 상태를 업데이트 해야하는 문제
+- 차량 및 교통카드는 매 30분 단위로 예약할 수 있습니다.
+- 예약시간에 돌입하면 대여한 차량 또는 교통카드는 대여상태가 대여중으로 변해야 했습니다.
+- 실시간으로 30분마다 체크되어 대여상태를 변경해야 했고, 각 도메인을 관리하는 테이블은 row수가 많지 않았으므로 간편한 spring scheduler를 활용하여 대여상태를 변경해주었습니다.
+
+### 5.6. 실시간 알림을 전송해야 하는 문제
+- 법인카드의 승인상태가 변경되었을 경우, 해당하는 유저에게 실시간으로 알림을 보내야 했습니다.
+- 간단한 기능에 polling을 사용하는 것은 불필요한 http 오버헤드를 발생시킬 여지가 있으므로 고려하지 않았습니다.
+- WebSocket을 활용할 수도 있었지만 서버에서만 단방향으로 데이터를 전송하면 충분했으므로, 단방향 통신인 sse를 사용했습니다.
+  
 
 ## 6. 리팩토링
 ### 6.1. 날짜와 시간을 다루는 로직의 개별 클래스화
 - 특정 오브젝트를 예약하고 반납하는 기능이 핵심 기능이었기에 시간과 날짜를 다루는 로직이 매우 많았습니다.
+- 가령, String으로 들어온 날짜 형식의 문자열을 LocalDate 혹은 시간까지 필요할 경우 LocalDateTime으로 변환하는 로직이나 기준 연월로 해당 월의 시작일과 종료일을 계산하는 로직이 그러했습니다.
 - 원래는 각 도메인 별 서비스 단에 이러한 날짜 제어 로직을 전부 집어 넣었지만 이러한 설계방식이 단일책임원칙(SRP)을 위배한다는 사실을 깨달았습니다.
 - 따라서 날짜 제어를 다루는 dateTimeUtil 클래스를 추가하고 각 메서드 별로 분기하여 필요한 날짜 제어 로직을 추가했습니다.
 
@@ -350,10 +361,11 @@ public class NotificationEventHandler {
   - 가령, 법인카드의 경우 법인카드, 법인카드 예약, 법인카드 승인, 법인카드 반납의 4가지 역할로 세분하여 클래스를 재설계했습니다.
 
 ### 6.7. url의 간소화 및 각 api를 restful 하도록 설계(신규)
-  - http에 대해 지속적으로 공부하면서 좀 더 restful한 설계에 대해 고민했습니다.
-  - url에는 리소스만 표현해야하고 구체적 행위는 http 메서드로 제어해야 한다는 것을 배웠습니다.
-  - 또한 모두 200 상태코드를 반환하는 것이 아닌 상황에 따라 적절한 http 상태 코드를 반환해야 한다는 것을 배웠습니다.
-  - 따라서 신규 기능은 이러한 설계원칙을 고려하여 개발중이고, 이후 기존 기능또한 리팩토링할 예정입니다.
+- http에 대해 지속적으로 공부하면서 좀 더 restful한 설계에 대해 고민했습니다.
+- url에는 리소스만 표현해야하고 구체적 행위는 http 메서드로 제어해야 한다는 것을 배웠습니다.
+- 또한 모두 200 상태코드를 반환하는 것이 아닌 상황에 따라 적절한 http 상태 코드를 반환해야 한다는 것을 배웠습니다.
+- 가령, 클라이언트쪽 오류를 캐치하여 적절한 400에러를 반환하고, 201 혹은 204를 상황에 맞게 사용하는 것입니다.
+- 따라서 신규 기능은 이러한 설계원칙을 고려하여 개발중이고, 이후 기존 기능또한 리팩토링할 예정입니다.
     
 </br>
 	
@@ -362,5 +374,6 @@ public class NotificationEventHandler {
 - api 반환타입을 ResponseEntity로 설정
 - 세밀한 트랜잭션 관리 (서비스 단으로 트랜잭션 이관 및 리포지토리를 readonly 설정)
 - 가독성이 떨어지는 경우, 쿼리메소드를 지양하고 queryDSL 고려
+- update의 경우 entity의 변경감지 기능을 
 - 명확한 책임의 분리
 
