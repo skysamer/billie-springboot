@@ -100,6 +100,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 //                        .antMatchers("/announcement/user/**").hasAnyRole("USER", "MANAGER", "ADMIN")
 //                        .antMatchers("/announcement/admin/**").hasRole("ADMIN")
 
+                        /*------------------------------------------------------------------------------------자유 게시판-----------------------------------------------------------------------------------*/
+//                        .antMatchers("/reply/user/**").hasAnyRole("USER", "MANAGER", "ADMIN")
+//                        .antMatchers("/board/user/**").hasAnyRole("USER", "MANAGER", "ADMIN")
+
                         .and()
                         .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider),
                                 UsernamePasswordAuthenticationFilter.class)

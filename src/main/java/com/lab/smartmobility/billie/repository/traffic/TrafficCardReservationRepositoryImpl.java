@@ -91,8 +91,23 @@ public class TrafficCardReservationRepositoryImpl {
                 .fetch();
     }
 
+    public long checkTimeIsDuplicated(Long reservationNum, LocalDateTime rentedAt, LocalDateTime returnedAt, TrafficCard card){
+        return jpaQueryFactory
+                .selectFrom(trafficCardReservation)
+                .where(trafficCardReservation.rentedAt.before(returnedAt)
+                        .and(trafficCardReservation.returnedAt.after(rentedAt))
+                        .and(reservationNumEq(reservationNum))
+                        .and(trafficCardReservation.trafficCard.eq(card))
+                )
+                .stream().count();
+    }
+
     private BooleanExpression trafficCardEq(TrafficCard trafficCard) {
         return trafficCard != null ? trafficCardReservation.trafficCard.eq(trafficCard) : null;
+    }
+
+    private BooleanExpression reservationNumEq(Long reservationNum) {
+        return reservationNum != null ? trafficCardReservation.reservationNum.ne(reservationNum) : null;
     }
 
     private BooleanExpression disposalInfoEq(int disposalInfo) {

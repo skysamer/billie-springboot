@@ -1,6 +1,5 @@
 package com.lab.smartmobility.billie.service.corporation;
 
-import com.lab.smartmobility.billie.dto.NotificationEventDTO;
 import com.lab.smartmobility.billie.dto.TotalCount;
 import com.lab.smartmobility.billie.dto.corporation.ApprovalCardUseForm;
 import com.lab.smartmobility.billie.dto.corporation.CompanionCardUseForm;

@@ -62,7 +62,6 @@ public class BoardService {
         }
 
         modelMapper.map(registerForm, board);
-        boardRepository.save(board);
         return new HttpBodyMessage("success", "게시글 수정 성공");
     }
 
@@ -96,12 +95,10 @@ public class BoardService {
         board.plusLikes();
         BoardLike boardLike = new BoardLike(email, id);
         boardLikeRepository.save(boardLike);
-        boardRepository.save(board);
     }
 
     private void minusLike(String email, Long id, Board board){
         board.minusLikes();
         boardLikeRepository.deleteByEmailAndBoardId(email, id);
-        boardRepository.save(board);
     }
 }

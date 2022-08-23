@@ -65,7 +65,6 @@ public class ReplyService {
         }
 
         modelMapper.map(registerForm, reply);
-        replyRepository.save(reply);
         return new HttpBodyMessage("success", "댓글 수정 성공");
     }
 

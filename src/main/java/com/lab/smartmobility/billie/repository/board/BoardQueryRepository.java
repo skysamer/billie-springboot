@@ -18,7 +18,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import static com.lab.smartmobility.billie.entity.QAnnouncement.announcement;
 import static com.lab.smartmobility.billie.entity.QBoard.board;
 import static com.lab.smartmobility.billie.entity.QReply.reply;
 
@@ -76,15 +75,7 @@ public class BoardQueryRepository {
             return null;
         }
 
-        List<ReplyResponseForm> replyList = jpaQueryFactory
-                .select(Projections.fields(ReplyResponseForm.class, reply.parent.id, reply.id, reply.content,
-                        reply.createdAt, reply.modifiedAt, reply.staff.staffNum, reply.staff.name, reply.isAnonymous))
-                .from(reply)
-                .where(reply.board.id.eq(id)
-                        .and(reply.parent.id.isNull())
-                )
-                .orderBy(reply.id.asc())
-                .fetch();
+        List<ReplyResponseForm> replyList = getReplyList(id);
 
         replyList.forEach(replyResponseForm -> {
             List<NestedReplyResponseForm> children = jpaQueryFactory.select(Projections.fields(NestedReplyResponseForm.class,
@@ -99,6 +90,18 @@ public class BoardQueryRepository {
 
         boardDetailsForm.addReply(replyList);
         return boardDetailsForm;
+    }
+
+    private List<ReplyResponseForm> getReplyList(Long id){
+        return jpaQueryFactory
+                .select(Projections.fields(ReplyResponseForm.class, reply.parent.id, reply.id, reply.content,
+                        reply.createdAt, reply.modifiedAt, reply.staff.staffNum, reply.staff.name, reply.isAnonymous))
+                .from(reply)
+                .where(reply.board.id.eq(id)
+                        .and(reply.parent.id.isNull())
+                )
+                .orderBy(reply.id.asc())
+                .fetch();
     }
 
     /*조회수 증가*/

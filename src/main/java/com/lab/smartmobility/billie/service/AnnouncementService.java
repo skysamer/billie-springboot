@@ -153,7 +153,6 @@ public class AnnouncementService {
     private void minusLike(Long announcementId, String email){
         Announcement announcement = announcementRepository.findById(announcementId).orElseThrow();
         announcement.minusLike();
-        announcementRepository.save(announcement);
 
         announcementStaffLikeRepository.deleteByEmailAndAnnouncementId(email, announcementId);
     }
@@ -161,7 +160,6 @@ public class AnnouncementService {
     private void plusLike(Long announcementId, String email){
         Announcement announcement = announcementRepository.findById(announcementId).orElseThrow();
         announcement.plusLike();
-        announcementRepository.save(announcement);
 
         AnnouncementStaffLike announcementStaffLike = new AnnouncementStaffLike(email, announcementId);
         announcementStaffLikeRepository.save(announcementStaffLike);

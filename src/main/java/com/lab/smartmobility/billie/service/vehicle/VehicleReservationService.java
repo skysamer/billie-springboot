@@ -8,6 +8,7 @@ import com.lab.smartmobility.billie.entity.VehicleReservation;
 import com.lab.smartmobility.billie.repository.StaffRepository;
 import com.lab.smartmobility.billie.repository.vehicle.VehicleRepository;
 import com.lab.smartmobility.billie.repository.vehicle.VehicleReservationRepository;
+import com.lab.smartmobility.billie.repository.vehicle.VehicleReservationRepositoryImpl;
 import com.lab.smartmobility.billie.util.DateTimeUtil;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.logging.Log;
@@ -26,6 +27,7 @@ import java.util.Objects;
 public class VehicleReservationService {
     private final VehicleRepository vehicleRepository;
     private final VehicleReservationRepository reservationRepository;
+    private final VehicleReservationRepositoryImpl reservationQueryRepository;
     private final StaffRepository staffRepository;
     private final ModelMapper modelMapper;
     private final DateTimeUtil dateTimeUtil;
@@ -35,44 +37,34 @@ public class VehicleReservationService {
 
     /*차량 예약 신청*/
     public HttpBodyMessage applyForRent(ApplyRentalVehicleDTO rentalVehicleDTO){
-        try {
-            Staff renderInfo=staffRepository.findByStaffNum(rentalVehicleDTO.getStaffNum());
-            Vehicle vehicle=vehicleRepository.findByVehicleNum(vehicleRepository.findByVehicleName(rentalVehicleDTO.getVehicleName()).getVehicleNum());
+        Staff renderInfo = staffRepository.findByStaffNum(rentalVehicleDTO.getStaffNum());
+        Vehicle vehicle = vehicleRepository.findByVehicleNum(vehicleRepository.findByVehicleName(rentalVehicleDTO.getVehicleName()).getVehicleNum());
 
-            LocalDateTime rentedAt = dateTimeUtil.combineDateAndTime(rentalVehicleDTO.getDateOfRental(), rentalVehicleDTO.getTimeOfRental());
-            LocalDateTime returnedAt = dateTimeUtil.combineDateAndTime(rentalVehicleDTO.getExpectedReturnDate(), rentalVehicleDTO.getExpectedReturnTime());
-            if(LocalDateTime.now().isAfter(rentedAt)){
-                return new HttpBodyMessage("fail", "현재 시각보다 과거로 예약할 수 없습니다");
-            }
-
-            if(checkReservationIsDuplicate(IS_INSERT, rentedAt, returnedAt, vehicle)){
-                return new HttpBodyMessage("fail", "해당 날짜에 차량이 이미 대여중입니다");
-            }
-
-            VehicleReservation applicationRentalVehicle=new VehicleReservation();
-            modelMapper.map(rentalVehicleDTO, applicationRentalVehicle);
-            applicationRentalVehicle.insert(vehicle, renderInfo, rentedAt, returnedAt);
-            reservationRepository.save(applicationRentalVehicle);
-        }catch (Exception e){
-            e.printStackTrace();
-            return new HttpBodyMessage("fail", "차량 대여 신청 실패");
+        LocalDateTime rentedAt = dateTimeUtil.combineDateAndTime(rentalVehicleDTO.getDateOfRental(), rentalVehicleDTO.getTimeOfRental());
+        LocalDateTime returnedAt = dateTimeUtil.combineDateAndTime(rentalVehicleDTO.getExpectedReturnDate(), rentalVehicleDTO.getExpectedReturnTime());
+        if(LocalDateTime.now().isAfter(rentedAt)){
+            return new HttpBodyMessage("fail", "현재 시각보다 과거로 예약할 수 없습니다");
         }
+        if(checkReservationIsDuplicate(IS_INSERT, rentedAt, returnedAt, vehicle)){
+            return new HttpBodyMessage("fail", "해당 날짜에 차량이 이미 대여중입니다");
+        }
+
+        VehicleReservation applicationRentalVehicle = modelMapper.map(rentalVehicleDTO, VehicleReservation.class);
+        applicationRentalVehicle.insert(vehicle, renderInfo, rentedAt, returnedAt);
+        reservationRepository.save(applicationRentalVehicle);
         return new HttpBodyMessage("success", "대여 성공");
     }
 
     /*예약 신청 날짜 및 시간이 기존예약괴 겹치는지 체크*/
     private boolean checkReservationIsDuplicate(Long rentNum, LocalDateTime rentedAt, LocalDateTime returnedAt, Vehicle vehicle){
-        if(Objects.equals(rentNum, IS_INSERT)){
-            return reservationRepository.countByVehicleAndReturnStatusCodeAndRentedAtLessThanAndReturnedAtGreaterThan(vehicle, 0, returnedAt, rentedAt) == 1;
-        }
-        return reservationRepository.countByRentNumNotAndVehicleAndReturnStatusCodeAndRentedAtLessThanAndReturnedAtGreaterThan(rentNum, vehicle, 0, returnedAt, rentedAt) == 1;
+        return reservationQueryRepository.checkTimeIsDuplicated(rentNum, rentedAt, returnedAt, vehicle) > 0;
     }
 
     /*월단위 차량 예약 목록 조회*/
     public List<VehicleReservation> reservationList(LocalDate startDate, LocalDate endDate){
-        LocalDateTime startDateTime=LocalDateTime.of(startDate.getYear(), startDate.getMonth(), startDate.getDayOfMonth(),
+        LocalDateTime startDateTime = LocalDateTime.of(startDate.getYear(), startDate.getMonth(), startDate.getDayOfMonth(),
                 0, 0, 0);
-        LocalDateTime endDateTime=LocalDateTime.of(endDate.getYear(), endDate.getMonth(), endDate.getDayOfMonth(),
+        LocalDateTime endDateTime = LocalDateTime.of(endDate.getYear(), endDate.getMonth(), endDate.getDayOfMonth(),
                 23, 59, 59);
         return reservationRepository.findAllByRentedAtBetween(startDateTime, endDateTime);
     }
@@ -84,8 +76,8 @@ public class VehicleReservationService {
 
     /*차량 예약 정보 수정*/
     public int modifyVehicleReservation(Long rentNum, ApplyRentalVehicleDTO applyRentalVehicleDTO){
-        VehicleReservation reservationInfo=reservationRepository.findByRentNum(rentNum);
-        Vehicle vehicle=vehicleRepository.findByVehicleNum(vehicleRepository.findByVehicleName(applyRentalVehicleDTO.getVehicleName()).getVehicleNum());
+        VehicleReservation reservationInfo = reservationRepository.findByRentNum(rentNum);
+        Vehicle vehicle = vehicleRepository.findByVehicleNum(vehicleRepository.findByVehicleName(applyRentalVehicleDTO.getVehicleName()).getVehicleNum());
 
         LocalDateTime rentedAt = dateTimeUtil.combineDateAndTime(applyRentalVehicleDTO.getDateOfRental(), applyRentalVehicleDTO.getTimeOfRental());
         LocalDateTime returnedAt = dateTimeUtil.combineDateAndTime(applyRentalVehicleDTO.getExpectedReturnDate(), applyRentalVehicleDTO.getExpectedReturnTime());
@@ -104,9 +96,8 @@ public class VehicleReservationService {
 
             modelMapper.map(applyRentalVehicleDTO, reservationInfo);
             reservationInfo.modifyInfo(vehicle, rentedAt, returnedAt);
-            reservationRepository.save(reservationInfo);
         }catch (Exception e){
-            e.printStackTrace();
+            log.error(e);
             return 9999;
         }
         return 0;
@@ -115,14 +106,14 @@ public class VehicleReservationService {
     /*차량 예약 삭제*/
     public int removeReservationInfo(Long rentNum){
         try{
-            VehicleReservation vehicleReservation=reservationRepository.findByRentNum(rentNum);
+            VehicleReservation vehicleReservation = reservationRepository.findByRentNum(rentNum);
             if(vehicleReservation.getRentedAt().isAfter(LocalDateTime.now())){
                 reservationRepository.deleteByRentNum(rentNum);
                 return 0;
             }
             return 500;
         }catch (Exception e){
-            e.printStackTrace();
+            log.error(e);
             return 9999;
         }
     }
@@ -130,7 +121,7 @@ public class VehicleReservationService {
     /*관리자의 차량 예약 삭제*/
     public HttpBodyMessage removeReservationByAdmin(Long rentNum){
         VehicleReservation vehicleReservation = reservationRepository.findByRentNum(rentNum);
-        if(vehicleReservation.getReturnStatusCode()==1){
+        if(vehicleReservation.getReturnStatusCode() == 1){
             return new HttpBodyMessage("fail", "refund-processing-is-in-progress");
         }
 
@@ -141,11 +132,11 @@ public class VehicleReservationService {
     /*관리자의 차량 예약 수정*/
     public HttpBodyMessage modifyRentInfoByAdmin(Long rentNum, ApplyRentalVehicleDTO rentalVehicleDTO){
         VehicleReservation vehicleReservation = reservationRepository.findByRentNum(rentNum);
-        if(vehicleReservation.getReturnStatusCode()==1){
+        if(vehicleReservation.getReturnStatusCode() == 1){
             return new HttpBodyMessage("fail", "refund-processing-is-in-progress");
         }
 
-        Vehicle vehicle=vehicleRepository.findByVehicleNum(vehicleRepository.findByVehicleName(rentalVehicleDTO.getVehicleName()).getVehicleNum());
+        Vehicle vehicle = vehicleRepository.findByVehicleNum(vehicleRepository.findByVehicleName(rentalVehicleDTO.getVehicleName()).getVehicleNum());
         LocalDateTime rentedAt = dateTimeUtil.combineDateAndTime(rentalVehicleDTO.getDateOfRental(), rentalVehicleDTO.getTimeOfRental());
         LocalDateTime returnedAt = dateTimeUtil.combineDateAndTime(rentalVehicleDTO.getExpectedReturnDate(), rentalVehicleDTO.getExpectedReturnTime());
 
@@ -155,7 +146,6 @@ public class VehicleReservationService {
 
         modelMapper.map(rentalVehicleDTO, vehicleReservation);
         vehicleReservation.modifyRentInfoByAdmin(vehicle, rentedAt, returnedAt);
-        reservationRepository.save(vehicleReservation);
         return new HttpBodyMessage("success", "success-modify");
     }
 

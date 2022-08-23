@@ -91,8 +91,24 @@ public class VehicleReservationRepositoryImpl {
                 .fetch();
     }
 
+    /*중복 예약시간 체크*/
+    public long checkTimeIsDuplicated(Long rentNum, LocalDateTime rentedAt, LocalDateTime returnedAt, Vehicle vehicle){
+        return jpaQueryFactory
+                .selectFrom(vehicleReservation)
+                .where(vehicleReservation.rentedAt.before(returnedAt)
+                        .and(vehicleReservation.returnedAt.after(rentedAt))
+                        .and(rentNumEq(rentNum))
+                        .and(vehicleReservation.vehicle.eq(vehicle))
+                )
+                .stream().count();
+    }
+
     private BooleanExpression vehicleEq(Vehicle vehicle) {
         return vehicle != null ? vehicleReservation.vehicle.eq(vehicle) : null;
+    }
+
+    private BooleanExpression rentNumEq(Long rentNum) {
+        return rentNum != null ? vehicleReservation.rentNum.ne(rentNum) : null;
     }
 
     private BooleanExpression disposalInfoEq(int disposalInfo) {

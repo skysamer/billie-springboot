@@ -57,14 +57,12 @@ public class TrafficCardReturnService {
     private void returnCard(ReturnTrafficCardDTO returnTrafficCard){
         TrafficCard usedTrafficCard = cardRepository.findByCardNum(returnTrafficCard.getCardNum());
         usedTrafficCard.returnCard(returnTrafficCard.getBalance());
-        cardRepository.save(usedTrafficCard);
     }
 
     private void modifyCardReservationInfo(ReturnTrafficCardDTO returnTrafficCard, LocalDateTime returnedAt){
         TrafficCardReservation updatedCardReservationInfo = reservationRepository.findByReservationNum(returnTrafficCard.getReservationNum());
         modelMapper.map(returnTrafficCard, updatedCardReservationInfo);
         updatedCardReservationInfo.update(1, returnedAt, returnTrafficCard.getBalance());
-        reservationRepository.save(updatedCardReservationInfo);
     }
 
     /*교통카드 반납 목록 조회*/
@@ -74,8 +72,8 @@ public class TrafficCardReturnService {
             return reservationRepositoryImpl.findAll(trafficCard, disposalInfo, pageRequest);
         }
 
-        LocalDateTime startDateTime= dateTimeUtil.getStartDateTime(baseDate);
-        LocalDateTime endDateTime= dateTimeUtil.getEndDateTime(baseDate);
+        LocalDateTime startDateTime = dateTimeUtil.getStartDateTime(baseDate);
+        LocalDateTime endDateTime = dateTimeUtil.getEndDateTime(baseDate);
         return reservationRepositoryImpl.findAll(trafficCard, startDateTime, endDateTime, disposalInfo, pageRequest);
     }
 
@@ -91,8 +89,8 @@ public class TrafficCardReturnService {
             return reservationRepositoryImpl.countByReturnStatus(trafficCard, disposalInfo);
         }
 
-        LocalDateTime startDateTime= dateTimeUtil.getStartDateTime(baseDate);
-        LocalDateTime endDateTime= dateTimeUtil.getEndDateTime(baseDate);
+        LocalDateTime startDateTime = dateTimeUtil.getStartDateTime(baseDate);
+        LocalDateTime endDateTime = dateTimeUtil.getEndDateTime(baseDate);
         return reservationRepositoryImpl.countByReturnStatus(trafficCard, startDateTime, endDateTime, disposalInfo);
     }
 
@@ -110,8 +108,8 @@ public class TrafficCardReturnService {
 
         Workbook wb = new XSSFWorkbook();
         Sheet sheet = wb.createSheet(baseDate);
-        Row row = null;
-        Cell cell = null;
+        Row row;
+        Cell cell;
         int rowNum = 0;
 
         row = sheet.createRow(rowNum++);
@@ -132,12 +130,12 @@ public class TrafficCardReturnService {
 
         for (TrafficCardReservation reservation : reservationList) {
             row = sheet.createRow(rowNum++);
-            LocalDate startDate=LocalDate.of(reservation.getRentedAt().getYear(), reservation.getRentedAt().getMonth(),
+            LocalDate startDate = LocalDate.of(reservation.getRentedAt().getYear(), reservation.getRentedAt().getMonth(),
                     reservation.getRentedAt().getDayOfMonth());
-            LocalTime startTime=LocalTime.of(reservation.getRentedAt().getHour(), reservation.getRentedAt().getMinute(), 0);
-            LocalDate endDate=LocalDate.of(reservation.getReturnedAt().getYear(), reservation.getReturnedAt().getMonth(),
+            LocalTime startTime = LocalTime.of(reservation.getRentedAt().getHour(), reservation.getRentedAt().getMinute(), 0);
+            LocalDate endDate = LocalDate.of(reservation.getReturnedAt().getYear(), reservation.getReturnedAt().getMonth(),
                     reservation.getReturnedAt().getDayOfMonth());
-            LocalTime endTime=LocalTime.of(reservation.getReturnedAt().getHour(), reservation.getReturnedAt().getMinute(), 0);
+            LocalTime endTime = LocalTime.of(reservation.getReturnedAt().getHour(), reservation.getReturnedAt().getMinute(), 0);
 
             cell = row.createCell(0);
             cell.setCellValue(reservation.getTrafficCard().getCardNum());

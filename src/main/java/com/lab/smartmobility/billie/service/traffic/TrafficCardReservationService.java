@@ -8,6 +8,7 @@ import com.lab.smartmobility.billie.entity.TrafficCardReservation;
 import com.lab.smartmobility.billie.repository.StaffRepository;
 import com.lab.smartmobility.billie.repository.traffic.TrafficCardRepository;
 import com.lab.smartmobility.billie.repository.traffic.TrafficCardReservationRepository;
+import com.lab.smartmobility.billie.repository.traffic.TrafficCardReservationRepositoryImpl;
 import com.lab.smartmobility.billie.util.DateTimeUtil;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.logging.Log;
@@ -25,6 +26,7 @@ import java.util.List;
 public class TrafficCardReservationService {
     private final TrafficCardRepository cardRepository;
     private final TrafficCardReservationRepository reservationRepository;
+    private final TrafficCardReservationRepositoryImpl reservationQueryRepository;
     private final StaffRepository staffRepository;
     private final ModelMapper modelMapper;
     private final DateTimeUtil dateTimeUtil;
@@ -51,7 +53,7 @@ public class TrafficCardReservationService {
             trafficCardReservation.insert(trafficCard, renderInfo, rentedAt, returnedAt);
             reservationRepository.save(trafficCardReservation);
         }catch (Exception e){
-            e.printStackTrace();
+            log.error(e);
             return 9999;
         }
         return 0;
@@ -59,10 +61,7 @@ public class TrafficCardReservationService {
 
     /*신규 예약이 기존 예약 날짜 및 시간과 겹치는지 체크*/
     private boolean checkReservationIsDuplicate(Long reservationNum, LocalDateTime rentedAt, LocalDateTime returnedAt, TrafficCard card){
-        if(reservationNum == -1L){
-            return reservationRepository.countByTrafficCardAndReturnStatusAndRentedAtLessThanAndReturnedAtGreaterThan(card, 0, returnedAt, rentedAt) == 1;
-        }
-        return reservationRepository.countByReservationNumNotAndReturnStatusAndTrafficCardAndRentedAtLessThanAndReturnedAtGreaterThan(reservationNum, 0, card, returnedAt, rentedAt) == 1;
+        return reservationQueryRepository.checkTimeIsDuplicated(reservationNum, rentedAt, returnedAt, card) > 0;
     }
 
     /*교통카드 대여 목록 조회*/
@@ -88,32 +87,26 @@ public class TrafficCardReservationService {
 
         LocalDateTime rentedAt = dateTimeUtil.combineDateAndTime(trafficCardApplyDTO.getDateOfRental(), trafficCardApplyDTO.getTimeOfRental());
         LocalDateTime returnedAt = dateTimeUtil.combineDateAndTime(trafficCardApplyDTO.getExpectedReturnDate(), trafficCardApplyDTO.getExpectedReturnTime());
-        try {
-            if(LocalDateTime.now().isAfter(rentedAt)){
-                return 400;
-            }else if(!trafficCardApplyDTO.getStaffNum().equals(reservationInfo.getStaff().getStaffNum())){
-                return 300;
-            }else if(LocalDateTime.now().isAfter(reservationInfo.getRentedAt())){
-                return 303;
-            }
-
-            if(checkReservationIsDuplicate(reservationNum, rentedAt, returnedAt, trafficCard)){
-                return 500;
-            }
-
-            modelMapper.map(trafficCardApplyDTO, reservationInfo);
-            reservationInfo.updateReservationInfo(trafficCard, rentedAt, returnedAt);
-            reservationRepository.save(reservationInfo);
-        }catch (Exception e){
-            e.printStackTrace();
-            return 9999;
+        if(LocalDateTime.now().isAfter(rentedAt)){
+            return 400;
+        }else if(!trafficCardApplyDTO.getStaffNum().equals(reservationInfo.getStaff().getStaffNum())){
+            return 300;
+        }else if(LocalDateTime.now().isAfter(reservationInfo.getRentedAt())){
+            return 303;
         }
+
+        if(checkReservationIsDuplicate(reservationNum, rentedAt, returnedAt, trafficCard)){
+            return 500;
+        }
+
+        modelMapper.map(trafficCardApplyDTO, reservationInfo);
+        reservationInfo.updateReservationInfo(trafficCard, rentedAt, returnedAt);
         return 0;
     }
 
     /*교통 카드 대여 요청 삭제*/
     public int removeCardReservationInfo(Long reservationNum){
-        TrafficCardReservation vehicleReservation=reservationRepository.findByReservationNum(reservationNum);
+        TrafficCardReservation vehicleReservation = reservationRepository.findByReservationNum(reservationNum);
         if(vehicleReservation.getRentedAt().isAfter(LocalDateTime.now())){
             reservationRepository.deleteByReservationNum(reservationNum);
             return 0;

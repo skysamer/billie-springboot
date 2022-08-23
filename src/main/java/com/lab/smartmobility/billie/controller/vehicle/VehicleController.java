@@ -24,7 +24,7 @@ import java.util.List;
 @RestController
 public class VehicleController {
     private final VehicleService service;
-    private final Log log = LogFactory.getLog(getClass());
+    private final Log log;
 
     @GetMapping("/to-own")
     @ApiOperation(value = "전체 보유 차량 조회", notes = "차량 드롭다운 기능 구현 시에도 이 api를 사용해 주세요")

@@ -23,7 +23,7 @@ public class VehicleReturnController {
     private final VehicleReturnService service;
 
     @PostMapping(value = "/insert-return", consumes = {"multipart/form-data"})
-    @ApiOperation(value = "차량 반납 신청 및 이미지 파일 등록", notes = "반납 신청 퐁 데이터는 returnVehicle, 이미지 파일은 imageFiles을 key로 하여 전달")
+    @ApiOperation(value = "차량 반납")
     @ApiResponses({
             @ApiResponse(code = 200, message = "저장 실패 or 반납 이력 저장 완료")
     })

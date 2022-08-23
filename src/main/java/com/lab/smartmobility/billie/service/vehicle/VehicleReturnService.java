@@ -17,6 +17,7 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.hibernate.Hibernate;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -58,60 +59,19 @@ public class VehicleReturnService {
         return 0;
     }
 
-    @Deprecated
-    private List<String> saveImageFile(List<MultipartFile> images) {
-        List<String> imageInformation=new ArrayList<>();
-
-        //String uploadFolder="C:\\vehicle";  //로컬 윈도우용
-        String uploadFolder="";
-
-        String uploadFolderPath=getFolder();
-        File uploadPath=new File(uploadFolder, uploadFolderPath);
-        log.info(uploadPath);
-        if(!uploadPath.exists()) {
-            boolean mkdirCheck=uploadPath.mkdirs();
-            log.info(mkdirCheck);
-        }
-        imageInformation.add(uploadPath.toString());
-
-        for(MultipartFile image : images){
-            UUID uuid=UUID.randomUUID();
-            String imageName=uuid+"_"+image.getOriginalFilename();
-            log.info(imageName);
-            imageInformation.add(imageName);
-
-            try{
-                File saveFile=new File(uploadPath, imageName);
-                image.transferTo(saveFile);
-            }catch (Exception e){
-                e.printStackTrace();
-                return new ArrayList<>();
-            }
-        }
-        return imageInformation;
-    }
-
-    private String getFolder() {
-        LocalDate now=LocalDate.now();
-        String str=String.valueOf(now);
-        return str.replace("-", File.separator);
-    }
-
     /*반납 시 차량 정보 업데이트*/
     private void modifyVehicleInfo(VehicleReturnDTO vehicleReturnDTO) {
         Vehicle vehicle = vehicleRepository.findByVehicleNum(vehicleRepository.findByVehicleName(vehicleReturnDTO.getVehicleName()).getVehicleNum());
         vehicle.update(0, vehicleReturnDTO.getParkingLoc(), vehicleReturnDTO.getDistanceDriven());
-        vehicleRepository.save(vehicle);
     }
 
     /*예약 정보 반납 상태로 업데이트*/
     private void modifyReservationInfo(VehicleReturnDTO vehicleReturnDTO) {
-        VehicleReservation updatedReturnInfo=reservationRepository.findByRentNum(vehicleReturnDTO.getRentNum());
+        VehicleReservation updatedReturnInfo = reservationRepository.findByRentNum(vehicleReturnDTO.getRentNum());
         LocalDateTime returnedAt = dateTimeUtil.combineDateAndTime(vehicleReturnDTO.getDateOfReturn(), vehicleReturnDTO.getTimeOfReturn());
 
         modelMapper.map(vehicleReturnDTO, updatedReturnInfo);
         updatedReturnInfo.update(returnedAt);
-        reservationRepository.save(updatedReturnInfo);
     }
 
     /*반납 이력 전체 조회*/
@@ -210,12 +170,12 @@ public class VehicleReturnService {
 
         for (VehicleReservation reservation : returnHistoryList) {
             row = sheet.createRow(rowNum++);
-            LocalDate startDate=LocalDate.of(reservation.getRentedAt().getYear(), reservation.getRentedAt().getMonth(),
+            LocalDate startDate = LocalDate.of(reservation.getRentedAt().getYear(), reservation.getRentedAt().getMonth(),
                     reservation.getRentedAt().getDayOfMonth());
-            LocalTime startTime=LocalTime.of(reservation.getRentedAt().getHour(), reservation.getRentedAt().getMinute(), 0);
-            LocalDate endDate=LocalDate.of(reservation.getReturnedAt().getYear(), reservation.getReturnedAt().getMonth(),
+            LocalTime startTime = LocalTime.of(reservation.getRentedAt().getHour(), reservation.getRentedAt().getMinute(), 0);
+            LocalDate endDate = LocalDate.of(reservation.getReturnedAt().getYear(), reservation.getReturnedAt().getMonth(),
                     reservation.getReturnedAt().getDayOfMonth());
-            LocalTime endTime=LocalTime.of(reservation.getReturnedAt().getHour(), reservation.getReturnedAt().getMinute(), 0);
+            LocalTime endTime = LocalTime.of(reservation.getReturnedAt().getHour(), reservation.getReturnedAt().getMinute(), 0);
 
             cell = row.createCell(0);
             cell.setCellValue(reservation.getVehicle().getVehicleName());

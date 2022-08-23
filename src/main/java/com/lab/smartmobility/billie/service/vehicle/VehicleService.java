@@ -3,15 +3,10 @@ package com.lab.smartmobility.billie.service.vehicle;
 import com.lab.smartmobility.billie.dto.vehicle.NonBorrowableVehicle;
 import com.lab.smartmobility.billie.dto.vehicle.VehicleDTO;
 import com.lab.smartmobility.billie.entity.*;
-import com.lab.smartmobility.billie.repository.*;
 import com.lab.smartmobility.billie.repository.vehicle.VehicleRepository;
 import com.lab.smartmobility.billie.repository.vehicle.VehicleRepositoryImpl;
-import com.lab.smartmobility.billie.repository.vehicle.VehicleReservationRepository;
-import com.lab.smartmobility.billie.repository.vehicle.VehicleReservationRepositoryImpl;
-import com.lab.smartmobility.billie.util.DateTimeUtil;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.logging.Log;
-import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,18 +19,18 @@ import java.util.*;
 public class VehicleService {
     private final VehicleRepository vehicleRepository;
     private final VehicleRepositoryImpl vehicleRepositoryImpl;
-    private final VehicleReservationRepository reservationRepository;
-    private final ModelMapper modelMapper;
-    private final VehicleReservationRepositoryImpl reservationRepositoryImpl;
     private final Log log;
-
-    private static final Long IS_INSERT = -1L;
 
     /*보유 차량 및 대여 가능 여부 조회*/
     public List<VehicleDTO> vehicleList(){
-        List<Vehicle> vehicleList=vehicleRepository.findAll();
-        List<VehicleDTO> returnVehicle=new ArrayList<>();
+        List<Vehicle> vehicleList = vehicleRepository.findAll();
+        List<VehicleDTO> returnVehicle = new ArrayList<>();
 
+        fitReturnFormat(vehicleList, returnVehicle);
+        return returnVehicle;
+    }
+
+    private void fitReturnFormat(List<Vehicle> vehicleList, List<VehicleDTO> returnVehicle) {
         for(Vehicle vehicle : vehicleList){
             String[] vehicleName=vehicle.getVehicleName().split(" ");
 
@@ -48,7 +43,6 @@ public class VehicleService {
                     .build();
             returnVehicle.add(vehicleDTO);
         }
-        return returnVehicle;
     }
 
     /*개별 차량 정보 상세 조회*/
@@ -61,7 +55,7 @@ public class VehicleService {
         try{
             return vehicleRepository.save(vehicle);
         }catch (Exception e){
-            e.printStackTrace();
+            log.error(e);
             return null;
         }
     }
@@ -72,7 +66,7 @@ public class VehicleService {
             vehicleRepository.save(vehicle);
             return 0;
         }catch (Exception e){
-            e.printStackTrace();
+            log.error(e);
             return 9999;
         }
     }
@@ -82,7 +76,7 @@ public class VehicleService {
         try {
             vehicleRepository.deleteByVehicleNum(vehicleNum);
         }catch (Exception e){
-            e.printStackTrace();
+            log.error(e);
             return 9999;
         }
         return 0;
@@ -90,13 +84,12 @@ public class VehicleService {
 
     /*차량 폐기*/
     public int discardVehicle(Long vehicleNum, HashMap<String, String> reason){
-        Vehicle vehicle=vehicleRepository.findByVehicleNum(vehicleNum);
-        if(vehicle.getRentalStatus()==99){
+        Vehicle vehicle = vehicleRepository.findByVehicleNum(vehicleNum);
+        if(vehicle.getRentalStatus() == 99){
             return 500;
         }
 
         vehicle.discard(99, reason.get("reason"));
-        vehicleRepository.save(vehicle);
         return 0;
     }
 

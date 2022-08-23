@@ -56,7 +56,6 @@ public class TrafficCardService {
         try{
             TrafficCard updatedCardInfo = cardRepository.findByCardNum(trafficCardForm.getCardNum());
             modelMapper.map(trafficCardForm, updatedCardInfo);
-            cardRepository.save(updatedCardInfo);
         }catch (Exception e){
             e.printStackTrace();
             return 9999;
@@ -70,9 +69,7 @@ public class TrafficCardService {
         if(trafficCard.getRentalStatus()==99){
             return 500;
         }
-
         trafficCard.discard(99, reason.get("reason"));
-        cardRepository.save(trafficCard);
         return 0;
     }
 

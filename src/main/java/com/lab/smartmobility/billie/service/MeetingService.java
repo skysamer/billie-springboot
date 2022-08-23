@@ -26,7 +26,6 @@ public class MeetingService {
     private final MeetingRepository meetingRepository;
     private final ModelMapper modelMapper;
     private final StaffRepository staffRepository;
-    private final DateTimeUtil dateTimeUtil;
     private final Log log;
 
     /*회의 등록*/
@@ -35,7 +34,7 @@ public class MeetingService {
             return 500;
         }
 
-        Meeting newMeeting=modelMapper.map(applyMeetingForm, Meeting.class);
+        Meeting newMeeting = modelMapper.map(applyMeetingForm, Meeting.class);
         newMeeting.insertRenderInfo(staffRepository.findByStaffNum(applyMeetingForm.getStaffNum()));
         meetingRepository.save(newMeeting);
         return 0;
@@ -61,9 +60,8 @@ public class MeetingService {
                 return 500;
             }
 
-            Meeting modifiedMeeting=meetingRepository.findByMeetingNum(meetingNum);
+            Meeting modifiedMeeting = meetingRepository.findByMeetingNum(meetingNum);
             modelMapper.map(applyMeetingForm, modifiedMeeting);
-            meetingRepository.save(modifiedMeeting);
         }catch (Exception e){
             log.error(e);
             return 9999;
@@ -103,13 +101,13 @@ public class MeetingService {
 
     // 오늘과 내일의 회의 목록 조회(디폴트 조회)
     public List<List<Meeting>> todayTomorrowMeetingList(){
-        LocalDate today=LocalDate.now();
-        LocalDate tomorrow=today.plusDays(1);
+        LocalDate today = LocalDate.now();
+        LocalDate tomorrow = today.plusDays(1);
 
-        List<Meeting> todayList=meetingRepository.findByDate(today);
-        List<Meeting> tomorrowList=meetingRepository.findByDate(tomorrow);
+        List<Meeting> todayList = meetingRepository.findByDate(today);
+        List<Meeting> tomorrowList = meetingRepository.findByDate(tomorrow);
 
-        List<List<Meeting>> todayTomorrowList=new ArrayList<>();
+        List<List<Meeting>> todayTomorrowList = new ArrayList<>();
 
         todayTomorrowList.add(todayList);
         todayTomorrowList.add(tomorrowList);
