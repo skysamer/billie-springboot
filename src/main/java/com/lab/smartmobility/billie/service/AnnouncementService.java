@@ -123,7 +123,7 @@ public class AnnouncementService {
         if(announcement == null){
             return new HttpBodyMessage("fail", "게시글을 찾을 수 없음");
         }
-        saveAnnouncementInfo(announcementRegisterForm, announcement);
+        modelMapper.map(announcementRegisterForm, announcement);
 
         if(attachmentRepository.findByAnnouncement(announcement).size() != 0){
             attachmentRepository.deleteAllByAnnouncement(announcement);
@@ -133,11 +133,6 @@ public class AnnouncementService {
             uploadFiles(attachments, announcement);
         }
         return new HttpBodyMessage("success", "게시글 수정 성공");
-    }
-
-    private void saveAnnouncementInfo(AnnouncementRegisterForm announcementRegisterForm, Announcement announcement){
-        modelMapper.map(announcementRegisterForm, announcement);
-        announcementRepository.save(announcement);
     }
 
     /*좋아요 버튼 클릭*/
@@ -153,7 +148,6 @@ public class AnnouncementService {
     private void minusLike(Long announcementId, String email){
         Announcement announcement = announcementRepository.findById(announcementId).orElseThrow();
         announcement.minusLike();
-
         announcementStaffLikeRepository.deleteByEmailAndAnnouncementId(email, announcementId);
     }
 

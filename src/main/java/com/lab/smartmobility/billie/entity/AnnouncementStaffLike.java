@@ -15,6 +15,10 @@ public class AnnouncementStaffLike {
     @Column(name = "announcement_id")
     private Long announcementId;
 
+    public AnnouncementStaffLike(){
+
+    }
+
     public AnnouncementStaffLike(String email, Long announcementId){
         this.email = email;
         this.announcementId = announcementId;
