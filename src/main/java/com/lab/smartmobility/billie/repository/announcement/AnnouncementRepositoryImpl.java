@@ -92,8 +92,11 @@ public class AnnouncementRepositoryImpl {
                 .where(announcement.id.lt(id))
                 .orderBy(announcement.isMain.desc(), announcement.id.desc())
                 .fetchFirst();
+        if(announcementDetailsForm == null){
+            return null;
+        }
 
-        List<String> attachmentList = getAttachmentList(id);
+        List<String> attachmentList = getAttachmentList(announcementDetailsForm.getId());
         announcementDetailsForm.addFilename(attachmentList);
         return announcementDetailsForm;
     }
@@ -108,8 +111,11 @@ public class AnnouncementRepositoryImpl {
                 .where(announcement.id.gt(id))
                 .orderBy(announcement.isMain.desc(), announcement.id.desc())
                 .fetchFirst();
+        if(announcementDetailsForm == null){
+            return null;
+        }
 
-        List<String> attachmentList = getAttachmentList(id);
+        List<String> attachmentList = getAttachmentList(announcementDetailsForm.getId());
         announcementDetailsForm.addFilename(attachmentList);
         return announcementDetailsForm;
     }
