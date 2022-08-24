@@ -121,7 +121,7 @@ public class AnnouncementController {
 
     @ApiOperation(value = "게시글 삭제")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "id", value = "게시글 번호"),
+            @ApiImplicitParam(name = "id", value = "게시글 번호")
     })
     @ApiResponses({
             @ApiResponse(code = 200, message = "게시글 삭제 성공"),

@@ -30,6 +30,9 @@ public class AnnouncementDetailsForm {
     @ApiModelProperty(value = "조회수")
     private long views;
 
+    @ApiModelProperty(value = "좋아요")
+    private int likes;
+
     @ApiModelProperty(value = "생성일")
     private LocalDateTime createdAt;
 

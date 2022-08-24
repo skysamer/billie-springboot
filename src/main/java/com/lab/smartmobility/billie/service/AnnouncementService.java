@@ -15,7 +15,6 @@ import com.lab.smartmobility.billie.repository.announcement.AnnouncementStaffLik
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.logging.Log;
 import org.modelmapper.ModelMapper;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -105,12 +104,13 @@ public class AnnouncementService {
 
     /*게시글 삭제*/
     public HttpBodyMessage remove(Long id){
-        try{
-            announcementRepository.deleteById(id);
-            return new HttpBodyMessage("success", "게시글 삭제 성공");
-        }catch (EmptyResultDataAccessException e){
+        Announcement announcement = announcementRepository.findById(id).orElse(null);
+        if(announcement == null){
             return new HttpBodyMessage("fail", "해당하는 게시글을 찾을 수 없음");
         }
+
+        announcementRepository.delete(announcement);
+        return new HttpBodyMessage("success", "게시글 삭제 성공");
     }
 
     /*게시글 수정*/
