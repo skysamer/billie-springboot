@@ -168,15 +168,16 @@ public class AnnouncementService {
     /*이전글 이동*/
     public AnnouncementDetailsForm movePrev(Long id){
         List<AnnouncementDetailsForm> list = announcementRepositoryImpl.getListOrderByIsMainAndId();
-        AnnouncementDetailsForm result = null;
+        AnnouncementDetailsForm result = new AnnouncementDetailsForm();
         for(int i=0; i<list.size(); i++){
-            if(list.get(i).getId().equals(id)){
-                result = list.get(i + 1);
-                break;
+            try{
+                if(list.get(i).getId().equals(id)){
+                    result = list.get(i + 1);
+                    break;
+                }
+            }catch (IndexOutOfBoundsException e){
+                return null;
             }
-        }
-        if(result == null){
-            return null;
         }
 
         addFilename(result);
@@ -192,15 +193,16 @@ public class AnnouncementService {
     /*다음글 이동*/
     public AnnouncementDetailsForm moveNext(Long id){
         List<AnnouncementDetailsForm> list = announcementRepositoryImpl.getListOrderByIsMainAndId();
-        AnnouncementDetailsForm result = null;
+        AnnouncementDetailsForm result = new AnnouncementDetailsForm();
         for(int i=0; i<list.size(); i++){
-            if(list.get(i).getId().equals(id)){
-                result = list.get(i - 1);
-                break;
+            try{
+                if(list.get(i).getId().equals(id)){
+                    result = list.get(i - 1);
+                    break;
+                }
+            }catch (IndexOutOfBoundsException e){
+                return null;
             }
-        }
-        if(result == null){
-            return null;
         }
 
         addFilename(result);
