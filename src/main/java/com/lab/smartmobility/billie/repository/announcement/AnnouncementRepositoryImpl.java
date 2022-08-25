@@ -74,7 +74,7 @@ public class AnnouncementRepositoryImpl {
         return announcementDetailsForm;
     }
 
-    private List<String> getAttachmentList(Long id){
+    public List<String> getAttachmentList(Long id){
         return jpaQueryFactory
                 .select(attachment.filename)
                 .from(attachment)
@@ -82,42 +82,14 @@ public class AnnouncementRepositoryImpl {
                 .fetch();
     }
 
-    /*이전글 조회*/
-    public AnnouncementDetailsForm movePrev(Long id){
-        AnnouncementDetailsForm announcementDetailsForm = jpaQueryFactory
+    public List<AnnouncementDetailsForm> getListOrderByIsMainAndId(){
+        return jpaQueryFactory
                 .select(Projections.fields(AnnouncementDetailsForm.class, announcement.id, announcement.title,
                         announcement.content, announcement.isMain, announcement.type,
                         announcement.createdAt, announcement.modifiedAt, announcement.likes, announcement.views))
                 .from(announcement)
-                .where(announcement.id.lt(id))
                 .orderBy(announcement.isMain.desc(), announcement.id.desc())
-                .fetchFirst();
-        if(announcementDetailsForm == null){
-            return null;
-        }
-
-        List<String> attachmentList = getAttachmentList(announcementDetailsForm.getId());
-        announcementDetailsForm.addFilename(attachmentList);
-        return announcementDetailsForm;
-    }
-
-    /*다음글 조회*/
-    public AnnouncementDetailsForm moveNext(Long id){
-        AnnouncementDetailsForm announcementDetailsForm = jpaQueryFactory
-                .select(Projections.fields(AnnouncementDetailsForm.class, announcement.id, announcement.title,
-                        announcement.content, announcement.isMain, announcement.type,
-                        announcement.createdAt, announcement.modifiedAt, announcement.likes, announcement.views))
-                .from(announcement)
-                .where(announcement.id.gt(id))
-                .orderBy(announcement.isMain.desc(), announcement.id.desc())
-                .fetchFirst();
-        if(announcementDetailsForm == null){
-            return null;
-        }
-
-        List<String> attachmentList = getAttachmentList(announcementDetailsForm.getId());
-        announcementDetailsForm.addFilename(attachmentList);
-        return announcementDetailsForm;
+                .fetch();
     }
 
     /*조회수 증가*/

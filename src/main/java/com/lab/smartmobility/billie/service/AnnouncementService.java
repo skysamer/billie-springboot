@@ -167,21 +167,39 @@ public class AnnouncementService {
 
     /*이전글 이동*/
     public AnnouncementDetailsForm movePrev(Long id){
-        AnnouncementDetailsForm announcement = announcementRepositoryImpl.movePrev(id);
-        if(announcement == null){
-            return null;
+        List<AnnouncementDetailsForm> list = announcementRepositoryImpl.getListOrderByIsMainAndId();
+        AnnouncementDetailsForm result = new AnnouncementDetailsForm();
+        for(int i=0; i<list.size(); i++){
+            if(list.get(i).getId().equals(id)){
+                result = list.get(i + 1);
+                break;
+            }
         }
-        announcementRepositoryImpl.updateViewsCount(id);
-        return announcement;
+
+        addFilename(result);
+        announcementRepositoryImpl.updateViewsCount(result.getId());
+        return result;
+    }
+
+    private void addFilename(AnnouncementDetailsForm result){
+        List<String> filenameList = announcementRepositoryImpl.getAttachmentList(result.getId());
+        result.addFilename(filenameList);
     }
 
     /*다음글 이동*/
     public AnnouncementDetailsForm moveNext(Long id){
-        AnnouncementDetailsForm announcement = announcementRepositoryImpl.moveNext(id);
-        if(announcement == null){
-            return null;
+        List<AnnouncementDetailsForm> list = announcementRepositoryImpl.getListOrderByIsMainAndId();
+        AnnouncementDetailsForm result = new AnnouncementDetailsForm();
+        for(int i=0; i<list.size(); i++){
+            if(list.get(i).getId().equals(id)){
+                result = list.get(i - 1);
+                break;
+            }
         }
-        announcementRepositoryImpl.updateViewsCount(id);
-        return announcement;
+
+        addFilename(result);
+        announcementRepositoryImpl.updateViewsCount(result.getId());
+        return result;
     }
+
 }
