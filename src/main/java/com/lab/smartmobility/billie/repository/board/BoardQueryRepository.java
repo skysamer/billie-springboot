@@ -113,6 +113,11 @@ public class BoardQueryRepository {
                 .execute();
     }
 
+    /*이전글 조회*/
+    public BoardDetailsForm getPrev(Long id){
+        return null;
+    }
+
     private BooleanExpression keywordLike(String keyword) {
         return keyword.equals("all") ? null
                 : board.title.contains(keyword).or(board.content.contains(keyword));
