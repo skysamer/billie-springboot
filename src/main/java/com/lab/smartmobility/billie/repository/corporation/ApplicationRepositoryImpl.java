@@ -147,7 +147,7 @@ public class ApplicationRepositoryImpl {
         if(cardName.equals("all")){
             return null;
         }else if(cardName.equals("개인경비 청구")){
-            return application.isClaimedExpense.eq(1);
+            return application.isClaimedExpense.eq(1).or(application.isClaimedExpense.eq(99));
         }
         String[] cardNumberAndCompany=cardName.split(" ");
         return application.corporationCard.company.eq(cardNumberAndCompany[0]);
