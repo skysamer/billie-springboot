@@ -11,6 +11,7 @@ import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.logging.Log;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,6 +28,7 @@ import static com.lab.smartmobility.billie.entity.QReply.reply;
 public class BoardQueryRepository {
     private final JPAQueryFactory jpaQueryFactory;
     private final DateTimeUtil dateTimeUtil;
+    private final Log log;
 
     public PageResult<BoardListForm> getBoardListPaging(String keyword, String date, Pageable pageable){
         List<BoardListForm> list = getBoardList(keyword, date, pageable);
@@ -115,7 +117,62 @@ public class BoardQueryRepository {
 
     /*이전글 조회*/
     public BoardDetailsForm getPrev(Long id){
-        return null;
+        BoardDetailsForm boardDetailsForm = jpaQueryFactory
+                .select(Projections.fields(BoardDetailsForm.class, board.id, board.title, board.content,
+                        board.createdAt, board.modifiedAt, board.views, board.likes, board.replyCnt, board.isAnonymous,
+                        board.staff.staffNum, board.staff.name))
+                .from(board)
+                .where(board.id.lt(id))
+                .orderBy(board.id.desc())
+                .fetchFirst();
+        if(boardDetailsForm == null){
+            return null;
+        }
+
+        List<ReplyResponseForm> replyList = getReplyList(boardDetailsForm.getId());
+        replyList.forEach(replyResponseForm -> {
+            List<NestedReplyResponseForm> children = jpaQueryFactory.select(Projections.fields(NestedReplyResponseForm.class,
+                            reply.id, reply.staff.staffNum, reply.staff.name, reply.content, reply.createdAt, reply.modifiedAt, reply.isAnonymous))
+                    .from(reply)
+                    .where(reply.parent.id.eq(replyResponseForm.getId())
+                            .and(reply.board.id.eq(boardDetailsForm.getId()))
+                    )
+                    .fetch();
+            replyResponseForm.addChildren(children);
+        });
+
+        boardDetailsForm.addReply(replyList);
+        return boardDetailsForm;
+    }
+
+    /*다음글 조회*/
+    public BoardDetailsForm getNext(Long id){
+        BoardDetailsForm boardDetailsForm = jpaQueryFactory
+                .select(Projections.fields(BoardDetailsForm.class, board.id, board.title, board.content,
+                        board.createdAt, board.modifiedAt, board.views, board.likes, board.replyCnt, board.isAnonymous,
+                        board.staff.staffNum, board.staff.name))
+                .from(board)
+                .where(board.id.gt(id))
+                .orderBy(board.id.asc())
+                .fetchFirst();
+        if(boardDetailsForm == null){
+            return null;
+        }
+
+        List<ReplyResponseForm> replyList = getReplyList(boardDetailsForm.getId());
+        replyList.forEach(replyResponseForm -> {
+            List<NestedReplyResponseForm> children = jpaQueryFactory.select(Projections.fields(NestedReplyResponseForm.class,
+                            reply.id, reply.staff.staffNum, reply.staff.name, reply.content, reply.createdAt, reply.modifiedAt, reply.isAnonymous))
+                    .from(reply)
+                    .where(reply.parent.id.eq(replyResponseForm.getId())
+                            .and(reply.board.id.eq(boardDetailsForm.getId()))
+                    )
+                    .fetch();
+            replyResponseForm.addChildren(children);
+        });
+
+        boardDetailsForm.addReply(replyList);
+        return boardDetailsForm;
     }
 
     private BooleanExpression keywordLike(String keyword) {

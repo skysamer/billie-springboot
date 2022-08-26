@@ -140,4 +140,38 @@ public class BoardController {
         }
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
+
+    @ApiOperation(value = "이전글 조회")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "id", value = "글번호")
+    })
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "조회 성공"),
+            @ApiResponse(code = 204, message = "이전글 없음")
+    })
+    @GetMapping("/user/prev/{id}")
+    public ResponseEntity<BoardDetailsForm> getPrev(@PathVariable Long id){
+        BoardDetailsForm result = service.getPrevBoard(id);
+        if(result == null){
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
+    @ApiOperation(value = "다음글 조회")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "id", value = "글번호")
+    })
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "조회 성공"),
+            @ApiResponse(code = 204, message = "다음글 없음")
+    })
+    @GetMapping("/user/next/{id}")
+    public ResponseEntity<BoardDetailsForm> getNext(@PathVariable Long id){
+        BoardDetailsForm result = service.getNextBoard(id);
+        if(result == null){
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
 }

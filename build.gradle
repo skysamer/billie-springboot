@@ -42,6 +42,7 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-websocket'
 	implementation 'org.webjars:stomp-websocket:2.3.4'
 	implementation 'org.modelmapper:modelmapper:3.1.0'
+	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 	compileOnly 'org.projectlombok:lombok'
 	compileOnly group: 'jakarta.websocket', name: 'jakarta.websocket-api', version: '2.0.0'
 	runtimeOnly 'org.mariadb.jdbc:mariadb-java-client'
