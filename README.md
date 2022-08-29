@@ -135,6 +135,10 @@ WHERE
 - 원인은 SecurityConfig 객체에서 UserDetailsService의 의존성을 주입받고, UserDetailsService에서도 SecurityConfig에서 빈을 등록한 PasswordEncoder의 의존성을 주입받고 있기 때문에 발생한 이슈였습니다.
 - 그래서 별도의 설정파일을 생성하여 passwordEncoder의 빈을 등록하여 순환참조 오류를 해결했습니다.
   
+</div>
+</details>
+
+</br>
 
 ## 6. 리팩토링
 ### 6.1. 날짜와 시간을 다루는 로직의 개별 클래스화
@@ -174,12 +178,5 @@ WHERE
 - 따라서 신규 기능은 이러한 설계원칙을 고려하여 개발중이고, 이후 기존 기능또한 리팩토링할 예정입니다.
     
 </br>
-	
 
-## 8. 2차 개발 및 추후 리팩토링 시 고려사항
-- api 반환타입을 ResponseEntity로 설정
-- 세밀한 트랜잭션 관리 (서비스 단으로 트랜잭션 이관 및 리포지토리를 readonly 설정)
-- 가독성이 떨어지는 경우, 쿼리메소드를 지양하고 queryDSL 고려
-- update의 경우 entity의 변경감지 기능을 
-- 명확한 책임의 분리
 
