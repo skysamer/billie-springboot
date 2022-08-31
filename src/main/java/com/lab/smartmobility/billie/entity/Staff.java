@@ -96,6 +96,7 @@ public class Staff implements UserDetails {
     @Column(name = "english_name")
     private String englishName;
 
+    @JsonIgnore
     public String getPasswordToCheckMatch(){
         return password;
     }

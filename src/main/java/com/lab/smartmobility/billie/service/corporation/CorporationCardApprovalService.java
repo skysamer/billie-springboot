@@ -98,11 +98,11 @@ public class CorporationCardApprovalService {
         for(ApprovalCardUseForm approvalCardUseForm : approvalCardUseForms){
             Application toBeApproveApplication = applicationRepository.findByApplicationId(approvalCardUseForm.getApplicationId());
             CorporationCard card = cardRepository.findByCardNameAndCompany(approvalCardUseForm.getCardName(), approvalCardUseForm.getCompany());
+
             if(card == null){
                 toBeApproveApplication.approveExpenseByAdmin(1, 'f');
                 Staff requester = toBeApproveApplication.getStaff();
 
-                applicationRepository.save(toBeApproveApplication);
                 notificationSender.sendNotification(NOTIFICATION_DOMAIN_TYPE, requester, 0);
                 continue;
             }
@@ -115,7 +115,6 @@ public class CorporationCardApprovalService {
             toBeApproveApplication.approveCorporationByAdmin(card, 'f');
             Staff requester = toBeApproveApplication.getStaff();
 
-            applicationRepository.save(toBeApproveApplication);
             notificationSender.sendNotification(NOTIFICATION_DOMAIN_TYPE, requester, 0);
         }
         return new HttpBodyMessage("success", "success-final-approve");
@@ -138,7 +137,7 @@ public class CorporationCardApprovalService {
 
     /*내가 사용중인 법인카드 내역 조회*/
     public List<Application> getMyCorporationCard(Long staffNum){
-        Staff my=staffRepository.findByStaffNum(staffNum);
+        Staff my = staffRepository.findByStaffNum(staffNum);
         return applicationRepository.findAllByStaffAndIsReturned(my, 0);
     }
 }

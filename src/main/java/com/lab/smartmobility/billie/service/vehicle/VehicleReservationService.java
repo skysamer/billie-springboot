@@ -42,6 +42,7 @@ public class VehicleReservationService {
 
         LocalDateTime rentedAt = dateTimeUtil.combineDateAndTime(rentalVehicleDTO.getDateOfRental(), rentalVehicleDTO.getTimeOfRental());
         LocalDateTime returnedAt = dateTimeUtil.combineDateAndTime(rentalVehicleDTO.getExpectedReturnDate(), rentalVehicleDTO.getExpectedReturnTime());
+
         if(LocalDateTime.now().isAfter(rentedAt)){
             return new HttpBodyMessage("fail", "현재 시각보다 과거로 예약할 수 없습니다");
         }
