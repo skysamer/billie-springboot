@@ -71,16 +71,16 @@ public class MeetingService {
 
     // 이번주 회의 목록 조회(일요일 ~ 토요일)
     public List<Meeting> getMeetingList(){
-        SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd");
-        Calendar c=Calendar.getInstance();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        Calendar calendar = Calendar.getInstance();
 
-        c.set(Calendar.DAY_OF_WEEK,Calendar.SUNDAY);
-        String sunday=sdf.format(c.getTime());
-        LocalDate startDate=LocalDate.parse(sunday, DateTimeFormatter.ISO_DATE);
+        calendar.set(Calendar.DAY_OF_WEEK,Calendar.SUNDAY);
+        String sunday = sdf.format(calendar.getTime());
+        LocalDate startDate = LocalDate.parse(sunday, DateTimeFormatter.ISO_DATE);
 
-        c.set(Calendar.DAY_OF_WEEK,Calendar.SATURDAY);
-        String saturday=sdf.format(c.getTime());
-        LocalDate endDate=LocalDate.parse(saturday, DateTimeFormatter.ISO_DATE);
+        calendar.set(Calendar.DAY_OF_WEEK,Calendar.SATURDAY);
+        String saturday = sdf.format(calendar.getTime());
+        LocalDate endDate = LocalDate.parse(saturday, DateTimeFormatter.ISO_DATE);
 
         return meetingRepository.findByDateBetween(startDate, endDate);
     }

@@ -66,7 +66,7 @@ public class VehicleReservationService {
                 0, 0, 0);
         LocalDateTime endDateTime = LocalDateTime.of(endDate.getYear(), endDate.getMonth(), endDate.getDayOfMonth(),
                 23, 59, 59);
-        return reservationRepository.findAllByRentedAtBetween(startDateTime, endDateTime);
+        return reservationQueryRepository.findAllByMonthly(startDateTime, endDateTime);
     }
 
     /*개별 차량 예약 조회*/

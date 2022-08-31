@@ -36,14 +36,14 @@ public class CorporationCardApprovalService {
 
     /*부서장의 요청 관리 목록 조회*/
     public List<Application> getListOfApprovalsRequestByManager(Long managerNum, String cardName, String baseYear, int disposalInfo, Pageable pageable){
-        Staff manager=staffRepository.findByStaffNum(managerNum);
+        Staff manager = staffRepository.findByStaffNum(managerNum);
         return applicationRepositoryImpl.getApplicationListByManager(manager.getDepartment(), "ROLE_USER",
                 cardName, baseYear, disposalInfo, pageable);
     }
 
     /*부서장의 요청 관리 목록 개수 조회*/
     public TotalCount getCountOfApprovalsRequestByManager(Long managerNum, String cardName, String baseYear, int disposalInfo){
-        Staff manager=staffRepository.findByStaffNum(managerNum);
+        Staff manager = staffRepository.findByStaffNum(managerNum);
         return new TotalCount(
                 applicationRepositoryImpl.getApplicationCountByManager(manager.getDepartment(), "ROLE_USER", cardName, baseYear, disposalInfo));
     }
@@ -52,11 +52,10 @@ public class CorporationCardApprovalService {
     public HttpBodyMessage approveCardUseByManager(List<ApprovalCardUseForm> approvalCardUseForms){
         try{
             for(ApprovalCardUseForm approvalCardUseForm : approvalCardUseForms){
-                Application application=applicationRepository.findByApplicationId(approvalCardUseForm.getApplicationId());
+                Application application = applicationRepository.findByApplicationId(approvalCardUseForm.getApplicationId());
                 application.approveByManager('t');
-                Staff admin = staffRepository.findByStaffNum(ADMIN_ID);
 
-                applicationRepository.save(application);
+                Staff admin = staffRepository.findByStaffNum(ADMIN_ID);
                 notificationSender.sendNotification(NOTIFICATION_DOMAIN_TYPE, admin, 1);
             }
         }catch (Exception e){

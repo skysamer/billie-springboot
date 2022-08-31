@@ -93,13 +93,13 @@ public class CorporationCardReservationService {
 
     /*나의 사용신청 목록 조회*/
     public List<Application> myApplicationList(Long staffNum, String cardName, String baseYear, Pageable pageable){
-        Staff my=staffRepository.findByStaffNum(staffNum);
+        Staff my = staffRepository.findByStaffNum(staffNum);
         return applicationRepositoryImpl.getMyApplicationList(my, cardName, baseYear, pageable);
     }
 
     /*나의 사용신청 목록 카운팅*/
     public TotalCount myApplicationCount(Long staffNum, String cardName, String baseYear){
-        Staff my=staffRepository.findByStaffNum(staffNum);
+        Staff my = staffRepository.findByStaffNum(staffNum);
         return new TotalCount(applicationRepositoryImpl.getMyApplicationCount(my, cardName, baseYear));
     }
 

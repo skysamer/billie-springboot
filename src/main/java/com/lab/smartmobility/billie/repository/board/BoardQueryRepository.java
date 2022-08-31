@@ -18,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static com.lab.smartmobility.billie.entity.QBoard.board;
 import static com.lab.smartmobility.billie.entity.QReply.reply;
@@ -79,16 +80,20 @@ public class BoardQueryRepository {
 
         List<ReplyResponseForm> replyList = getReplyList(id);
 
-        replyList.forEach(replyResponseForm -> {
-            List<NestedReplyResponseForm> children = jpaQueryFactory.select(Projections.fields(NestedReplyResponseForm.class,
-                    reply.id, reply.staff.staffNum, reply.staff.name, reply.content, reply.createdAt, reply.modifiedAt, reply.isAnonymous))
-                    .from(reply)
-                    .where(reply.parent.id.eq(replyResponseForm.getId())
-                            .and(reply.board.id.eq(id))
-                    )
-                    .fetch();
-            replyResponseForm.addChildren(children);
-        });
+        List<NestedReplyResponseForm> childrenReplyList = jpaQueryFactory.select(Projections.fields(NestedReplyResponseForm.class,
+                        reply.parent.id.as("parentId"), reply.id, reply.staff.staffNum, reply.staff.name,
+                        reply.content, reply.createdAt, reply.modifiedAt, reply.isAnonymous))
+                .from(reply)
+                .where(reply.parent.id.isNotNull()
+                        .and(reply.board.id.eq(id))
+                )
+                .fetch();
+
+        replyList.forEach(parent -> {
+                            parent.addChildren(childrenReplyList.stream()
+                                    .filter(child -> child.getParentId().equals(parent.getId()))
+                                    .collect(Collectors.toList()));
+                        });
 
         boardDetailsForm.addReply(replyList);
         return boardDetailsForm;
@@ -130,15 +135,20 @@ public class BoardQueryRepository {
         }
 
         List<ReplyResponseForm> replyList = getReplyList(boardDetailsForm.getId());
-        replyList.forEach(replyResponseForm -> {
-            List<NestedReplyResponseForm> children = jpaQueryFactory.select(Projections.fields(NestedReplyResponseForm.class,
-                            reply.id, reply.staff.staffNum, reply.staff.name, reply.content, reply.createdAt, reply.modifiedAt, reply.isAnonymous))
-                    .from(reply)
-                    .where(reply.parent.id.eq(replyResponseForm.getId())
-                            .and(reply.board.id.eq(boardDetailsForm.getId()))
-                    )
-                    .fetch();
-            replyResponseForm.addChildren(children);
+
+        List<NestedReplyResponseForm> childrenReplyList = jpaQueryFactory.select(Projections.fields(NestedReplyResponseForm.class,
+                        reply.parent.id.as("parentId"), reply.id, reply.staff.staffNum, reply.staff.name,
+                        reply.content, reply.createdAt, reply.modifiedAt, reply.isAnonymous))
+                .from(reply)
+                .where(reply.parent.id.isNotNull()
+                        .and(reply.board.id.eq(boardDetailsForm.getId()))
+                )
+                .fetch();
+
+        replyList.forEach(parent -> {
+            parent.addChildren(childrenReplyList.stream()
+                    .filter(child -> child.getParentId().equals(parent.getId()))
+                    .collect(Collectors.toList()));
         });
 
         boardDetailsForm.addReply(replyList);
@@ -160,15 +170,20 @@ public class BoardQueryRepository {
         }
 
         List<ReplyResponseForm> replyList = getReplyList(boardDetailsForm.getId());
-        replyList.forEach(replyResponseForm -> {
-            List<NestedReplyResponseForm> children = jpaQueryFactory.select(Projections.fields(NestedReplyResponseForm.class,
-                            reply.id, reply.staff.staffNum, reply.staff.name, reply.content, reply.createdAt, reply.modifiedAt, reply.isAnonymous))
-                    .from(reply)
-                    .where(reply.parent.id.eq(replyResponseForm.getId())
-                            .and(reply.board.id.eq(boardDetailsForm.getId()))
-                    )
-                    .fetch();
-            replyResponseForm.addChildren(children);
+
+        List<NestedReplyResponseForm> childrenReplyList = jpaQueryFactory.select(Projections.fields(NestedReplyResponseForm.class,
+                        reply.parent.id.as("parentId"), reply.id, reply.staff.staffNum, reply.staff.name,
+                        reply.content, reply.createdAt, reply.modifiedAt, reply.isAnonymous))
+                .from(reply)
+                .where(reply.parent.id.isNotNull()
+                        .and(reply.board.id.eq(boardDetailsForm.getId()))
+                )
+                .fetch();
+
+        replyList.forEach(parent -> {
+            parent.addChildren(childrenReplyList.stream()
+                    .filter(child -> child.getParentId().equals(parent.getId()))
+                    .collect(Collectors.toList()));
         });
 
         boardDetailsForm.addReply(replyList);

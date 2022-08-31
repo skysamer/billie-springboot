@@ -103,6 +103,16 @@ public class VehicleReservationRepositoryImpl {
                 .stream().count();
     }
 
+    /*월단위 차량 예약 조회*/
+    public List<VehicleReservation> findAllByMonthly(LocalDateTime startDateTime, LocalDateTime endDateTime){
+        return jpaQueryFactory
+                .selectFrom(vehicleReservation)
+                .where(vehicleReservation.rentedAt.between(startDateTime, endDateTime)
+                        .or(vehicleReservation.returnedAt.between(startDateTime, endDateTime))
+                )
+                .fetch();
+    }
+
     private BooleanExpression vehicleEq(Vehicle vehicle) {
         return vehicle != null ? vehicleReservation.vehicle.eq(vehicle) : null;
     }

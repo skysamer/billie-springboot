@@ -30,9 +30,9 @@ public class MeetingController {
             @ApiResponse(code = 200, message = "The time has already been reserved // reservation complete")
     })
     public HttpBodyMessage insertMeeting(@RequestBody ApplyMeetingForm applyMeetingForm){
-        int isInserted=meetingService.insertMeeting(applyMeetingForm);
+        int isInserted = meetingService.insertMeeting(applyMeetingForm);
 
-        if(isInserted==500){
+        if(isInserted == 500){
             return new HttpBodyMessage("fail", "The time has already been reserved");
         }
         return new HttpBodyMessage("success", "reservation complete");
@@ -57,9 +57,9 @@ public class MeetingController {
     })
     public HttpBodyMessage modifyMeeting(@RequestBody ApplyMeetingForm applyMeetingForm, @PathVariable("meeting-num") Long meetingNum){
         int isUpdated=meetingService.updateMeeting(meetingNum, applyMeetingForm);
-        if(isUpdated==9999){
+        if(isUpdated == 9999){
             return new HttpBodyMessage("fail", "fail to modify");
-        }else if(isUpdated==500){
+        }else if(isUpdated == 500){
             return new HttpBodyMessage("fail", "The time has already been reserved");
         }
         return new HttpBodyMessage("success", "reservation complete");

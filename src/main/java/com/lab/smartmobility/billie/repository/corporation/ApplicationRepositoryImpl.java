@@ -24,7 +24,7 @@ import static com.lab.smartmobility.billie.entity.corporation.QCorporationCard.c
 public class ApplicationRepositoryImpl {
     private final Log log;
     private final JPAQueryFactory jpaQueryFactory;
-    private final DateTimeUtil baseDateParser;
+    private final DateTimeUtil dateTimeUtil;
 
     public long isDuplicate(CorporationCard card, int isReturned, LocalDate startDate, LocalDate endDate, LocalTime startTime, LocalTime endTime){
         return jpaQueryFactory
@@ -138,8 +138,8 @@ public class ApplicationRepositoryImpl {
             return null;
         }
 
-        LocalDate startDate=baseDateParser.getStartDate(baseYear);
-        LocalDate endDate=baseDateParser.getEndDate(baseYear);
+        LocalDate startDate= dateTimeUtil.getStartDate(baseYear);
+        LocalDate endDate= dateTimeUtil.getEndDate(baseYear);
         return application.startDate.between(startDate, endDate);
     }
 
@@ -157,7 +157,7 @@ public class ApplicationRepositoryImpl {
         if(cardName.equals("all")){
             return null;
         }else if(cardName.equals("개인경비 청구")){
-            return application.isClaimedExpense.eq(1);
+            return application.isClaimedExpense.eq(1).or(application.isClaimedExpense.eq(99));
         }
         String[] cardNumberAndCompany=cardName.split(" ");
         return application.corporationCard.cardName.eq(cardNumberAndCompany[1]);

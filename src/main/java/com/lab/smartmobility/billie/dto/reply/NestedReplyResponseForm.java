@@ -9,8 +9,11 @@ import java.time.LocalDateTime;
 @Getter
 @ApiModel(value = "대댓글 폼")
 public class NestedReplyResponseForm {
-    @ApiModelProperty(value = "번호")
+    @ApiModelProperty(value = "부모댓글번호")
     private Long id;
+
+    @ApiModelProperty(value = "번호")
+    private Long parentId;
 
     @ApiModelProperty(value = "내용")
     private String content;
