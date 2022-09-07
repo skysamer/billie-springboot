@@ -76,47 +76,39 @@ public class VehicleReservationService {
     }
 
     /*차량 예약 정보 수정*/
-    public int modifyVehicleReservation(Long rentNum, ApplyRentalVehicleDTO applyRentalVehicleDTO){
+    public HttpBodyMessage modifyVehicleReservation(Long rentNum, ApplyRentalVehicleDTO applyRentalVehicleDTO){
         VehicleReservation reservationInfo = reservationRepository.findByRentNum(rentNum);
         Vehicle vehicle = vehicleRepository.findByVehicleNum(vehicleRepository.findByVehicleName(applyRentalVehicleDTO.getVehicleName()).getVehicleNum());
 
         LocalDateTime rentedAt = dateTimeUtil.combineDateAndTime(applyRentalVehicleDTO.getDateOfRental(), applyRentalVehicleDTO.getTimeOfRental());
         LocalDateTime returnedAt = dateTimeUtil.combineDateAndTime(applyRentalVehicleDTO.getExpectedReturnDate(), applyRentalVehicleDTO.getExpectedReturnTime());
-        try{
-            if(LocalDateTime.now().isAfter(rentedAt)){
-                return 400;
-            }else if(!applyRentalVehicleDTO.getStaffNum().equals(reservationInfo.getStaff().getStaffNum())){
-                return 300;
-            }else if(LocalDateTime.now().isAfter(reservationInfo.getRentedAt())){
-                return 303;
-            }
 
-            if(checkReservationIsDuplicate(rentNum, rentedAt, returnedAt,  vehicle)){
-                return 500;
-            }
-
-            modelMapper.map(applyRentalVehicleDTO, reservationInfo);
-            reservationInfo.modifyInfo(vehicle, rentedAt, returnedAt);
-        }catch (Exception e){
-            log.error(e);
-            return 9999;
+        if(LocalDateTime.now().isAfter(rentedAt)){
+            return new HttpBodyMessage("fail", "현재 시각보다 과거로 예약할 수 없습니다");
+        }else if(!applyRentalVehicleDTO.getStaffNum().equals(reservationInfo.getStaff().getStaffNum())){
+            return new HttpBodyMessage("fail", "대여자 정보가 일치하지 않습니다");
+        }else if(LocalDateTime.now().isAfter(reservationInfo.getRentedAt())){
+            return new HttpBodyMessage("fail", "대여시작시간 이후에는 변경할 수 없습니다");
         }
-        return 0;
+
+        if(checkReservationIsDuplicate(rentNum, rentedAt, returnedAt,  vehicle)){
+            return new HttpBodyMessage("fail", "해당 날짜에 차량이 이미 대여중입니다");
+        }
+
+        modelMapper.map(applyRentalVehicleDTO, reservationInfo);
+        reservationInfo.modifyInfo(vehicle, rentedAt, returnedAt);
+        return new HttpBodyMessage("success", "예약 수정 성공");
     }
 
     /*차량 예약 삭제*/
-    public int removeReservationInfo(Long rentNum){
-        try{
-            VehicleReservation vehicleReservation = reservationRepository.findByRentNum(rentNum);
-            if(vehicleReservation.getRentedAt().isAfter(LocalDateTime.now())){
-                reservationRepository.deleteByRentNum(rentNum);
-                return 0;
-            }
-            return 500;
-        }catch (Exception e){
-            log.error(e);
-            return 9999;
+    public HttpBodyMessage removeReservationInfo(Long rentNum){
+        VehicleReservation vehicleReservation = reservationRepository.findByRentNum(rentNum);
+        if(vehicleReservation.getRentedAt().isAfter(LocalDateTime.now())){
+            reservationRepository.deleteByRentNum(rentNum);
+            return new HttpBodyMessage("success", "삭제 성공");
         }
+
+        return new HttpBodyMessage("fail", "삭제 불가");
     }
 
     /*관리자의 차량 예약 삭제*/

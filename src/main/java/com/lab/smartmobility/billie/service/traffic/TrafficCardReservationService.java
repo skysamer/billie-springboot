@@ -33,30 +33,25 @@ public class TrafficCardReservationService {
     private final Log log;
 
     /*교통카드 대여 신청*/
-    public int applyCardRental(TrafficCardApplyDTO trafficCardApplyDTO){
-        try {
-            TrafficCard trafficCard=cardRepository.findByCardNum(trafficCardApplyDTO.getCardNum());
-            Staff renderInfo=staffRepository.findByStaffNum(trafficCardApplyDTO.getStaffNum());
+    public HttpBodyMessage applyCardRental(TrafficCardApplyDTO trafficCardApplyDTO){
+        TrafficCard trafficCard = cardRepository.findByCardNum(trafficCardApplyDTO.getCardNum());
+        Staff renderInfo = staffRepository.findByStaffNum(trafficCardApplyDTO.getStaffNum());
 
-            LocalDateTime rentedAt = dateTimeUtil.combineDateAndTime(trafficCardApplyDTO.getDateOfRental(), trafficCardApplyDTO.getTimeOfRental());
-            LocalDateTime returnedAt = dateTimeUtil.combineDateAndTime(trafficCardApplyDTO.getExpectedReturnDate(), trafficCardApplyDTO.getExpectedReturnTime());
+        LocalDateTime rentedAt = dateTimeUtil.combineDateAndTime(trafficCardApplyDTO.getDateOfRental(), trafficCardApplyDTO.getTimeOfRental());
+        LocalDateTime returnedAt = dateTimeUtil.combineDateAndTime(trafficCardApplyDTO.getExpectedReturnDate(), trafficCardApplyDTO.getExpectedReturnTime());
 
-            if(LocalDateTime.now().isAfter(rentedAt)){
-                return 400;
-            }
-            if(checkReservationIsDuplicate(-1L, rentedAt, returnedAt, trafficCard)){
-                return 500;
-            }
-
-            TrafficCardReservation trafficCardReservation=new TrafficCardReservation();
-            modelMapper.map(trafficCardApplyDTO, trafficCardReservation);
-            trafficCardReservation.insert(trafficCard, renderInfo, rentedAt, returnedAt);
-            reservationRepository.save(trafficCardReservation);
-        }catch (Exception e){
-            log.error(e);
-            return 9999;
+        if(LocalDateTime.now().isAfter(rentedAt)){
+            return new HttpBodyMessage("fail", "이전 날짜로 대여할 수 없습니다");
         }
-        return 0;
+        if(checkReservationIsDuplicate(-1L, rentedAt, returnedAt, trafficCard)){
+            return new HttpBodyMessage("fail", "해당 날짜에 이미 대여중인 카드입니다");
+        }
+
+        TrafficCardReservation trafficCardReservation=new TrafficCardReservation();
+        modelMapper.map(trafficCardApplyDTO, trafficCardReservation);
+        trafficCardReservation.insert(trafficCard, renderInfo, rentedAt, returnedAt);
+        reservationRepository.save(trafficCardReservation);
+        return new HttpBodyMessage("success", "대여신청 성공");
     }
 
     /*신규 예약이 기존 예약 날짜 및 시간과 겹치는지 체크*/
@@ -81,37 +76,38 @@ public class TrafficCardReservationService {
     }
 
     /*교통카드 대여 정보 수정*/
-    public int modifyCardReservation(Long reservationNum, TrafficCardApplyDTO trafficCardApplyDTO){
+    public HttpBodyMessage modifyCardReservation(Long reservationNum, TrafficCardApplyDTO trafficCardApplyDTO){
         TrafficCardReservation reservationInfo = reservationRepository.findByReservationNum(reservationNum);
         TrafficCard trafficCard = cardRepository.findByCardNum(trafficCardApplyDTO.getCardNum());
 
         LocalDateTime rentedAt = dateTimeUtil.combineDateAndTime(trafficCardApplyDTO.getDateOfRental(), trafficCardApplyDTO.getTimeOfRental());
         LocalDateTime returnedAt = dateTimeUtil.combineDateAndTime(trafficCardApplyDTO.getExpectedReturnDate(), trafficCardApplyDTO.getExpectedReturnTime());
+
         if(LocalDateTime.now().isAfter(rentedAt)){
-            return 400;
+            return new HttpBodyMessage("fail", "이전 날짜로 대여할 수 없습니다");
         }else if(!trafficCardApplyDTO.getStaffNum().equals(reservationInfo.getStaff().getStaffNum())){
-            return 300;
+            return new HttpBodyMessage("fail", "대여자 정보가 일치하지 않습니다");
         }else if(LocalDateTime.now().isAfter(reservationInfo.getRentedAt())){
-            return 303;
+            return new HttpBodyMessage("fail", "대여시작시간 이후에는 수정할 수 없습니다");
         }
 
         if(checkReservationIsDuplicate(reservationNum, rentedAt, returnedAt, trafficCard)){
-            return 500;
+            return new HttpBodyMessage("fail", "이미 대여중인 카드입니다");
         }
 
         modelMapper.map(trafficCardApplyDTO, reservationInfo);
         reservationInfo.updateReservationInfo(trafficCard, rentedAt, returnedAt);
-        return 0;
+        return new HttpBodyMessage("success", "대여정보 수정 성공");
     }
 
     /*교통 카드 대여 요청 삭제*/
-    public int removeCardReservationInfo(Long reservationNum){
+    public HttpBodyMessage removeCardReservationInfo(Long reservationNum){
         TrafficCardReservation vehicleReservation = reservationRepository.findByReservationNum(reservationNum);
         if(vehicleReservation.getRentedAt().isAfter(LocalDateTime.now())){
             reservationRepository.deleteByReservationNum(reservationNum);
-            return 0;
+            return new HttpBodyMessage("success", "대여 정보 삭제 완료");
         }
-        return 9999;
+        return new HttpBodyMessage("fail", "삭제할 수 없습니다. 반납 처리를 먼저 진행해주세요");
     }
 
     /*관리자의 대여 신청 삭제*/

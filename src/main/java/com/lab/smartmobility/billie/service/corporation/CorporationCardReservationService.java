@@ -46,7 +46,7 @@ public class CorporationCardReservationService {
         Staff requester=staffRepository.findByStaffNum(applyCorporationCardForm.getStaffNum());
 
         application.assignRequester(requester);
-        Staff approval= assignApproval(requester);
+        Staff approval = assignApproval(requester);
         if(requester.getRole().equals("ROLE_ADMIN")){
             application.updateApprovalStatus('t');
         }

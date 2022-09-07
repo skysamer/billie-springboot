@@ -69,11 +69,10 @@ public class CorporationCardApprovalService {
     public HttpBodyMessage rejectCardUse(List<CompanionCardUseForm> companionCardUseForms){
         try{
             for(CompanionCardUseForm companionCardUseForm : companionCardUseForms){
-                Application application=applicationRepository.findByApplicationId(companionCardUseForm.getApplicationId());
+                Application application = applicationRepository.findByApplicationId(companionCardUseForm.getApplicationId());
                 application.reject('c', companionCardUseForm.getReason());
                 Staff requester = application.getStaff();
 
-                applicationRepository.save(application);
                 notificationSender.sendNotification(NOTIFICATION_DOMAIN_TYPE, requester, 0);
             }
         }catch (Exception e){

@@ -52,20 +52,7 @@ public class VehicleReservationController {
                     "or 예약 수정 실패 or 예약 수정 성공")
     })
     public HttpBodyMessage modify(@PathVariable("rent-num") Long rentNum, @RequestBody ApplyRentalVehicleDTO applyRentalVehicleDTO){
-        int isUpdated=service.modifyVehicleReservation(rentNum, applyRentalVehicleDTO);
-
-        if(isUpdated==400){
-            return new HttpBodyMessage("fail", "현재 시각보다 과거로 예약할 수 없습니다");
-        }else if(isUpdated==500){
-            return new HttpBodyMessage("fail", "해당 날짜에 차량이 이미 대여중입니다");
-        }else if(isUpdated==300){
-            return new HttpBodyMessage("fail", "대여자 정보가 일치하지 않습니다");
-        }else if(isUpdated==303){
-            return new HttpBodyMessage("fail", "대여시작시간 이후에는 변경할 수 없습니다");
-        }else if(isUpdated==9999){
-            return new HttpBodyMessage("fail", "예약 수정 실패");
-        }
-        return new HttpBodyMessage("success", "예약 수정 성공");
+        return service.modifyVehicleReservation(rentNum, applyRentalVehicleDTO);
     }
 
     @DeleteMapping("/remove/{rent-num}")
@@ -74,14 +61,7 @@ public class VehicleReservationController {
             @ApiResponse(code = 200, message = "삭제 실패 or 삭제 성공 or 삭제 불가")
     })
     public HttpBodyMessage remove(@PathVariable("rent-num") Long rentNum){
-        int isDeleted=service.removeReservationInfo(rentNum);
-
-        if(isDeleted==9999){
-            return new HttpBodyMessage("fail", "삭제 실패");
-        }else if(isDeleted==500){
-            return new HttpBodyMessage("fail", "삭제 불가");
-        }
-        return new HttpBodyMessage("success", "삭제 성공");
+        return service.removeReservationInfo(rentNum);
     }
 
     @ApiOperation(value = "관리자의 차량 예약 삭제")

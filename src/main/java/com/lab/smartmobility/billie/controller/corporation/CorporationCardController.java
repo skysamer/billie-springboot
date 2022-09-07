@@ -22,8 +22,8 @@ public class CorporationCardController {
     })
     @PostMapping("/insert")
     public HttpBodyMessage createNewCard(@RequestBody CorporationCardForm corporationCardForm){
-        int isInserted= service.createCard(corporationCardForm);
-        if(isInserted==9999){
+        int isInserted = service.createCard(corporationCardForm);
+        if(isInserted == 9999){
             return new HttpBodyMessage("fail", "fail-insert");
         }
         return new HttpBodyMessage("success", "success-insert");
@@ -53,8 +53,8 @@ public class CorporationCardController {
     })
     @PutMapping("/modify/{card-id}")
     public HttpBodyMessage modifyCardInfo(@PathVariable("card-id") Long cardId, @RequestBody CorporationCardForm corporationCardForm){
-        int isModified= service.modifyCardInfo(cardId, corporationCardForm);
-        if(isModified==9999){
+        int isModified = service.modifyCardInfo(cardId, corporationCardForm);
+        if(isModified == 9999){
             return new HttpBodyMessage("fail", "fail-modify");
         }
         return new HttpBodyMessage("success", "success-modify");

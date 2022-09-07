@@ -8,7 +8,7 @@ plugins {
 	id 'org.springframework.boot' version '2.6.2'
 	id 'io.spring.dependency-management' version '1.0.11.RELEASE'
 	id 'java'
-	//id 'war'
+//	id 'war'
 }
 
 group = 'com.lab.smartmobility'
@@ -41,11 +41,12 @@ dependencies {
 	implementation 'org.webjars:stomp-websocket:2.3.4'
 	implementation 'org.modelmapper:modelmapper:3.1.0'
 	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
-	implementation 'org.springframework.boot:spring-boot-starter-actuator'
+//	implementation 'org.springframework.boot:spring-boot-starter-actuator'
+//	implementation group: 'io.micrometer', name: 'micrometer-core', version: '1.9.2'
 	compileOnly 'org.projectlombok:lombok'
 	compileOnly group: 'jakarta.websocket', name: 'jakarta.websocket-api', version: '2.0.0'
 	runtimeOnly 'org.mariadb.jdbc:mariadb-java-client'
-	runtimeOnly 'io.micrometer:micrometer-registry-prometheus'
+//	runtimeOnly 'io.micrometer:micrometer-registry-prometheus'
 	annotationProcessor 'org.projectlombok:lombok'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'org.springframework.security:spring-security-test'

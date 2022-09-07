@@ -8,7 +8,6 @@ import com.lab.smartmobility.billie.service.vehicle.VehicleService;
 import io.swagger.annotations.*;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -62,7 +61,7 @@ public class VehicleController {
             @ApiResponse(code = 200, message = "삭제 성공 or 삭제 실패")
     })
     public HttpBodyMessage removeVehicleInfo(@PathVariable("vehicle-num") Long vehicleNum){
-        if(service.removeVehicleInfo(vehicleNum)==9999){
+        if(service.removeVehicleInfo(vehicleNum) == 9999){
             return new HttpBodyMessage("fail", "삭제 실패");
         }
         return new HttpBodyMessage("success", "삭제 성공");
@@ -75,23 +74,23 @@ public class VehicleController {
     })
     public HttpBodyMessage discardVehicle(@PathVariable("vehicle-num") Long vehicleNum,
                                           @ApiParam(value = "'reason' : '폐기 사유'") @RequestBody HashMap<String, String> reason){
-        if(service.discardVehicle(vehicleNum, reason)==500){
+        if(service.discardVehicle(vehicleNum, reason) == 500){
             return new HttpBodyMessage("fail", "이미 폐기된 차량입니다.");
         }
         return new HttpBodyMessage("success", "폐기 성공");
     }
 
-    @GetMapping("/user/not-borrow/{rented-at}/{returned-at}/{rent-num}")
+    @ApiOperation(value = "해당 예약 날짜에 빌릴수 없는 차량 목록 조회")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "rented-at", value = "대여 시작 시간 (yyyy-MM-dd hh:mm)"),
             @ApiImplicitParam(name = "returned-at", value = "대여 종료 시간 (yyyy-MM-dd hh:mm)"),
             @ApiImplicitParam(name = "rent-num", value = "예약 번호 (신규 예약은 -1)")
     })
-    @ApiOperation(value = "해당 예약 날짜에 빌릴수 없는 차량 목록 조회")
     @ApiResponses({
             @ApiResponse(code = 200, message = "조회성공"),
             @ApiResponse(code = 404, message = "모든 차량 대여 가능")
     })
+    @GetMapping("/user/not-borrow/{rented-at}/{returned-at}/{rent-num}")
     public ResponseEntity<List<NonBorrowableVehicle>> getNonBorrowableVehicleList(@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm") @PathVariable("rented-at") LocalDateTime rentedAt,
                                                                                   @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm") @PathVariable("returned-at") LocalDateTime returnedAt,
                                                                                   @PathVariable("rent-num") Long rentNum){

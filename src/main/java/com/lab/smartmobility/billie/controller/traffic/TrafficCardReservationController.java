@@ -29,17 +29,7 @@ public class TrafficCardReservationController {
             @ApiResponse(code = 200, message = "대여신청 실패 or 해당 날짜에 이미 대여중인 카드입니다 or 이전 날짜로 대여할 수 없습니다 or 대여신청 성공")
     })
     public HttpBodyMessage applyRental(@Valid @RequestBody TrafficCardApplyDTO trafficCardApplyDTO){
-        int checkApplyRental=service.applyCardRental(trafficCardApplyDTO);
-
-        if(checkApplyRental==9999){
-            return new HttpBodyMessage("fail", "대여신청 실패");
-        }
-        else if(checkApplyRental==500){
-            return new HttpBodyMessage("fail", "해당 날짜에 이미 대여중인 카드입니다");
-        }else if(checkApplyRental==400){
-            return new HttpBodyMessage("fail", "이전 날짜로 대여할 수 없습니다");
-        }
-        return new HttpBodyMessage("success", "대여신청 성공");
+        return service.applyCardRental(trafficCardApplyDTO);
     }
 
     @GetMapping("/rental-list/{start-date}/{end-date}")
@@ -61,20 +51,7 @@ public class TrafficCardReservationController {
             @ApiResponse(code = 200, message = "이미 대여중인 카드입니다 or 이전 날짜로 대여할 수 없습니다 or 대여자 정보가 일치하지 않습니다 or 대여시작시간 이후에는 수정할 수 없습니다 or 대여정보 수정 실패 or 대여정보 수정 성공")
     })
     public HttpBodyMessage modifyCardReservationInfo(@PathVariable("reservation-num") Long reservationNum, @RequestBody TrafficCardApplyDTO trafficCardApplyDTO){
-        int isUpdated=service.modifyCardReservation(reservationNum, trafficCardApplyDTO);
-
-        if(isUpdated==500){
-            return new HttpBodyMessage("fail", "이미 대여중인 카드입니다");
-        }else if(isUpdated==400){
-            return new HttpBodyMessage("fail", "이전 날짜로 대여할 수 없습니다");
-        }else if(isUpdated==300){
-            return new HttpBodyMessage("fail", "대여자 정보가 일치하지 않습니다");
-        }else if(isUpdated==303){
-            return new HttpBodyMessage("fail", "대여시작시간 이후에는 수정할 수 없습니다");
-        }else if(isUpdated==9999){
-            return new HttpBodyMessage("fail", "대여정보 수정 실패");
-        }
-        return new HttpBodyMessage("success", "대여정보 수정 성공");
+        return service.modifyCardReservation(reservationNum, trafficCardApplyDTO);
     }
 
     @DeleteMapping("/remove/{reservation-num}")
@@ -83,12 +60,7 @@ public class TrafficCardReservationController {
             @ApiResponse(code = 200, message = "삭제할 수 없습니다. 반납 처리를 먼저 진행해주세요 or 대여 정보 삭제 완료")
     })
     public HttpBodyMessage removeCardReservationInfo(@PathVariable("reservation-num") Long reservationNum){
-        int isDeleted=service.removeCardReservationInfo(reservationNum);
-
-        if(isDeleted==9999){
-            return new HttpBodyMessage("fail", "삭제할 수 없습니다. 반납 처리를 먼저 진행해주세요");
-        }
-        return new HttpBodyMessage("success", "대여 정보 삭제 완료");
+        return service.removeCardReservationInfo(reservationNum);
     }
 
     @ApiOperation(value = "관리자의 대여 신청 삭제")
