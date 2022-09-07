@@ -75,9 +75,6 @@
 - 따라서 프론트엔드에서 get요청은 정상작동하는데 post요청이 오작동하였습니다.
 - 결론적으로 SecurityContext에서 option메서드를 허용하여 문제를 해결했습니다.
 
-</div>
-</details>
-
 </br>
 
 ### 5.2. 예약시간이 중복되는 경우를 체크해야 하는 문제
@@ -112,18 +109,7 @@ WHERE
 
 </br>
 
-
-### 5.3. 실시간 알림을 전송해야 하는 문제
-- 법인카드의 승인상태가 변경되었을 경우, 해당하는 유저에게 실시간으로 알림을 보내야 했습니다.
-- 간단한 기능에 polling을 사용하는 것은 불필요한 http 오버헤드를 발생시킬 여지가 있으므로 고려하지 않았습니다.
-- WebSocket을 활용할 수도 있었지만 서버에서만 단방향으로 데이터를 전송하면 충분했으므로, 단방향 통신인 sse를 사용했습니다.
-  
-</div>
-</details>
-
-</br>
-
-### 5.4. 게시글 조회 시 댓글 및 대댓글 쿼리 n + 1 문제(신규 기능)
+### 5.3. 게시글 조회 시 댓글 및 대댓글 쿼리 n + 1 문제(신규 기능)
 - 신규 게시판 기능 개발 중, 게시판의 게시글을 조회 시 댓글과 대댓글을 모두 가져와야 하는 이슈가 있었습니다.
 - 기존 게시글 조회 로직은 게시글 번호로 게시글을 가져온 다음, 게시글에 해당하는 부모 댓글을 가져옵니다.
 - 부모댓글 목록에서 반복문을 돌려서 부모댓글에 매핑되는 자식 댓글이 있을 경우, 부모 댓글에 매핑하여 반환합니다.
@@ -242,6 +228,69 @@ public BoardDetailsForm getBoard(Long id){
 </div>
 </details>
 
+</br>
+	
+### 5.4. 게시판의 현재 글에서 정렬된 순으로 이전글, 다음글이 표출되지 않는 문제(신규기능)
+- 공지 게시판 목록은 메인공지 글을 우선적으로 정렬하고, 그 다음 순번의 역순으로 총 2번 정렬합니다.
+- 또한 게시글이 중간에 삭제가 될 수 있기 때문에 현재글의 다음 번호 혹은 이전 번호를 가지고 이전글과 다음글을 조회하면 정렬된 순서와 맞지 않는 오류가 발생했습니다.
+- 결국 정렬된 순서에 맞게 이전글과 다음글을 호출하려면, 정렬된 전체 리스트에서 별도의 인덱스를 부여하고 현재글의 인덱스에서 이전 혹은 다음 인덱스의 게시글을 호출해야 했습니다.
+- 처음에는 서브쿼리를 고려하였으나, 서브쿼리 자체가 쿼리의 안티패턴이라는 이동욱 개발자님의 의견([https://jojoldu.tistory.com/379?category=637935])과(아마 성능상의 이슈 때문인 듯하다) 객체지향적으로 설계되어 있다면 서브쿼리 자체가 필요없다고 생각했기에, 더 이상 고려하지 않았습니다,
+- 따라서 정렬된 게시글 목록을 List에 담아서 별도의 게시글 별 인덱스를 부여한 다음, 인덱스를 기준으로 이전글과 다음글을 찾는 로직을 작성했습니다.
+
+<details>
+<summary><b>정렬된 리스트 조회</b></summary>
+<div markdown="1">
+
+~~~java
+  
+public List<AnnouncementDetailsForm> getListOrderByIsMainAndId(){
+        return jpaQueryFactory
+                .select(Projections.fields(AnnouncementDetailsForm.class, announcement.id, announcement.title,
+                        announcement.content, announcement.isMain, announcement.type,
+                        announcement.createdAt, announcement.modifiedAt, announcement.likes, announcement.views))
+                .from(announcement)
+                .orderBy(announcement.isMain.desc(), announcement.id.desc())
+                .fetch();
+}
+  
+~~~
+
+</div>
+</details>
+	
+<details>
+<summary><b>인덱스 부여</b></summary>
+<div markdown="1">
+
+~~~java
+  
+public AnnouncementDetailsForm movePrev(Long id){
+        List<AnnouncementDetailsForm> list = announcementRepositoryImpl.getListOrderByIsMainAndId();
+        AnnouncementDetailsForm result = new AnnouncementDetailsForm();
+        for(int i=0; i<list.size(); i++){
+            try{
+                if(list.get(i).getId().equals(id)){
+                    result = list.get(i + 1);
+                    break;
+                }
+            }catch (IndexOutOfBoundsException e){
+                return null;
+            }
+        }
+
+        addFilename(result);
+        announcementRepositoryImpl.updateViewsCount(result.getId());
+        return result;
+    }
+  
+~~~
+
+</div>
+</details>
+
+- 현재 글이 가장 이전글 혹은 가장 최근 글일 경우 여기서 다음 인덱스를 조회하면 `IndexOutOfBoundsException` 에러가 발생합니다.
+- 따라서 위 구문을 try catch문으로 감싸서 에러가 캐치될 경우 이전 혹은 다음글이 없다는 메시지를 반환하도록 했습니다.
+
 
 ## 6. 그 외 트러블 슈팅
 <details>
@@ -275,9 +324,19 @@ public BoardDetailsForm getBoard(Long id){
 
 </div>
 </details>
+	
+<details>
+<summary>실시간 알림을 전송해야 하는 문제</summary>
+<div markdown="3">
+
+- 법인카드의 승인상태가 변경되었을 경우, 해당하는 유저에게 실시간으로 알림을 보내야 했습니다.
+- 간단한 기능에 polling을 사용하는 것은 불필요한 http 오버헤드를 발생시킬 여지가 있으므로 고려하지 않았습니다.
+- WebSocket을 활용할 수도 있었지만 서버에서만 단방향으로 데이터를 전송하면 충분했으므로, 단방향 통신인 sse를 사용했습니다.
 
 </div>
 </details>
+
+</br>
 
 ## 7. 리팩토링
 ### 7.1. 날짜와 시간을 다루는 로직의 개별 클래스화
