@@ -3,7 +3,7 @@ package com.lab.smartmobility.billie.repository.corporation;
 import com.lab.smartmobility.billie.entity.corporation.Application;
 import com.lab.smartmobility.billie.entity.Staff;
 import com.lab.smartmobility.billie.entity.corporation.CorporationCard;
-import com.lab.smartmobility.billie.util.DateTimeUtil;
+import com.lab.smartmobility.billie.global.util.DateTimeUtil;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
@@ -138,8 +138,8 @@ public class ApplicationRepositoryImpl {
             return null;
         }
 
-        LocalDate startDate= dateTimeUtil.getStartDate(baseYear);
-        LocalDate endDate= dateTimeUtil.getEndDate(baseYear);
+        LocalDate startDate = dateTimeUtil.getStartDate(baseYear);
+        LocalDate endDate = dateTimeUtil.getEndDate(baseYear);
         return application.startDate.between(startDate, endDate);
     }
 

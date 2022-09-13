@@ -1,6 +1,6 @@
 package com.lab.smartmobility.billie.service;
 
-import com.lab.smartmobility.billie.dto.PageResult;
+import com.lab.smartmobility.billie.global.dto.PageResult;
 import com.lab.smartmobility.billie.dto.announcement.AnnouncementDetailsForm;
 import com.lab.smartmobility.billie.dto.announcement.AnnouncementRegisterForm;
 import com.lab.smartmobility.billie.dto.announcement.MainAnnouncementCountDTO;
@@ -21,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
 
@@ -39,7 +40,7 @@ public class AnnouncementService {
     private static final String SERVER_UPLOAD_PATH = "/home/smlab/billie/announcement";
 
     /*게시글 등록*/
-    public HttpBodyMessage register(AnnouncementRegisterForm announcementRegisterForm, List<MultipartFile> attachments){
+    public HttpBodyMessage register(AnnouncementRegisterForm announcementRegisterForm, List<MultipartFile> attachments) throws IOException {
         if(announcementRegisterForm.getIsExceedMainCount() == 1){
             cancelOldestMain(announcementRegisterForm);
         }
@@ -50,30 +51,26 @@ public class AnnouncementService {
             Announcement savedAnnouncement = announcementRepository.findFirstByOrderByIdDesc();
             uploadFiles(attachments, savedAnnouncement);
         }
-        return new HttpBodyMessage("success", "게시글 등록 성공");
+        return new HttpBodyMessage("success", announcement.getId());
     }
 
     /*가장 오래된 메인 공지 취소*/
     private void cancelOldestMain(AnnouncementRegisterForm announcementRegisterForm){
         Announcement oldestMain = announcementRepository.findFirstByIsMainOrderByModifiedAt(1);
+        log.info(oldestMain.toString());
         oldestMain.cancelMain();
-        announcementRepository.save(oldestMain);
     }
 
     /*파일 업로드*/
-    private void uploadFiles(List<MultipartFile> attachments, Announcement savedAnnouncement){
+    private void uploadFiles(List<MultipartFile> attachments, Announcement savedAnnouncement) throws IOException {
         File uploadPath = new File(SERVER_UPLOAD_PATH);
         for(MultipartFile attachment : attachments){
-            try{
-                String uuid = UUID.randomUUID().toString();
-                String filename = uuid+"_"+attachment.getOriginalFilename();
+            String uuid = UUID.randomUUID().toString();
+            String filename = uuid+"_"+attachment.getOriginalFilename();
 
-                saveAttachmentInfo(uuid, attachment.getOriginalFilename(), savedAnnouncement);
-                File saveFile=new File(uploadPath, filename);
-                attachment.transferTo(saveFile);
-            }catch (Exception e){
-                log.error(e);
-            }
+            saveAttachmentInfo(uuid, attachment.getOriginalFilename(), savedAnnouncement);
+            File saveFile=new File(uploadPath, filename);
+            attachment.transferTo(saveFile);
         }
     }
 
@@ -93,11 +90,14 @@ public class AnnouncementService {
     }
 
     /*게시글 상세 조회*/
-    public AnnouncementDetailsForm getAnnouncement(Long id){
+    public AnnouncementDetailsForm getAnnouncement(Long id, String email){
         AnnouncementDetailsForm announcement = announcementRepositoryImpl.getAnnouncement(id);
         if(announcement == null){
             return null;
         }
+
+        boolean isLiked = announcementStaffLikeRepository.existsByEmailAndAnnouncementId(email, announcement.getId());
+        announcement.checkIsLiked(isLiked);
         announcementRepositoryImpl.updateViewsCount(id);
         return announcement;
     }
@@ -114,7 +114,7 @@ public class AnnouncementService {
     }
 
     /*게시글 수정*/
-    public HttpBodyMessage modify(Long id, AnnouncementRegisterForm announcementRegisterForm, List<MultipartFile> attachments){
+    public HttpBodyMessage modify(Long id, AnnouncementRegisterForm announcementRegisterForm, List<MultipartFile> attachments) throws IOException {
         if(announcementRegisterForm.getIsExceedMainCount() == 1){
             cancelOldestMain(announcementRegisterForm);
         }

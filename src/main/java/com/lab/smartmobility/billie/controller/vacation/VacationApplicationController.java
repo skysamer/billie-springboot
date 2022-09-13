@@ -1,6 +1,6 @@
 package com.lab.smartmobility.billie.controller.vacation;
 
-import com.lab.smartmobility.billie.dto.PageResult;
+import com.lab.smartmobility.billie.global.dto.PageResult;
 import com.lab.smartmobility.billie.dto.vacation.VacationApplicationForm;
 import com.lab.smartmobility.billie.entity.HttpBodyMessage;
 import com.lab.smartmobility.billie.entity.Vacation;

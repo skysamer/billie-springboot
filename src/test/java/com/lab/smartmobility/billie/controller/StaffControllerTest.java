@@ -1,12 +1,11 @@
-/*
 package com.lab.smartmobility.billie.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.lab.smartmobility.billie.config.JwtTokenProvider;
-import com.lab.smartmobility.billie.dto.staff.DepartmentDTO;
-import com.lab.smartmobility.billie.dto.staff.EmailForm;
-import com.lab.smartmobility.billie.dto.staff.RankDTO;
-import com.lab.smartmobility.billie.repository.StaffRepository;
+import com.lab.smartmobility.billie.global.config.JwtTokenProvider;
+import com.lab.smartmobility.billie.user.dto.DepartmentDTO;
+import com.lab.smartmobility.billie.user.dto.EmailForm;
+import com.lab.smartmobility.billie.user.dto.RankDTO;
+import com.lab.smartmobility.billie.user.repository.StaffRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -106,4 +105,4 @@ class StaffControllerTest {
         assertThat(dropdown.get(0).getRank()).isNotNull();
         assertThat(dropdown.size()).isEqualTo(10);
     }
-}*/
+}

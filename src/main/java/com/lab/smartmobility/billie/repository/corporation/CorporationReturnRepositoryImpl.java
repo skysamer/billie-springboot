@@ -1,8 +1,9 @@
 package com.lab.smartmobility.billie.repository.corporation;
 
 import com.lab.smartmobility.billie.dto.corporation.*;
+import com.lab.smartmobility.billie.entity.QStaff;
 import com.lab.smartmobility.billie.entity.corporation.*;
-import com.lab.smartmobility.billie.util.DateTimeUtil;
+import com.lab.smartmobility.billie.global.util.DateTimeUtil;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -25,6 +26,7 @@ public class CorporationReturnRepositoryImpl {
     private final DateTimeUtil baseDateParser;
 
     QApplication application=QApplication.application;
+    QStaff staff = QStaff.staff;
     QCorporationCardReturn cardReturn=QCorporationCardReturn.corporationCardReturn;
     QCorporationCardUseCase cardUseCase=QCorporationCardUseCase.corporationCardUseCase;
     QExpenseClaim expenseClaim=QExpenseClaim.expenseClaim;
@@ -87,21 +89,22 @@ public class CorporationReturnRepositoryImpl {
                         application.startDate, application.startTime, application.endDate, application.endTime, application.content, application.isClaimedExpense,
                         application.corporationCard.cardName, application.corporationCard.company, application.corporationCard.cardNumber, application.corporationCard.rentalStatus,
                         cardReturn.returnId, cardReturn.totalAmountUsed, cardReturn.note))
-                .from(application)
+                .from(cardReturn)
                 .where(
                         application.staff.staffNum.eq(staffNum)
                                 .and(baseYearEq(baseYear))
                                 .and(cardCompanyEq(cardName))
                                 .and(cardNameEq(cardName))
                 )
-                .innerJoin(cardReturn).on(application.applicationId.eq(cardReturn.application.applicationId))
+                .innerJoin(application).on(application.applicationId.eq(cardReturn.application.applicationId))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .orderBy(cardReturn.returnId.desc())
                 .fetch();
-        if(corporationHistoryFormList.size()==0){
+        if(corporationHistoryFormList.size() == 0){
             return new ArrayList<>();
         }
+
         for(CorporationHistoryForm corporationHistoryForm : corporationHistoryFormList){
             corporationHistoryForm.addCardUseCases(jpaQueryFactory
                     .select(Projections.bean(CorporationUseCaseForm.class,

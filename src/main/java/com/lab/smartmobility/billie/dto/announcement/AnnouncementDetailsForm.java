@@ -1,6 +1,5 @@
 package com.lab.smartmobility.billie.dto.announcement;
 
-import com.lab.smartmobility.billie.entity.Attachment;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
@@ -39,10 +38,17 @@ public class AnnouncementDetailsForm {
     @ApiModelProperty(value = "수정일")
     private LocalDateTime modifiedAt;
 
+    @ApiModelProperty(value = "내가 좋아요를 눌렀는지 여부")
+    private boolean isLiked;
+
     @ApiModelProperty(value = "첨부파일 정보 (uuid가 포함된 파일이름)")
     private final List<String> filename = new ArrayList<>();
 
     public void addFilename(List<String> filename){
         this.filename.addAll(filename);
+    }
+
+    public void checkIsLiked(boolean isLiked){
+        this.isLiked = isLiked;
     }
 }

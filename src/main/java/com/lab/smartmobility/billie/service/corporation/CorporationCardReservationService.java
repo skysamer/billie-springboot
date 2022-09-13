@@ -1,14 +1,14 @@
 package com.lab.smartmobility.billie.service.corporation;
 
-import com.lab.smartmobility.billie.dto.TotalCount;
+import com.lab.smartmobility.billie.global.dto.TotalCount;
 import com.lab.smartmobility.billie.dto.corporation.ApplyCorporationCardForm;
 import com.lab.smartmobility.billie.entity.HttpBodyMessage;
 import com.lab.smartmobility.billie.entity.Staff;
 import com.lab.smartmobility.billie.entity.corporation.Application;
-import com.lab.smartmobility.billie.repository.StaffRepository;
+import com.lab.smartmobility.billie.user.repository.StaffRepository;
 import com.lab.smartmobility.billie.repository.corporation.*;
-import com.lab.smartmobility.billie.util.DateTimeUtil;
-import com.lab.smartmobility.billie.util.NotificationSender;
+import com.lab.smartmobility.billie.global.util.DateTimeUtil;
+import com.lab.smartmobility.billie.global.util.NotificationSender;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.logging.Log;
 import org.modelmapper.ModelMapper;

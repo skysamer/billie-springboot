@@ -1,7 +1,7 @@
 package com.lab.smartmobility.billie.controller;
 
-import com.lab.smartmobility.billie.config.JwtTokenProvider;
-import com.lab.smartmobility.billie.dto.PageResult;
+import com.lab.smartmobility.billie.global.config.JwtTokenProvider;
+import com.lab.smartmobility.billie.global.dto.PageResult;
 import com.lab.smartmobility.billie.dto.board.BoardDetailsForm;
 import com.lab.smartmobility.billie.dto.board.BoardListForm;
 import com.lab.smartmobility.billie.dto.board.BoardRegisterForm;

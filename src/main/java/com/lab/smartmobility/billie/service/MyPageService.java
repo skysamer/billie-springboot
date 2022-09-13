@@ -1,10 +1,10 @@
 package com.lab.smartmobility.billie.service;
 
-import com.lab.smartmobility.billie.dto.staff.StaffInfoForm;
+import com.lab.smartmobility.billie.user.dto.StaffInfoForm;
 import com.lab.smartmobility.billie.entity.HttpBodyMessage;
 import com.lab.smartmobility.billie.entity.Staff;
-import com.lab.smartmobility.billie.repository.StaffRepository;
-import com.lab.smartmobility.billie.repository.StaffRepositoryImpl;
+import com.lab.smartmobility.billie.user.repository.StaffRepository;
+import com.lab.smartmobility.billie.user.repository.StaffRepositoryImpl;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;

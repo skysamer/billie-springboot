@@ -1,11 +1,11 @@
 package com.lab.smartmobility.billie.service.corporation;
 
-import com.lab.smartmobility.billie.dto.TotalCount;
+import com.lab.smartmobility.billie.entity.corporation.*;
+import com.lab.smartmobility.billie.global.dto.TotalCount;
 import com.lab.smartmobility.billie.dto.corporation.*;
 import com.lab.smartmobility.billie.entity.HttpBodyMessage;
 import com.lab.smartmobility.billie.entity.Staff;
-import com.lab.smartmobility.billie.entity.corporation.*;
-import com.lab.smartmobility.billie.repository.StaffRepository;
+import com.lab.smartmobility.billie.user.repository.StaffRepository;
 import com.lab.smartmobility.billie.repository.corporation.*;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.logging.Log;

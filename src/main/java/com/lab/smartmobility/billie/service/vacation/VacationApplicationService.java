@@ -1,15 +1,15 @@
 package com.lab.smartmobility.billie.service.vacation;
 
-import com.lab.smartmobility.billie.dto.PageResult;
+import com.lab.smartmobility.billie.global.dto.PageResult;
 import com.lab.smartmobility.billie.dto.vacation.VacationApplicationForm;
 import com.lab.smartmobility.billie.entity.HttpBodyMessage;
 import com.lab.smartmobility.billie.entity.Staff;
 import com.lab.smartmobility.billie.entity.Vacation;
-import com.lab.smartmobility.billie.repository.StaffRepository;
+import com.lab.smartmobility.billie.user.repository.StaffRepository;
 import com.lab.smartmobility.billie.repository.vacation.VacationRepository;
 import com.lab.smartmobility.billie.repository.vacation.VacationApplicationRepositoryImpl;
-import com.lab.smartmobility.billie.util.AssigneeToApprover;
-import com.lab.smartmobility.billie.util.NotificationSender;
+import com.lab.smartmobility.billie.global.util.AssigneeToApprover;
+import com.lab.smartmobility.billie.global.util.NotificationSender;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.logging.Log;
 import org.modelmapper.ModelMapper;

@@ -1,6 +1,5 @@
 package com.lab.smartmobility.billie.dto;
 
-import com.lab.smartmobility.billie.entity.Staff;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.*;

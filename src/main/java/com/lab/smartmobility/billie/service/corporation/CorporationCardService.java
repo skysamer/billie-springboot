@@ -1,8 +1,8 @@
 package com.lab.smartmobility.billie.service.corporation;
 
 import com.lab.smartmobility.billie.dto.corporation.*;
-import com.lab.smartmobility.billie.entity.*;
-import com.lab.smartmobility.billie.entity.corporation.*;
+import com.lab.smartmobility.billie.entity.HttpBodyMessage;
+import com.lab.smartmobility.billie.entity.corporation.CorporationCard;
 import com.lab.smartmobility.billie.repository.corporation.*;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.logging.Log;

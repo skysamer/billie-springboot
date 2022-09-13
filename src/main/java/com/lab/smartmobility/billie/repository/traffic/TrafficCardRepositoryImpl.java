@@ -1,7 +1,6 @@
 package com.lab.smartmobility.billie.repository.traffic;
 
 import com.lab.smartmobility.billie.dto.traffic.NonBorrowableTrafficCard;
-import com.lab.smartmobility.billie.dto.vehicle.NonBorrowableVehicle;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.Expressions;

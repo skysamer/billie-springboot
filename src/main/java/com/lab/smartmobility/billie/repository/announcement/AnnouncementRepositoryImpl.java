@@ -1,9 +1,9 @@
 package com.lab.smartmobility.billie.repository.announcement;
 
-import com.lab.smartmobility.billie.dto.PageResult;
+import com.lab.smartmobility.billie.global.dto.PageResult;
 import com.lab.smartmobility.billie.dto.announcement.AnnouncementDetailsForm;
 import com.lab.smartmobility.billie.entity.Announcement;
-import com.lab.smartmobility.billie.util.DateTimeUtil;
+import com.lab.smartmobility.billie.global.util.DateTimeUtil;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.Expressions;
@@ -16,8 +16,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import static com.lab.smartmobility.billie.entity.QAnnouncement.announcement;
 import static com.lab.smartmobility.billie.entity.QAttachment.attachment;
+import static com.lab.smartmobility.billie.entity.QAnnouncement.announcement;
 
 @Repository
 @Transactional(readOnly = true)

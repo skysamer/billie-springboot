@@ -1,15 +1,15 @@
 package com.lab.smartmobility.billie.service;
 
-import com.lab.smartmobility.billie.dto.PageResult;
+import com.lab.smartmobility.billie.entity.*;
+import com.lab.smartmobility.billie.global.dto.PageResult;
 import com.lab.smartmobility.billie.dto.board.BoardDetailsForm;
 import com.lab.smartmobility.billie.dto.board.BoardListForm;
 import com.lab.smartmobility.billie.dto.board.BoardRegisterForm;
-import com.lab.smartmobility.billie.entity.*;
 import com.lab.smartmobility.billie.repository.ViewRedisRepository;
 import com.lab.smartmobility.billie.repository.board.BoardLikeRepository;
 import com.lab.smartmobility.billie.repository.board.BoardQueryRepository;
 import com.lab.smartmobility.billie.repository.board.BoardRepository;
-import com.lab.smartmobility.billie.repository.StaffRepository;
+import com.lab.smartmobility.billie.user.repository.StaffRepository;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Pageable;

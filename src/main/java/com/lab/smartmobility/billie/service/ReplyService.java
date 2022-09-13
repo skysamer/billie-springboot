@@ -8,7 +8,7 @@ import com.lab.smartmobility.billie.entity.HttpBodyMessage;
 import com.lab.smartmobility.billie.entity.Reply;
 import com.lab.smartmobility.billie.entity.Staff;
 import com.lab.smartmobility.billie.repository.ReplyRepository;
-import com.lab.smartmobility.billie.repository.StaffRepository;
+import com.lab.smartmobility.billie.user.repository.StaffRepository;
 import com.lab.smartmobility.billie.repository.board.BoardRepository;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;

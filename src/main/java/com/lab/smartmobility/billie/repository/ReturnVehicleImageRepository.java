@@ -1,9 +1,8 @@
 package com.lab.smartmobility.billie.repository;
 
 import com.lab.smartmobility.billie.entity.ImageVehicle;
-import com.lab.smartmobility.billie.entity.VehicleReservation;
+import com.lab.smartmobility.billie.vehicle.domain.VehicleReservation;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 

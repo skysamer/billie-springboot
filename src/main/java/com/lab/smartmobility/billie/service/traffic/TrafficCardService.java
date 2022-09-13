@@ -2,7 +2,7 @@ package com.lab.smartmobility.billie.service.traffic;
 
 import com.lab.smartmobility.billie.dto.traffic.NonBorrowableTrafficCard;
 import com.lab.smartmobility.billie.dto.traffic.TrafficCardForm;
-import com.lab.smartmobility.billie.entity.*;
+import com.lab.smartmobility.billie.entity.TrafficCard;
 import com.lab.smartmobility.billie.repository.traffic.TrafficCardRepository;
 import com.lab.smartmobility.billie.repository.traffic.TrafficCardRepositoryImpl;
 import lombok.RequiredArgsConstructor;

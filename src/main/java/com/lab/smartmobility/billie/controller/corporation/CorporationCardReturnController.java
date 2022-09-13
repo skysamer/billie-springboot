@@ -1,6 +1,6 @@
 package com.lab.smartmobility.billie.controller.corporation;
 
-import com.lab.smartmobility.billie.dto.TotalCount;
+import com.lab.smartmobility.billie.global.dto.TotalCount;
 import com.lab.smartmobility.billie.dto.corporation.CorporationHistoryForm;
 import com.lab.smartmobility.billie.dto.corporation.CorporationReturnForm;
 import com.lab.smartmobility.billie.dto.corporation.ExpenseClaimForm;
@@ -19,7 +19,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/corporation-card/*")
-@Api(tags = {"법인카드 승인 api"})
+@Api(tags = {"법인카드 반납 api"})
 @RequiredArgsConstructor
 public class CorporationCardReturnController {
     private final CorporationCardReturnService service;

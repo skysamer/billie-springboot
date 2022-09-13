@@ -1,6 +1,6 @@
 package com.lab.smartmobility.billie.repository.vacation;
 
-import com.lab.smartmobility.billie.util.DateTimeUtil;
+import com.lab.smartmobility.billie.global.util.DateTimeUtil;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;

@@ -1,7 +1,7 @@
 package com.lab.smartmobility.billie.controller;
 
-import com.lab.smartmobility.billie.config.JwtTokenProvider;
-import com.lab.smartmobility.billie.dto.PageResult;
+import com.lab.smartmobility.billie.global.config.JwtTokenProvider;
+import com.lab.smartmobility.billie.global.dto.PageResult;
 import com.lab.smartmobility.billie.dto.announcement.AnnouncementDetailsForm;
 import com.lab.smartmobility.billie.dto.announcement.AnnouncementRegisterForm;
 import com.lab.smartmobility.billie.dto.announcement.MainAnnouncementCountDTO;
@@ -42,13 +42,18 @@ public class AnnouncementController {
 
     @ApiOperation(value = "게시글 등록")
     @ApiResponses({
-            @ApiResponse(code = 201, message = "게시글 등록 성공"),
+            @ApiResponse(code = 201, message = "등록된 글번호가 리턴됩니다."),
             @ApiResponse(code = 400, message = "요청값은 null일 수 없습니다"),
     })
     @PostMapping("/admin")
     public ResponseEntity<HttpBodyMessage> register(@Valid @RequestPart("announcement") AnnouncementRegisterForm announcementRegisterForm,
                                                     @Nullable @RequestPart(value = "file", required = false) List<MultipartFile> attachments){
-        HttpBodyMessage httpBodyMessage = service.register(announcementRegisterForm, attachments);
+        HttpBodyMessage httpBodyMessage = null;
+        try {
+            httpBodyMessage = service.register(announcementRegisterForm, attachments);
+        }catch (Exception e){
+            log.error(e);
+        }
         return new ResponseEntity<>(httpBodyMessage, HttpStatus.CREATED);
     }
 
@@ -83,11 +88,17 @@ public class AnnouncementController {
     })
     @ApiResponses({
             @ApiResponse(code = 200, message = "조회 성공"),
-            @ApiResponse(code = 404, message = "id가 존재하지 않음")
+            @ApiResponse(code = 404, message = "id가 존재하지 않음"),
+            @ApiResponse(code = 400, message = "토큰이 유효하지 않음")
     })
     @GetMapping("/user/{id}")
-    public ResponseEntity<AnnouncementDetailsForm> getAnnouncement(@PathVariable Long id){
-        AnnouncementDetailsForm announcement = service.getAnnouncement(id);
+    public ResponseEntity<AnnouncementDetailsForm> getAnnouncement(@PathVariable Long id, @RequestHeader("X-AUTH-TOKEN") String token){
+        if(!jwtTokenProvider.validateToken(token)){
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+
+        String email = jwtTokenProvider.getUserPk(token);
+        AnnouncementDetailsForm announcement = service.getAnnouncement(id, email);
         if(announcement == null){
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
@@ -148,7 +159,13 @@ public class AnnouncementController {
     public ResponseEntity<HttpBodyMessage> modify(@PathVariable Long id,
                                                   @Valid @RequestPart("announcement") AnnouncementRegisterForm announcementRegisterForm,
                                                   @Nullable @RequestPart("file") List<MultipartFile> attachments){
-        HttpBodyMessage bodyMessage = service.modify(id, announcementRegisterForm, attachments);
+        HttpBodyMessage bodyMessage = null;
+        try {
+            bodyMessage = service.modify(id, announcementRegisterForm, attachments);
+        }catch (Exception e){
+            log.error(e);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
         if(bodyMessage.getCode().equals("fail")){
             return new ResponseEntity<>(bodyMessage, HttpStatus.BAD_REQUEST);
         }
@@ -160,11 +177,17 @@ public class AnnouncementController {
             @ApiImplicitParam(name = "id", value = "게시글 번호"),
     })
     @ApiResponses({
-            @ApiResponse(code = 200, message = "좋아요 수 계산 완료")
+            @ApiResponse(code = 200, message = "좋아요 수 계산 완료"),
+            @ApiResponse(code = 400, message = "토큰이 유효하지 않습니다")
     })
     @PatchMapping("/user/like/{id}")
     public ResponseEntity<HttpBodyMessage> calculateLikeCount(@PathVariable("id") Long announcementId,
                                                               @RequestHeader(value = "X-AUTH-TOKEN") String token){
+        if(!jwtTokenProvider.validateToken(token)){
+            return new ResponseEntity<>(
+                    new HttpBodyMessage("fail", "토큰이 유효하지 않습니다"), HttpStatus.BAD_REQUEST);
+        }
+
         String email = jwtTokenProvider.getUserPk(token);
         HttpBodyMessage bodyMessage = service.calculateLikeCount(announcementId, email);
         return new ResponseEntity<>(bodyMessage, HttpStatus.OK);

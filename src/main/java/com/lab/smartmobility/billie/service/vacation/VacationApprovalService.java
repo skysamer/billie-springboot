@@ -1,6 +1,6 @@
 package com.lab.smartmobility.billie.service.vacation;
 
-import com.lab.smartmobility.billie.dto.PageResult;
+import com.lab.smartmobility.billie.global.dto.PageResult;
 import com.lab.smartmobility.billie.entity.Vacation;
 import com.lab.smartmobility.billie.repository.vacation.VacationRepository;
 import lombok.RequiredArgsConstructor;

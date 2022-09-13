@@ -56,9 +56,13 @@ public class CorporationHistoryForm {
     @ApiModelProperty(value = "대여상태", notes = "폐기상태는 99")
     private int rentalStatus;
 
-    private List<CorporationUseCaseForm> cardUseCases=new ArrayList<>();
+    private List<CorporationUseCaseForm> cardUseCases = new ArrayList<>();
 
     public void addCardUseCases(List<CorporationUseCaseForm> cardUseCase){
         this.cardUseCases.addAll(cardUseCase);
+    }
+
+    public void addCardUseCase(CorporationUseCaseForm cardUseCase){
+        this.cardUseCases.add(cardUseCase);
     }
 }

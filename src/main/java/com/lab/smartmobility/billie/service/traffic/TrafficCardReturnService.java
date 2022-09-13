@@ -6,7 +6,7 @@ import com.lab.smartmobility.billie.entity.TrafficCardReservation;
 import com.lab.smartmobility.billie.repository.traffic.TrafficCardRepository;
 import com.lab.smartmobility.billie.repository.traffic.TrafficCardReservationRepository;
 import com.lab.smartmobility.billie.repository.traffic.TrafficCardReservationRepositoryImpl;
-import com.lab.smartmobility.billie.util.DateTimeUtil;
+import com.lab.smartmobility.billie.global.util.DateTimeUtil;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.logging.Log;
 import org.apache.poi.ss.usermodel.Cell;

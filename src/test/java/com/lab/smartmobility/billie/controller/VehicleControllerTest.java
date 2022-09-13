@@ -1,10 +1,9 @@
-/*
 package com.lab.smartmobility.billie.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.lab.smartmobility.billie.config.JwtTokenProvider;
-import com.lab.smartmobility.billie.entity.Vehicle;
-import com.lab.smartmobility.billie.repository.vehicle.VehicleRepository;
+import com.lab.smartmobility.billie.global.config.JwtTokenProvider;
+import com.lab.smartmobility.billie.vehicle.domain.Vehicle;
+import com.lab.smartmobility.billie.vehicle.repository.VehicleRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -86,4 +85,3 @@ class VehicleControllerTest {
         assertThat(vehicle.getVehicleNum()).isEqualTo(apiReturn.getVehicleNum());
     }
 }
-*/

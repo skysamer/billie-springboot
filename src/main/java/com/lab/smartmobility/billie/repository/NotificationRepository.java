@@ -1,9 +1,7 @@
 package com.lab.smartmobility.billie.repository;
 
 import com.lab.smartmobility.billie.entity.Notification;
-import com.lab.smartmobility.billie.entity.Staff;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;

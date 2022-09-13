@@ -1,6 +1,6 @@
 package com.lab.smartmobility.billie.controller;
 
-import com.lab.smartmobility.billie.config.JwtTokenProvider;
+import com.lab.smartmobility.billie.global.config.JwtTokenProvider;
 import com.lab.smartmobility.billie.dto.reply.NestedReplyRegisterForm;
 import com.lab.smartmobility.billie.dto.reply.ReplyModifyForm;
 import com.lab.smartmobility.billie.dto.reply.ReplyRegisterForm;

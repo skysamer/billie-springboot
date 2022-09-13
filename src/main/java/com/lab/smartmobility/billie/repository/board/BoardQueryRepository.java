@@ -1,11 +1,11 @@
 package com.lab.smartmobility.billie.repository.board;
 
-import com.lab.smartmobility.billie.dto.PageResult;
+import com.lab.smartmobility.billie.global.dto.PageResult;
 import com.lab.smartmobility.billie.dto.ReplyResponseForm;
 import com.lab.smartmobility.billie.dto.board.BoardDetailsForm;
 import com.lab.smartmobility.billie.dto.board.BoardListForm;
 import com.lab.smartmobility.billie.dto.reply.NestedReplyResponseForm;
-import com.lab.smartmobility.billie.util.DateTimeUtil;
+import com.lab.smartmobility.billie.global.util.DateTimeUtil;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.Expressions;

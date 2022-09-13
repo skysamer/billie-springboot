@@ -2,10 +2,9 @@ package com.lab.smartmobility.billie.service.vacation;
 
 import com.lab.smartmobility.billie.dto.MyVacationDTO;
 import com.lab.smartmobility.billie.entity.Staff;
-import com.lab.smartmobility.billie.repository.StaffRepository;
+import com.lab.smartmobility.billie.user.repository.StaffRepository;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.logging.Log;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

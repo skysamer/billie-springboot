@@ -1,6 +1,6 @@
 package com.lab.smartmobility.billie.controller.corporation;
 
-import com.lab.smartmobility.billie.dto.TotalCount;
+import com.lab.smartmobility.billie.global.dto.TotalCount;
 import com.lab.smartmobility.billie.dto.corporation.ApplyCorporationCardForm;
 import com.lab.smartmobility.billie.entity.HttpBodyMessage;
 import com.lab.smartmobility.billie.entity.corporation.Application;
