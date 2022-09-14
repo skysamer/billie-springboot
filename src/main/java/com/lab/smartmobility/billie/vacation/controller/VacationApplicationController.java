@@ -1,10 +1,12 @@
 package com.lab.smartmobility.billie.vacation.controller;
 
 import com.lab.smartmobility.billie.global.dto.PageResult;
-import com.lab.smartmobility.billie.dto.vacation.VacationApplicationForm;
+import com.lab.smartmobility.billie.vacation.dto.VacationApplicationDetailsForm;
+import com.lab.smartmobility.billie.vacation.dto.VacationApplicationForm;
 import com.lab.smartmobility.billie.entity.HttpBodyMessage;
 import com.lab.smartmobility.billie.vacation.domain.Vacation;
-import com.lab.smartmobility.billie.service.vacation.VacationApplicationService;
+import com.lab.smartmobility.billie.vacation.service.VacationApplicationService;
+import com.lab.smartmobility.billie.vacation.dto.VacationApplicationListForm;
 import io.swagger.annotations.*;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.logging.Log;
@@ -50,12 +52,12 @@ public class VacationApplicationController {
             @ApiResponse(code = 404, message = "조건에 맞는 데이터 없음")
     })
     @GetMapping("/user/application/{staff-num}/{base-date}/{vacation-type}/{page}/{size}")
-    public ResponseEntity<PageResult<Vacation>> getApplicationList(@PathVariable("staff-num") Long staffNum,
-                                                   @PathVariable("base-date") String baseDate,
-                                                   @PathVariable("vacation-type") String vacationType,
-                                                   @PathVariable("page") Integer page,
-                                                   @PathVariable("size") Integer size){
-        PageResult<Vacation> pageResult = service.getApplicationList(staffNum, baseDate, vacationType, PageRequest.of(page, size));
+    public ResponseEntity<PageResult<VacationApplicationListForm>> getApplicationList(@PathVariable("staff-num") Long staffNum,
+                                                                                      @PathVariable("base-date") String baseDate,
+                                                                                      @PathVariable("vacation-type") String vacationType,
+                                                                                      @PathVariable("page") Integer page,
+                                                                                      @PathVariable("size") Integer size){
+        PageResult<VacationApplicationListForm> pageResult = service.getApplicationList(staffNum, baseDate, vacationType, PageRequest.of(page, size));
         if(pageResult.getCount() == 0){
             return new ResponseEntity<>(pageResult, HttpStatus.NOT_FOUND);
         }
@@ -71,8 +73,8 @@ public class VacationApplicationController {
             @ApiResponse(code = 404, message = "조건에 맞는 데이터 없음")
     })
     @GetMapping("/user/application/{vacation-id}")
-    public ResponseEntity<Vacation> getMyApplication(@PathVariable("vacation-id") Long vacationId){
-        Vacation vacation = service.getMyApplication(vacationId);
+    public ResponseEntity<VacationApplicationDetailsForm> getMyApplication(@PathVariable("vacation-id") Long vacationId){
+        VacationApplicationDetailsForm vacation = service.getMyApplication(vacationId);
         if(vacation == null){
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
@@ -94,5 +96,18 @@ public class VacationApplicationController {
             return new ResponseEntity<>(myRecentVacationList, HttpStatus.NOT_FOUND);
         }
         return new ResponseEntity<>(myRecentVacationList, HttpStatus.OK);
+    }
+
+    @ApiOperation(value = "휴가 신청 내역 삭제")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "id", value = "휴가 번호")
+    })
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "휴가 삭제 완료 // 승인된 휴가에 대한 취소 처리 완료"),
+    })
+    @DeleteMapping("/user/{id}")
+    public ResponseEntity<HttpBodyMessage> remove(@PathVariable Long id){
+        HttpBodyMessage result = service.cancel(id);
+        return new ResponseEntity<>(result, HttpStatus.OK);
     }
 }

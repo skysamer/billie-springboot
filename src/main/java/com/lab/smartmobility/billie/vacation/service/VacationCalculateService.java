@@ -1,6 +1,6 @@
-package com.lab.smartmobility.billie.service.vacation;
+package com.lab.smartmobility.billie.vacation.service;
 
-import com.lab.smartmobility.billie.dto.MyVacationDTO;
+import com.lab.smartmobility.billie.vacation.dto.MyVacationDTO;
 import com.lab.smartmobility.billie.staff.domain.Staff;
 import com.lab.smartmobility.billie.staff.repository.StaffRepository;
 import lombok.RequiredArgsConstructor;
@@ -57,7 +57,7 @@ public class VacationCalculateService {
         }
     }
 
-    public int calculateBaseYear(Staff staff){
+    private int calculateBaseYear(Staff staff){
         return ((LocalDate.of(LocalDate.now().get(ChronoField.YEAR),
                 staff.getHireDate().get(ChronoField.MONTH_OF_YEAR),
                 staff.getHireDate().get(ChronoField.DAY_OF_MONTH))).isAfter(LocalDate.now()))

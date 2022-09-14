@@ -1,8 +1,11 @@
 package com.lab.smartmobility.billie.repository.vacation;
 
 import com.lab.smartmobility.billie.global.dto.PageResult;
-import com.lab.smartmobility.billie.vacation.domain.Vacation;
 import com.lab.smartmobility.billie.global.util.DateTimeUtil;
+import com.lab.smartmobility.billie.vacation.dto.QVacationApplicationDetailsForm;
+import com.lab.smartmobility.billie.vacation.dto.QVacationApplicationListForm;
+import com.lab.smartmobility.billie.vacation.dto.VacationApplicationDetailsForm;
+import com.lab.smartmobility.billie.vacation.dto.VacationApplicationListForm;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
@@ -24,15 +27,18 @@ public class VacationApplicationRepositoryImpl {
     private final DateTimeUtil dateTimeUtil;
     private final Log log;
 
-    public PageResult<Vacation> getMyApplicationList(Long staffNum, String baseDate, String vacationType, Pageable pageable){
-        List<Vacation> content = getApplicationList(staffNum, baseDate, vacationType, pageable);
+    public PageResult<VacationApplicationListForm> getMyApplicationList(Long staffNum, String baseDate, String vacationType, Pageable pageable){
+        List<VacationApplicationListForm> content = getApplicationList(staffNum, baseDate, vacationType, pageable);
         long count = getApplicationListCount(staffNum, baseDate, vacationType);
         return new PageResult<>(content, count);
     }
 
-    private List<Vacation> getApplicationList(Long staffNum, String baseDate, String vacationType, Pageable pageable){
+    /*나의 신청 목록 조회*/
+    private List<VacationApplicationListForm> getApplicationList(Long staffNum, String baseDate, String vacationType, Pageable pageable){
         return jpaQueryFactory
-                .selectFrom(vacation)
+                .select(new QVacationApplicationListForm(vacation.vacationId, vacation.startDate, vacation.endDate,
+                        vacation.reason, vacation.vacationType, vacation.approvalStatus))
+                .from(vacation)
                 .where(vacation.staff.staffNum.eq(staffNum)
                         .and(baseYearEq(baseDate))
                         .and(vacationTypeEq(vacationType))
@@ -51,6 +57,16 @@ public class VacationApplicationRepositoryImpl {
                         .and(vacationTypeEq(vacationType))
                 )
                 .stream().count();
+    }
+
+    /*나의 신청 목록 상세 조회*/
+    public VacationApplicationDetailsForm findById(Long vacationId){
+        return jpaQueryFactory
+                .select(new QVacationApplicationDetailsForm(vacation.vacationId, vacation.startDate, vacation.endDate,
+                        vacation.workAt, vacation.homeAt, vacation.contact, vacation.reason, vacation.vacationType, vacation.approvalStatus))
+                .from(vacation)
+                .where(vacation.vacationId.eq(vacationId))
+                .fetchFirst();
     }
 
     private BooleanExpression baseYearEq(String baseYear) {

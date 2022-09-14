@@ -62,7 +62,7 @@ public class Application {
     @JoinColumn(name = "card_id")
     private CorporationCard corporationCard;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "staff_num")
     private Staff staff;
 

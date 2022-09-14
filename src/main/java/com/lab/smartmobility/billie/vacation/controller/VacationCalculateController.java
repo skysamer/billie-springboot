@@ -1,7 +1,7 @@
 package com.lab.smartmobility.billie.vacation.controller;
 
-import com.lab.smartmobility.billie.dto.MyVacationDTO;
-import com.lab.smartmobility.billie.service.vacation.VacationCalculateService;
+import com.lab.smartmobility.billie.vacation.dto.MyVacationDTO;
+import com.lab.smartmobility.billie.vacation.service.VacationCalculateService;
 import io.swagger.annotations.*;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.logging.Log;

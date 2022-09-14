@@ -44,9 +44,10 @@ public class Vacation {
     @Column(name = "vacation_type")
     private String vacationType;
 
-    @ApiModelProperty(value = "승인상태")
+    @ApiModelProperty(value = "승인상태(WAITING, DEPARTMENT, FINAL, COMPANION, CANCEL)")
     @Column(name = "approval_status")
-    private Character approvalStatus;
+    @Enumerated(value = EnumType.STRING)
+    private ApprovalStatus approvalStatus;
 
     @ApiModelProperty(value = "반려 사유")
     @Column(name = "companion_reason")
@@ -58,10 +59,14 @@ public class Vacation {
 
     @PrePersist
     public void prePersist(){
-        this.approvalStatus = this.approvalStatus == null ? 'w' : this.approvalStatus;
+        this.approvalStatus = this.approvalStatus == null ? ApprovalStatus.WAITING : this.approvalStatus;
     }
 
     public void register(Staff staff){
         this.staff = staff;
+    }
+
+    public void cancel(){
+        this.approvalStatus = ApprovalStatus.CANCEL;
     }
 }

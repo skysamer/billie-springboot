@@ -1,15 +1,18 @@
-package com.lab.smartmobility.billie.service.vacation;
+package com.lab.smartmobility.billie.vacation.service;
 
 import com.lab.smartmobility.billie.global.dto.PageResult;
-import com.lab.smartmobility.billie.dto.vacation.VacationApplicationForm;
+import com.lab.smartmobility.billie.vacation.dto.VacationApplicationDetailsForm;
+import com.lab.smartmobility.billie.vacation.dto.VacationApplicationForm;
 import com.lab.smartmobility.billie.entity.HttpBodyMessage;
 import com.lab.smartmobility.billie.staff.domain.Staff;
+import com.lab.smartmobility.billie.vacation.domain.ApprovalStatus;
 import com.lab.smartmobility.billie.vacation.domain.Vacation;
 import com.lab.smartmobility.billie.staff.repository.StaffRepository;
 import com.lab.smartmobility.billie.repository.vacation.VacationRepository;
 import com.lab.smartmobility.billie.repository.vacation.VacationApplicationRepositoryImpl;
 import com.lab.smartmobility.billie.global.util.AssigneeToApprover;
 import com.lab.smartmobility.billie.global.util.NotificationSender;
+import com.lab.smartmobility.billie.vacation.dto.VacationApplicationListForm;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.logging.Log;
 import org.modelmapper.ModelMapper;
@@ -18,7 +21,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
-import java.time.Period;
 import java.util.List;
 
 @Service
@@ -39,10 +41,12 @@ public class VacationApplicationService {
             return new HttpBodyMessage("fail", "이전 날짜로 신청할 수 없습니다");
         }
         Staff applicant = staffRepository.findByStaffNum(vacationApplicationForm.getStaffNum());
-        int vacationRequestCount = 0;
         if(applicant.getVacationCount() == 0){
             return new HttpBodyMessage("fail", "휴가 개수를 모두 소진했습니다");
         }
+
+//        Period period = Period.between(vacationApplicationForm.getStartDate(), vacationApplicationForm.getEndDate());
+//        calculateVacationCount(applicant, vacationApplicationForm.getVacationType(), period.getDays());
 
         Staff approval = assigneeToApprover.assignApproval(applicant);
         Vacation vacation = modelMapper.map(vacationApplicationForm, Vacation.class);
@@ -52,9 +56,14 @@ public class VacationApplicationService {
         return new HttpBodyMessage("success", "휴가 신청 성공");
     }
 
-    private int calculateVacationRequestCount(VacationApplicationForm vacationApplicationForm){
-        return Period.between(vacationApplicationForm.getStartDate(), vacationApplicationForm.getEndDate()).getDays() == 0 ? 0
-                : Period.between(vacationApplicationForm.getStartDate(), vacationApplicationForm.getEndDate()).getDays();
+    private void calculateVacationCount(Staff applicant, String vacationType, int period){
+        if(vacationType.equals("반차")){
+            applicant.calculateVacation(0.5);
+        }else if(vacationType.equals("경조") || vacationType.equals("공가")){
+            applicant.calculateVacation(0);
+        }else{
+            applicant.calculateVacation(period + 1);
+        }
     }
 
     private boolean isEarlierDate(LocalDate startDate){
@@ -67,13 +76,13 @@ public class VacationApplicationService {
     }
 
     /*나의 휴가 신청 내역 전체 조회*/
-    public PageResult<Vacation> getApplicationList(Long staffNum, String baseDate, String vacationType, Pageable pageable){
+    public PageResult<VacationApplicationListForm> getApplicationList(Long staffNum, String baseDate, String vacationType, Pageable pageable){
         return vacationApplicationRepository.getMyApplicationList(staffNum, baseDate, vacationType, pageable);
     }
 
     /*나의 휴가 신청 내역 상세 조회*/
-    public Vacation getMyApplication(Long vacationId){
-        return vacationRepository.findByVacationId(vacationId);
+    public VacationApplicationDetailsForm getMyApplication(Long vacationId){
+        return vacationApplicationRepository.findById(vacationId);
     }
 
     /*나의 최근 휴가 신청 내역*/
@@ -82,27 +91,15 @@ public class VacationApplicationService {
         return vacationRepository.findTop4ByStaffOrderByStartDate(staff);
     }
 
-    // TODO 휴가 신청 내역 수정
-    public HttpBodyMessage modify(Long vacationId, VacationApplicationForm vacationApplicationForm){
+    /*휴가 신청 내역 취소*/
+    public HttpBodyMessage cancel(Long vacationId){
         Vacation vacation = vacationRepository.findByVacationId(vacationId);
-        if(vacation.getApprovalStatus() == 'w'){
-            Vacation modifiedVacation = modelMapper.map(vacationApplicationForm, vacation.getClass());
-            vacationRepository.save(modifiedVacation);
-            return new HttpBodyMessage("success", "승인 절차가 진행되지 않아 자동 수정되었습니다");
-        }
-
-
-        return new HttpBodyMessage("success", "취소 요청이 전송되었습니다");
-    }
-
-    // TODO 휴가 신청 내역 취소
-    public HttpBodyMessage delete(Long vacationId){
-        Vacation vacation = vacationRepository.findByVacationId(vacationId);
-        if(vacation.getApprovalStatus() == 'w'){
+        if(vacation.getApprovalStatus().equals(ApprovalStatus.WAITING)){
             vacationRepository.delete(vacation);
-            return new HttpBodyMessage("success", "승인 절차가 진행되지 않아 자동 취소되었습니다");
+            return new HttpBodyMessage("success", "휴가 삭제 완료");
         }
 
-        return new HttpBodyMessage("success", "취소 요청이 전송되었습니다");
+        vacation.cancel();
+        return new HttpBodyMessage("success", "승인된 휴가에 대한 취소 처리 완료");
     }
 }

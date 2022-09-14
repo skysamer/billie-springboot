@@ -11,7 +11,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Collection;
 
-@Getter @Setter @ToString @Builder
+@Getter @Setter @Builder
 @NoArgsConstructor @AllArgsConstructor
 @Entity @ApiModel(value = "직원 정보 엔티티") @Table(name = "tbl_staff")
 public class Staff implements UserDetails {
@@ -112,6 +112,10 @@ public class Staff implements UserDetails {
 
     public void certify(int isVerified){
         this.isVerified = isVerified;
+    }
+
+    public void calculateVacation(double deductionCount){
+        this.vacationCount -= deductionCount;
     }
 
     @Override

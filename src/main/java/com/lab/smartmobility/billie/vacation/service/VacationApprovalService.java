@@ -1,4 +1,4 @@
-package com.lab.smartmobility.billie.service.vacation;
+package com.lab.smartmobility.billie.vacation.service;
 
 import com.lab.smartmobility.billie.global.dto.PageResult;
 import com.lab.smartmobility.billie.vacation.domain.Vacation;
@@ -14,7 +14,5 @@ public class VacationApprovalService {
     private final VacationRepository vacationRepository;
 
     /*부서장의 승인 요청 목록 조회*/
-    public PageResult<Vacation> getRequestListByManager(){
-        return null;
-    }
+
 }
