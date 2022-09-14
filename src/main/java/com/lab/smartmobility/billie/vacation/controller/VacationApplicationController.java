@@ -3,7 +3,7 @@ package com.lab.smartmobility.billie.vacation.controller;
 import com.lab.smartmobility.billie.global.dto.PageResult;
 import com.lab.smartmobility.billie.dto.vacation.VacationApplicationForm;
 import com.lab.smartmobility.billie.entity.HttpBodyMessage;
-import com.lab.smartmobility.billie.entity.Vacation;
+import com.lab.smartmobility.billie.vacation.domain.Vacation;
 import com.lab.smartmobility.billie.service.vacation.VacationApplicationService;
 import io.swagger.annotations.*;
 import lombok.RequiredArgsConstructor;

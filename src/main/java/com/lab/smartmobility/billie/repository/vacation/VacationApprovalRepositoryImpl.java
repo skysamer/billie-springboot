@@ -10,7 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 
-import static com.lab.smartmobility.billie.entity.QVacation.vacation;
+import static com.lab.smartmobility.billie.vacation.domain.QVacation.vacation;
 
 @Repository
 @Transactional(readOnly = true)

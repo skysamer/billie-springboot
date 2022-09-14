@@ -11,7 +11,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
-import static com.lab.smartmobility.billie.entity.QStaff.staff;
+import static com.lab.smartmobility.billie.staff.domain.QStaff.staff;
 
 @Repository
 @Transactional(readOnly = true)

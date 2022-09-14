@@ -4,7 +4,7 @@ import com.lab.smartmobility.billie.meeting.dto.ApplyMeetingForm;
 import com.lab.smartmobility.billie.meeting.repository.MeetingQueryRepository;
 import com.lab.smartmobility.billie.meeting.repository.MeetingRepository;
 import com.lab.smartmobility.billie.entity.HttpBodyMessage;
-import com.lab.smartmobility.billie.entity.Meeting;
+import com.lab.smartmobility.billie.meeting.domain.Meeting;
 import com.lab.smartmobility.billie.staff.repository.StaffRepository;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.logging.Log;

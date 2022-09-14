@@ -1,6 +1,6 @@
 package com.lab.smartmobility.billie.meeting.repository;
 
-import com.lab.smartmobility.billie.entity.Meeting;
+import com.lab.smartmobility.billie.meeting.domain.Meeting;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.transaction.annotation.Transactional;
 

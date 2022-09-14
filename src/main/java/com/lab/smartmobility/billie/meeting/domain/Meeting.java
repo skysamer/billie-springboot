@@ -1,4 +1,4 @@
-package com.lab.smartmobility.billie.entity;
+package com.lab.smartmobility.billie.meeting.domain;
 import com.lab.smartmobility.billie.staff.domain.Staff;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;

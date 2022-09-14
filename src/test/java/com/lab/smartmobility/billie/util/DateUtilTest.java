@@ -1,6 +1,6 @@
 package com.lab.smartmobility.billie.util;
 
-import com.lab.smartmobility.billie.entity.Vacation;
+import com.lab.smartmobility.billie.vacation.domain.Vacation;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 

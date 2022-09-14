@@ -1,7 +1,7 @@
 package com.lab.smartmobility.billie.repository.vacation;
 
 import com.lab.smartmobility.billie.global.dto.PageResult;
-import com.lab.smartmobility.billie.entity.Vacation;
+import com.lab.smartmobility.billie.vacation.domain.Vacation;
 import com.lab.smartmobility.billie.global.util.DateTimeUtil;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -14,7 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.util.List;
 
-import static com.lab.smartmobility.billie.entity.QVacation.vacation;
+import static com.lab.smartmobility.billie.vacation.domain.QVacation.vacation;
 
 @Repository
 @Transactional(readOnly = true)

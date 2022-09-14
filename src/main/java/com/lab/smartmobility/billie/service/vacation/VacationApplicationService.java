@@ -4,7 +4,7 @@ import com.lab.smartmobility.billie.global.dto.PageResult;
 import com.lab.smartmobility.billie.dto.vacation.VacationApplicationForm;
 import com.lab.smartmobility.billie.entity.HttpBodyMessage;
 import com.lab.smartmobility.billie.staff.domain.Staff;
-import com.lab.smartmobility.billie.entity.Vacation;
+import com.lab.smartmobility.billie.vacation.domain.Vacation;
 import com.lab.smartmobility.billie.staff.repository.StaffRepository;
 import com.lab.smartmobility.billie.repository.vacation.VacationRepository;
 import com.lab.smartmobility.billie.repository.vacation.VacationApplicationRepositoryImpl;

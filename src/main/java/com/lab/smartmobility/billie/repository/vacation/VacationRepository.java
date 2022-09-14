@@ -1,7 +1,7 @@
 package com.lab.smartmobility.billie.repository.vacation;
 
 import com.lab.smartmobility.billie.staff.domain.Staff;
-import com.lab.smartmobility.billie.entity.Vacation;
+import com.lab.smartmobility.billie.vacation.domain.Vacation;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.transaction.annotation.Transactional;
 

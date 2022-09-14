@@ -1,4 +1,4 @@
-package com.lab.smartmobility.billie.entity;
+package com.lab.smartmobility.billie.vacation.domain;
 
 import com.lab.smartmobility.billie.staff.domain.Staff;
 import io.swagger.annotations.ApiModel;
@@ -44,7 +44,7 @@ public class Vacation {
     @Column(name = "vacation_type")
     private String vacationType;
 
-    @ApiModelProperty(value = "승인상태(w: 대기중, t: 팀장승인, f: 최종승인, c: 반려)")
+    @ApiModelProperty(value = "승인상태")
     @Column(name = "approval_status")
     private Character approvalStatus;
 

@@ -10,7 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
-import static com.lab.smartmobility.billie.entity.QMeeting.meeting;
+import static com.lab.smartmobility.billie.meeting.domain.QMeeting.meeting;
 
 @Repository
 @Transactional(readOnly = true)
