@@ -2,9 +2,9 @@ package com.lab.smartmobility.billie.service;
 
 import com.lab.smartmobility.billie.entity.HttpBodyMessage;
 import com.lab.smartmobility.billie.entity.Notification;
-import com.lab.smartmobility.billie.entity.Staff;
+import com.lab.smartmobility.billie.staff.domain.Staff;
 import com.lab.smartmobility.billie.repository.NotificationRepository;
-import com.lab.smartmobility.billie.user.repository.StaffRepository;
+import com.lab.smartmobility.billie.staff.repository.StaffRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

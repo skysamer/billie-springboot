@@ -1,7 +1,7 @@
 package com.lab.smartmobility.billie.repository;
 
 import com.lab.smartmobility.billie.entity.Overtime;
-import com.lab.smartmobility.billie.entity.Staff;
+import com.lab.smartmobility.billie.staff.domain.Staff;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.transaction.annotation.Transactional;

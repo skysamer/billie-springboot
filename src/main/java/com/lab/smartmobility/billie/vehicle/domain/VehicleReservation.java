@@ -1,6 +1,6 @@
 package com.lab.smartmobility.billie.vehicle.domain;
 
-import com.lab.smartmobility.billie.entity.Staff;
+import com.lab.smartmobility.billie.staff.domain.Staff;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.*;

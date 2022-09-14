@@ -1,7 +1,7 @@
 package com.lab.smartmobility.billie.global.util;
 
 import com.lab.smartmobility.billie.entity.Notification;
-import com.lab.smartmobility.billie.entity.Staff;
+import com.lab.smartmobility.billie.staff.domain.Staff;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;

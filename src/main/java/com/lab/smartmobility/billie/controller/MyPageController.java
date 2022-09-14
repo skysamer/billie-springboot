@@ -1,6 +1,6 @@
 package com.lab.smartmobility.billie.controller;
 
-import com.lab.smartmobility.billie.user.dto.StaffInfoForm;
+import com.lab.smartmobility.billie.staff.dto.StaffInfoForm;
 import com.lab.smartmobility.billie.entity.HttpBodyMessage;
 import com.lab.smartmobility.billie.service.MyPageService;
 import io.swagger.annotations.*;

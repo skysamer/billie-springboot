@@ -2,10 +2,10 @@ package com.lab.smartmobility.billie.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.lab.smartmobility.billie.global.config.JwtTokenProvider;
-import com.lab.smartmobility.billie.user.dto.DepartmentDTO;
-import com.lab.smartmobility.billie.user.dto.EmailForm;
-import com.lab.smartmobility.billie.user.dto.RankDTO;
-import com.lab.smartmobility.billie.user.repository.StaffRepository;
+import com.lab.smartmobility.billie.staff.dto.DepartmentDTO;
+import com.lab.smartmobility.billie.staff.dto.EmailForm;
+import com.lab.smartmobility.billie.staff.dto.RankDTO;
+import com.lab.smartmobility.billie.staff.repository.StaffRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

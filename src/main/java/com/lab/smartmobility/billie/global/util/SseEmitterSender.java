@@ -1,7 +1,7 @@
 package com.lab.smartmobility.billie.global.util;
 
 import com.lab.smartmobility.billie.entity.Notification;
-import com.lab.smartmobility.billie.entity.Staff;
+import com.lab.smartmobility.billie.staff.domain.Staff;
 import com.lab.smartmobility.billie.repository.NotificationRepository;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.logging.Log;

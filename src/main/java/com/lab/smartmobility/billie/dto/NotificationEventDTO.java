@@ -1,6 +1,6 @@
 package com.lab.smartmobility.billie.dto;
 
-import com.lab.smartmobility.billie.entity.Staff;
+import com.lab.smartmobility.billie.staff.domain.Staff;
 import lombok.*;
 
 @Getter

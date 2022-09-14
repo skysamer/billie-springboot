@@ -1,7 +1,7 @@
 package com.lab.smartmobility.billie.global.config;
 
-import com.lab.smartmobility.billie.entity.Staff;
-import com.lab.smartmobility.billie.user.service.StaffService;
+import com.lab.smartmobility.billie.staff.domain.Staff;
+import com.lab.smartmobility.billie.staff.service.StaffService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;

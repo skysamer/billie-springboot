@@ -1,7 +1,7 @@
 package com.lab.smartmobility.billie.task;
 
-import com.lab.smartmobility.billie.entity.Staff;
-import com.lab.smartmobility.billie.user.repository.StaffRepository;
+import com.lab.smartmobility.billie.staff.domain.Staff;
+import com.lab.smartmobility.billie.staff.repository.StaffRepository;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;

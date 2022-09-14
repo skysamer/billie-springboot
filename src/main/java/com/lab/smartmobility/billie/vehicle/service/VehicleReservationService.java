@@ -2,10 +2,10 @@ package com.lab.smartmobility.billie.vehicle.service;
 
 import com.lab.smartmobility.billie.vehicle.dto.ApplyRentalVehicleDTO;
 import com.lab.smartmobility.billie.entity.HttpBodyMessage;
-import com.lab.smartmobility.billie.entity.Staff;
+import com.lab.smartmobility.billie.staff.domain.Staff;
 import com.lab.smartmobility.billie.vehicle.domain.Vehicle;
 import com.lab.smartmobility.billie.vehicle.domain.VehicleReservation;
-import com.lab.smartmobility.billie.user.repository.StaffRepository;
+import com.lab.smartmobility.billie.staff.repository.StaffRepository;
 import com.lab.smartmobility.billie.vehicle.repository.VehicleRepository;
 import com.lab.smartmobility.billie.vehicle.repository.VehicleReservationRepository;
 import com.lab.smartmobility.billie.vehicle.repository.VehicleReservationRepositoryImpl;
