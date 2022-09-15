@@ -1,6 +1,5 @@
-package com.lab.smartmobility.billie.dto.board;
+package com.lab.smartmobility.billie.board.dto;
 
-import com.lab.smartmobility.billie.dto.ReplyResponseForm;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;

@@ -1,4 +1,4 @@
-package com.lab.smartmobility.billie.dto.reply;
+package com.lab.smartmobility.billie.board.dto;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -7,8 +7,12 @@ import lombok.Getter;
 import javax.validation.constraints.NotNull;
 
 @Getter
-@ApiModel(value = "댓글 수정 폼")
-public class ReplyModifyForm {
+@ApiModel(value = "게시글 등록 폼")
+public class BoardRegisterForm {
+    @ApiModelProperty(value = "제목")
+    @NotNull(message="해당 값은 null 일 수 없습니다.")
+    private String title;
+
     @ApiModelProperty(value = "내용")
     @NotNull(message="해당 값은 null 일 수 없습니다.")
     private String content;

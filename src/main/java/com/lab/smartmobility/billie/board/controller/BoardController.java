@@ -2,9 +2,9 @@ package com.lab.smartmobility.billie.board.controller;
 
 import com.lab.smartmobility.billie.global.config.JwtTokenProvider;
 import com.lab.smartmobility.billie.global.dto.PageResult;
-import com.lab.smartmobility.billie.dto.board.BoardDetailsForm;
-import com.lab.smartmobility.billie.dto.board.BoardListForm;
-import com.lab.smartmobility.billie.dto.board.BoardRegisterForm;
+import com.lab.smartmobility.billie.board.dto.BoardDetailsForm;
+import com.lab.smartmobility.billie.board.dto.BoardListForm;
+import com.lab.smartmobility.billie.board.dto.BoardRegisterForm;
 import com.lab.smartmobility.billie.entity.HttpBodyMessage;
 import com.lab.smartmobility.billie.board.service.BoardService;
 import io.swagger.annotations.*;
@@ -95,13 +95,21 @@ public class BoardController {
     @ApiResponses({
             @ApiResponse(code = 200, message = "게시글 수정 성공"),
             @ApiResponse(code = 404, message = "게시글이 존재하지 않습니다"),
-            @ApiResponse(code = 400, message = "요청값은 null일 수 없습니다")
+            @ApiResponse(code = 400, message = "요청값은 null일 수 없습니다 // 해당 유저만 수정할 수 있습니다")
     })
     @PutMapping("/user/{id}")
-    public ResponseEntity<HttpBodyMessage> modify(@PathVariable Long id, @Valid @RequestBody BoardRegisterForm registerForm){
-        HttpBodyMessage result = service.modify(id, registerForm);
-        if(result.getCode().equals("fail")){
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    public ResponseEntity<HttpBodyMessage> modify(@RequestHeader("X-AUTH-TOKEN") String token, @PathVariable Long id,
+                                                  @Valid @RequestBody BoardRegisterForm registerForm){
+        if(!jwtTokenProvider.validateToken(token)){
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+        String email = jwtTokenProvider.getUserPk(token);
+
+        HttpBodyMessage result = service.modify(id, email, registerForm);
+        if(result.getMessage().equals("게시글이 존재하지 않습니다")){
+            return new ResponseEntity<>(result, HttpStatus.NOT_FOUND);
+        }else if(result.getMessage().equals("해당 유저만 수정할 수 있습니다")){
+            return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
         }
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
@@ -112,13 +120,21 @@ public class BoardController {
     })
     @ApiResponses({
             @ApiResponse(code = 200, message = "게시글 삭제 성공"),
-            @ApiResponse(code = 404, message = "게시글이 존재하지 않습니다")
+            @ApiResponse(code = 404, message = "게시글이 존재하지 않습니다"),
+            @ApiResponse(code = 400, message = "해당 유저만 수정할 수 있습니다")
     })
     @DeleteMapping("/user/{id}")
-    public ResponseEntity<HttpBodyMessage> remove(@PathVariable Long id){
-        HttpBodyMessage result = service.remove(id);
-        if(result.getCode().equals("fail")){
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    public ResponseEntity<HttpBodyMessage> remove(@RequestHeader("X-AUTH-TOKEN") String token, @PathVariable Long id){
+        if(!jwtTokenProvider.validateToken(token)){
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+        String email = jwtTokenProvider.getUserPk(token);
+
+        HttpBodyMessage result = service.remove(id, email);
+        if(result.getMessage().equals("게시글이 존재하지 않습니다")){
+            return new ResponseEntity<>(result, HttpStatus.NOT_FOUND);
+        }else if(result.getMessage().equals("해당 유저만 수정할 수 있습니다")){
+            return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
         }
         return new ResponseEntity<>(result, HttpStatus.OK);
     }

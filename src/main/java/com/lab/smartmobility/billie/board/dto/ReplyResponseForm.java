@@ -1,6 +1,6 @@
-package com.lab.smartmobility.billie.dto;
+package com.lab.smartmobility.billie.board.dto;
 
-import com.lab.smartmobility.billie.dto.reply.NestedReplyResponseForm;
+import com.lab.smartmobility.billie.board.dto.NestedReplyResponseForm;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;

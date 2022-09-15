@@ -1,9 +1,9 @@
 package com.lab.smartmobility.billie.board.controller;
 
 import com.lab.smartmobility.billie.global.config.JwtTokenProvider;
-import com.lab.smartmobility.billie.dto.reply.NestedReplyRegisterForm;
-import com.lab.smartmobility.billie.dto.reply.ReplyModifyForm;
-import com.lab.smartmobility.billie.dto.reply.ReplyRegisterForm;
+import com.lab.smartmobility.billie.board.dto.NestedReplyRegisterForm;
+import com.lab.smartmobility.billie.board.dto.ReplyModifyForm;
+import com.lab.smartmobility.billie.board.dto.ReplyRegisterForm;
 import com.lab.smartmobility.billie.entity.HttpBodyMessage;
 import com.lab.smartmobility.billie.board.service.ReplyService;
 import io.swagger.annotations.*;
