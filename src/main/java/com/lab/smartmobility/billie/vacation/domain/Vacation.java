@@ -12,8 +12,7 @@ import java.time.LocalTime;
 @Entity @Table(name = "tbl_vacation")
 @ApiModel(value = "휴가 관리 엔티티")
 public class Vacation {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @ApiModelProperty(value = "휴가 데이터 시퀀스")
     @Column(name = "vacation_num", insertable = false)
     private Long vacationId;

@@ -1,4 +1,4 @@
-package com.lab.smartmobility.billie.task;
+package com.lab.smartmobility.billie.vacation.task;
 
 import com.lab.smartmobility.billie.staff.domain.Staff;
 import com.lab.smartmobility.billie.staff.repository.StaffRepository;

@@ -1,4 +1,4 @@
-package com.lab.smartmobility.billie.service;
+package com.lab.smartmobility.billie.board.service;
 
 import com.lab.smartmobility.billie.entity.*;
 import com.lab.smartmobility.billie.global.dto.PageResult;
@@ -6,9 +6,9 @@ import com.lab.smartmobility.billie.dto.board.BoardDetailsForm;
 import com.lab.smartmobility.billie.dto.board.BoardListForm;
 import com.lab.smartmobility.billie.dto.board.BoardRegisterForm;
 import com.lab.smartmobility.billie.repository.ViewRedisRepository;
-import com.lab.smartmobility.billie.repository.board.BoardLikeRepository;
-import com.lab.smartmobility.billie.repository.board.BoardQueryRepository;
-import com.lab.smartmobility.billie.repository.board.BoardRepository;
+import com.lab.smartmobility.billie.board.repository.BoardLikeRepository;
+import com.lab.smartmobility.billie.board.repository.BoardQueryRepository;
+import com.lab.smartmobility.billie.board.repository.BoardRepository;
 import com.lab.smartmobility.billie.staff.domain.Staff;
 import com.lab.smartmobility.billie.staff.repository.StaffRepository;
 import lombok.RequiredArgsConstructor;
@@ -37,7 +37,7 @@ public class BoardService {
 
         board.setStaff(staff);
         boardRepository.save(board);
-        return new HttpBodyMessage("success", "게시글 등록 성공");
+        return new HttpBodyMessage("success", board.getId());
     }
 
     /*게시글 목록 조회*/
@@ -46,14 +46,20 @@ public class BoardService {
     }
 
     /*게시글 상세 조회*/
-    public BoardDetailsForm getBoard(Long id){
+    public BoardDetailsForm getBoard(Long id, String email){
         BoardDetailsForm boardDetailsForm = boardQueryRepository.getBoard(id);
         if(boardDetailsForm == null){
             return null;
         }
 
+        checkIsLiked(email, boardDetailsForm);
         boardQueryRepository.plusViews(id);
         return boardDetailsForm;
+    }
+
+    private void checkIsLiked(String email, BoardDetailsForm boardDetailsForm){
+        boolean isLiked = boardLikeRepository.existsByEmailAndBoardId(email, boardDetailsForm.getId());
+        boardDetailsForm.checkIsLiked(isLiked);
     }
 
     /*게시글 수정*/
@@ -105,16 +111,18 @@ public class BoardService {
     }
 
     /*이전글 조회*/
-    public BoardDetailsForm getPrevBoard(Long id){
+    public BoardDetailsForm getPrevBoard(Long id, String email){
         BoardDetailsForm boardDetailsForm = boardQueryRepository.getPrev(id);
         boardQueryRepository.plusViews(boardDetailsForm.getId());
+        checkIsLiked(email, boardDetailsForm);
         return boardDetailsForm;
     }
 
     /*다음글 조회*/
-    public BoardDetailsForm getNextBoard(Long id){
+    public BoardDetailsForm getNextBoard(Long id, String email){
         BoardDetailsForm boardDetailsForm = boardQueryRepository.getNext(id);
         boardQueryRepository.plusViews(boardDetailsForm.getId());
+        checkIsLiked(email, boardDetailsForm);
         return boardDetailsForm;
     }
 

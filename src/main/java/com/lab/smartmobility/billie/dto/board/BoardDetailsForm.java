@@ -45,10 +45,17 @@ public class BoardDetailsForm {
     @ApiModelProperty(value = "이름")
     private String name;
 
+    @ApiModelProperty(value = "내가 좋아요를 눌렀는지 여부")
+    private boolean isLiked;
+
     @ApiModelProperty(value = "댓글 목록")
     private List<ReplyResponseForm> replyList = new ArrayList<>();
 
     public void addReply(List<ReplyResponseForm> replyList){
         this.replyList = replyList;
+    }
+
+    public void checkIsLiked(boolean isLiked){
+        this.isLiked = isLiked;
     }
 }

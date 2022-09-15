@@ -96,8 +96,8 @@ public class AnnouncementController {
         if(!jwtTokenProvider.validateToken(token)){
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
-
         String email = jwtTokenProvider.getUserPk(token);
+
         AnnouncementDetailsForm announcement = service.getAnnouncement(id, email);
         if(announcement == null){
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -209,11 +209,17 @@ public class AnnouncementController {
     })
     @ApiResponses({
             @ApiResponse(code = 200, message = "조회 성공"),
+            @ApiResponse(code = 400, message = "토큰이 유효하지 않음"),
             @ApiResponse(code = 204, message = "이전글이 존재하지 않음")
     })
     @GetMapping("/user/prev/{id}")
-    public ResponseEntity<AnnouncementDetailsForm> movePrev(@PathVariable Long id){
-        AnnouncementDetailsForm announcement = service.movePrev(id);
+    public ResponseEntity<AnnouncementDetailsForm> movePrev(@RequestHeader("X-AUTH-TOKEN") String token, @PathVariable Long id){
+        if(!jwtTokenProvider.validateToken(token)){
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+        String email = jwtTokenProvider.getUserPk(token);
+
+        AnnouncementDetailsForm announcement = service.movePrev(id, email);
         if(announcement == null){
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
@@ -226,11 +232,17 @@ public class AnnouncementController {
     })
     @ApiResponses({
             @ApiResponse(code = 200, message = "조회 성공"),
+            @ApiResponse(code = 400, message = "토큰이 유효하지 않음"),
             @ApiResponse(code = 204, message = "다음글이 존재하지 않음")
     })
     @GetMapping("/user/next/{id}")
-    public ResponseEntity<AnnouncementDetailsForm> moveNext(@PathVariable Long id){
-        AnnouncementDetailsForm announcement = service.moveNext(id);
+    public ResponseEntity<AnnouncementDetailsForm> moveNext(@RequestHeader("X-AUTH-TOKEN") String token, @PathVariable Long id){
+        if(!jwtTokenProvider.validateToken(token)){
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+        String email = jwtTokenProvider.getUserPk(token);
+
+        AnnouncementDetailsForm announcement = service.moveNext(id, email);
         if(announcement == null){
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }

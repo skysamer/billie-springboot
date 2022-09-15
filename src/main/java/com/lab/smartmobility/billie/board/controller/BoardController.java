@@ -1,4 +1,4 @@
-package com.lab.smartmobility.billie.controller;
+package com.lab.smartmobility.billie.board.controller;
 
 import com.lab.smartmobility.billie.global.config.JwtTokenProvider;
 import com.lab.smartmobility.billie.global.dto.PageResult;
@@ -6,7 +6,7 @@ import com.lab.smartmobility.billie.dto.board.BoardDetailsForm;
 import com.lab.smartmobility.billie.dto.board.BoardListForm;
 import com.lab.smartmobility.billie.dto.board.BoardRegisterForm;
 import com.lab.smartmobility.billie.entity.HttpBodyMessage;
-import com.lab.smartmobility.billie.service.BoardService;
+import com.lab.smartmobility.billie.board.service.BoardService;
 import io.swagger.annotations.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -26,7 +26,7 @@ public class BoardController {
 
     @ApiOperation(value = "게시글 등록")
     @ApiResponses({
-            @ApiResponse(code = 201, message = "게시글 등록 성공"),
+            @ApiResponse(code = 201, message = "생성된 글번호 반환"),
             @ApiResponse(code = 400, message = "요청값은 null일 수 없습니다 // 토큰이 유효하지 않습니다")
     })
     @PostMapping("/user")
@@ -58,7 +58,7 @@ public class BoardController {
                              @PathVariable String keyword,
                              @PathVariable Integer page,
                              @PathVariable Integer size){
-        PageResult<BoardListForm> result = service.getBoardList(date, keyword, PageRequest.of(page, size));
+        PageResult<BoardListForm> result = service.getBoardList(keyword, date, PageRequest.of(page, size));
         if(result.getCount() == 0){
             return new ResponseEntity<>(result, HttpStatus.NO_CONTENT);
         }
@@ -71,11 +71,17 @@ public class BoardController {
     })
     @ApiResponses({
             @ApiResponse(code = 200, message = "조회 성공"),
+            @ApiResponse(code = 400, message = "토큰이 유효하지 않음"),
             @ApiResponse(code = 404, message = "번호값이 존재하지 않음")
     })
     @GetMapping("/user/{id}")
-    public ResponseEntity<BoardDetailsForm> getBoard(@PathVariable Long id){
-        BoardDetailsForm result = service.getBoard(id);
+    public ResponseEntity<BoardDetailsForm> getBoard(@RequestHeader("X-AUTH-TOKEN") String token, @PathVariable Long id){
+        if(!jwtTokenProvider.validateToken(token)){
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+        String email = jwtTokenProvider.getUserPk(token);
+
+        BoardDetailsForm result = service.getBoard(id, email);
         if(result == null){
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
@@ -147,11 +153,17 @@ public class BoardController {
     })
     @ApiResponses({
             @ApiResponse(code = 200, message = "조회 성공"),
+            @ApiResponse(code = 400, message = "토큰이 유효하지 않음"),
             @ApiResponse(code = 204, message = "이전글 없음")
     })
     @GetMapping("/user/prev/{id}")
-    public ResponseEntity<BoardDetailsForm> getPrev(@PathVariable Long id){
-        BoardDetailsForm result = service.getPrevBoard(id);
+    public ResponseEntity<BoardDetailsForm> getPrev(@RequestHeader("X-AUTH-TOKEN") String token, @PathVariable Long id){
+        if(!jwtTokenProvider.validateToken(token)){
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+        String email = jwtTokenProvider.getUserPk(token);
+
+        BoardDetailsForm result = service.getPrevBoard(id, email);
         if(result == null){
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
@@ -167,8 +179,13 @@ public class BoardController {
             @ApiResponse(code = 204, message = "다음글 없음")
     })
     @GetMapping("/user/next/{id}")
-    public ResponseEntity<BoardDetailsForm> getNext(@PathVariable Long id){
-        BoardDetailsForm result = service.getNextBoard(id);
+    public ResponseEntity<BoardDetailsForm> getNext(@RequestHeader("X-AUTH-TOKEN") String token, @PathVariable Long id){
+        if(!jwtTokenProvider.validateToken(token)){
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+        String email = jwtTokenProvider.getUserPk(token);
+
+        BoardDetailsForm result = service.getNextBoard(id, email);
         if(result == null){
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }

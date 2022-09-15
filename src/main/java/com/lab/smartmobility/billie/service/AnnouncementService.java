@@ -96,10 +96,14 @@ public class AnnouncementService {
             return null;
         }
 
-        boolean isLiked = announcementStaffLikeRepository.existsByEmailAndAnnouncementId(email, announcement.getId());
-        announcement.checkIsLiked(isLiked);
+        checkIsLiked(email, announcement);
         announcementRepositoryImpl.updateViewsCount(id);
         return announcement;
+    }
+
+    private void checkIsLiked(String email, AnnouncementDetailsForm announcement){
+        boolean isLiked = announcementStaffLikeRepository.existsByEmailAndAnnouncementId(email, announcement.getId());
+        announcement.checkIsLiked(isLiked);
     }
 
     /*게시글 삭제*/
@@ -166,7 +170,7 @@ public class AnnouncementService {
     }
 
     /*이전글 이동*/
-    public AnnouncementDetailsForm movePrev(Long id){
+    public AnnouncementDetailsForm movePrev(Long id, String email){
         List<AnnouncementDetailsForm> list = announcementRepositoryImpl.getListOrderByIsMainAndId();
         AnnouncementDetailsForm result = new AnnouncementDetailsForm();
         for(int i=0; i<list.size(); i++){
@@ -182,6 +186,7 @@ public class AnnouncementService {
 
         addFilename(result);
         announcementRepositoryImpl.updateViewsCount(result.getId());
+        checkIsLiked(email, result);
         return result;
     }
 
@@ -191,7 +196,7 @@ public class AnnouncementService {
     }
 
     /*다음글 이동*/
-    public AnnouncementDetailsForm moveNext(Long id){
+    public AnnouncementDetailsForm moveNext(Long id, String email){
         List<AnnouncementDetailsForm> list = announcementRepositoryImpl.getListOrderByIsMainAndId();
         AnnouncementDetailsForm result = new AnnouncementDetailsForm();
         for(int i=0; i<list.size(); i++){
@@ -207,6 +212,7 @@ public class AnnouncementService {
 
         addFilename(result);
         announcementRepositoryImpl.updateViewsCount(result.getId());
+        checkIsLiked(email, result);
         return result;
     }
 

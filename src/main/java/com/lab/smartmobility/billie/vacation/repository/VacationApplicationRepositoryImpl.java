@@ -1,11 +1,8 @@
-package com.lab.smartmobility.billie.repository.vacation;
+package com.lab.smartmobility.billie.vacation.repository;
 
 import com.lab.smartmobility.billie.global.dto.PageResult;
 import com.lab.smartmobility.billie.global.util.DateTimeUtil;
-import com.lab.smartmobility.billie.vacation.dto.QVacationApplicationDetailsForm;
-import com.lab.smartmobility.billie.vacation.dto.QVacationApplicationListForm;
-import com.lab.smartmobility.billie.vacation.dto.VacationApplicationDetailsForm;
-import com.lab.smartmobility.billie.vacation.dto.VacationApplicationListForm;
+import com.lab.smartmobility.billie.vacation.dto.*;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
@@ -63,10 +60,23 @@ public class VacationApplicationRepositoryImpl {
     public VacationApplicationDetailsForm findById(Long vacationId){
         return jpaQueryFactory
                 .select(new QVacationApplicationDetailsForm(vacation.vacationId, vacation.startDate, vacation.endDate,
-                        vacation.workAt, vacation.homeAt, vacation.contact, vacation.reason, vacation.vacationType, vacation.approvalStatus))
+                        vacation.workAt, vacation.homeAt, vacation.contact,
+                        vacation.reason, vacation.vacationType, vacation.approvalStatus))
                 .from(vacation)
                 .where(vacation.vacationId.eq(vacationId))
                 .fetchFirst();
+    }
+
+    /*나의 최근 휴가 신청 목록*/
+    public List<MyRecentVacationForm> findMyRecentVacationList(Long staffNum){
+        return jpaQueryFactory
+                .select(new QMyRecentVacationForm(vacation.vacationId, vacation.startDate, vacation.endDate,
+                        vacation.workAt, vacation.homeAt, vacation.vacationType, vacation.approvalStatus))
+                .from(vacation)
+                .where(vacation.staff.staffNum.eq(staffNum))
+                .limit(4)
+                .orderBy(vacation.startDate.desc())
+                .fetch();
     }
 
     private BooleanExpression baseYearEq(String baseYear) {

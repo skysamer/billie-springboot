@@ -1,4 +1,4 @@
-package com.lab.smartmobility.billie.repository.vacation;
+package com.lab.smartmobility.billie.vacation.repository;
 
 import com.lab.smartmobility.billie.staff.domain.Staff;
 import com.lab.smartmobility.billie.vacation.domain.Vacation;
@@ -10,5 +10,4 @@ import java.util.List;
 @Transactional(readOnly = true)
 public interface VacationRepository extends JpaRepository<Vacation, Long> {
     Vacation findByVacationId(Long vacationId);
-    List<Vacation> findTop4ByStaffOrderByStartDate(Staff staff);
 }

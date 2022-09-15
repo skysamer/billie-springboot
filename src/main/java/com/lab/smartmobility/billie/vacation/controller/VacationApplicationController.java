@@ -1,6 +1,7 @@
 package com.lab.smartmobility.billie.vacation.controller;
 
 import com.lab.smartmobility.billie.global.dto.PageResult;
+import com.lab.smartmobility.billie.vacation.dto.MyRecentVacationForm;
 import com.lab.smartmobility.billie.vacation.dto.VacationApplicationDetailsForm;
 import com.lab.smartmobility.billie.vacation.dto.VacationApplicationForm;
 import com.lab.smartmobility.billie.entity.HttpBodyMessage;
@@ -51,7 +52,7 @@ public class VacationApplicationController {
             @ApiResponse(code = 200, message = "조회성공"),
             @ApiResponse(code = 404, message = "조건에 맞는 데이터 없음")
     })
-    @GetMapping("/user/application/{staff-num}/{base-date}/{vacation-type}/{page}/{size}")
+    @GetMapping("/application/user/{staff-num}/{base-date}/{vacation-type}/{page}/{size}")
     public ResponseEntity<PageResult<VacationApplicationListForm>> getApplicationList(@PathVariable("staff-num") Long staffNum,
                                                                                       @PathVariable("base-date") String baseDate,
                                                                                       @PathVariable("vacation-type") String vacationType,
@@ -72,7 +73,7 @@ public class VacationApplicationController {
             @ApiResponse(code = 200, message = "조회성공"),
             @ApiResponse(code = 404, message = "조건에 맞는 데이터 없음")
     })
-    @GetMapping("/user/application/{vacation-id}")
+    @GetMapping("/application/user/{vacation-id}")
     public ResponseEntity<VacationApplicationDetailsForm> getMyApplication(@PathVariable("vacation-id") Long vacationId){
         VacationApplicationDetailsForm vacation = service.getMyApplication(vacationId);
         if(vacation == null){
@@ -89,9 +90,9 @@ public class VacationApplicationController {
             @ApiResponse(code = 200, message = "조회성공"),
             @ApiResponse(code = 404, message = "조건에 맞는 데이터 없음")
     })
-    @GetMapping("/user/application/recent/{staff-num}")
-    public ResponseEntity<List<Vacation>> getMyRecentApplication(@PathVariable("staff-num") Long staffNum){
-        List<Vacation> myRecentVacationList = service.getMyRecentApplication(staffNum);
+    @GetMapping("/application/user/recent/{staff-num}")
+    public ResponseEntity<List<MyRecentVacationForm>> getMyRecentApplication(@PathVariable("staff-num") Long staffNum){
+        List<MyRecentVacationForm> myRecentVacationList = service.getMyRecentApplication(staffNum);
         if(myRecentVacationList.size() == 0){
             return new ResponseEntity<>(myRecentVacationList, HttpStatus.NOT_FOUND);
         }
@@ -105,7 +106,7 @@ public class VacationApplicationController {
     @ApiResponses({
             @ApiResponse(code = 200, message = "휴가 삭제 완료 // 승인된 휴가에 대한 취소 처리 완료"),
     })
-    @DeleteMapping("/user/{id}")
+    @DeleteMapping("application/user/{id}")
     public ResponseEntity<HttpBodyMessage> remove(@PathVariable Long id){
         HttpBodyMessage result = service.cancel(id);
         return new ResponseEntity<>(result, HttpStatus.OK);

@@ -1,6 +1,7 @@
 package com.lab.smartmobility.billie.vacation.service;
 
 import com.lab.smartmobility.billie.global.dto.PageResult;
+import com.lab.smartmobility.billie.vacation.dto.MyRecentVacationForm;
 import com.lab.smartmobility.billie.vacation.dto.VacationApplicationDetailsForm;
 import com.lab.smartmobility.billie.vacation.dto.VacationApplicationForm;
 import com.lab.smartmobility.billie.entity.HttpBodyMessage;
@@ -8,8 +9,8 @@ import com.lab.smartmobility.billie.staff.domain.Staff;
 import com.lab.smartmobility.billie.vacation.domain.ApprovalStatus;
 import com.lab.smartmobility.billie.vacation.domain.Vacation;
 import com.lab.smartmobility.billie.staff.repository.StaffRepository;
-import com.lab.smartmobility.billie.repository.vacation.VacationRepository;
-import com.lab.smartmobility.billie.repository.vacation.VacationApplicationRepositoryImpl;
+import com.lab.smartmobility.billie.vacation.repository.VacationRepository;
+import com.lab.smartmobility.billie.vacation.repository.VacationApplicationRepositoryImpl;
 import com.lab.smartmobility.billie.global.util.AssigneeToApprover;
 import com.lab.smartmobility.billie.global.util.NotificationSender;
 import com.lab.smartmobility.billie.vacation.dto.VacationApplicationListForm;
@@ -86,9 +87,8 @@ public class VacationApplicationService {
     }
 
     /*나의 최근 휴가 신청 내역*/
-    public List<Vacation> getMyRecentApplication(Long staffNum) {
-        Staff staff = staffRepository.findByStaffNum(staffNum);
-        return vacationRepository.findTop4ByStaffOrderByStartDate(staff);
+    public List<MyRecentVacationForm> getMyRecentApplication(Long staffNum) {
+        return vacationApplicationRepository.findMyRecentVacationList(staffNum);
     }
 
     /*휴가 신청 내역 취소*/

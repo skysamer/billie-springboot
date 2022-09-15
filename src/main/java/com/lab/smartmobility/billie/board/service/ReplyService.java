@@ -1,4 +1,4 @@
-package com.lab.smartmobility.billie.service;
+package com.lab.smartmobility.billie.board.service;
 
 import com.lab.smartmobility.billie.dto.reply.NestedReplyRegisterForm;
 import com.lab.smartmobility.billie.dto.reply.ReplyModifyForm;
@@ -9,7 +9,7 @@ import com.lab.smartmobility.billie.entity.Reply;
 import com.lab.smartmobility.billie.staff.domain.Staff;
 import com.lab.smartmobility.billie.repository.ReplyRepository;
 import com.lab.smartmobility.billie.staff.repository.StaffRepository;
-import com.lab.smartmobility.billie.repository.board.BoardRepository;
+import com.lab.smartmobility.billie.board.repository.BoardRepository;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
