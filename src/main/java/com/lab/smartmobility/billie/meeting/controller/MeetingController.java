@@ -2,7 +2,7 @@ package com.lab.smartmobility.billie.meeting.controller;
 
 import com.lab.smartmobility.billie.meeting.dto.ApplyMeetingForm;
 import com.lab.smartmobility.billie.meeting.service.MeetingService;
-import com.lab.smartmobility.billie.entity.HttpBodyMessage;
+import com.lab.smartmobility.billie.global.dto.HttpBodyMessage;
 import com.lab.smartmobility.billie.meeting.domain.Meeting;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;

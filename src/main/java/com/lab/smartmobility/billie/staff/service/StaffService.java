@@ -1,7 +1,7 @@
 package com.lab.smartmobility.billie.staff.service;
 
 import com.lab.smartmobility.billie.global.config.CommonEncoder;
-import com.lab.smartmobility.billie.entity.HttpBodyMessage;
+import com.lab.smartmobility.billie.global.dto.HttpBodyMessage;
 import com.lab.smartmobility.billie.staff.domain.Staff;
 import com.lab.smartmobility.billie.staff.dto.DepartmentDTO;
 import com.lab.smartmobility.billie.staff.dto.EmailTokenForm;

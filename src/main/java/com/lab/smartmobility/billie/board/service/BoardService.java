@@ -1,6 +1,8 @@
 package com.lab.smartmobility.billie.board.service;
 
-import com.lab.smartmobility.billie.entity.*;
+import com.lab.smartmobility.billie.board.domain.Board;
+import com.lab.smartmobility.billie.board.domain.BoardLike;
+import com.lab.smartmobility.billie.global.dto.HttpBodyMessage;
 import com.lab.smartmobility.billie.global.dto.PageResult;
 import com.lab.smartmobility.billie.board.dto.BoardDetailsForm;
 import com.lab.smartmobility.billie.board.dto.BoardListForm;

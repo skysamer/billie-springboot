@@ -4,7 +4,7 @@ import com.lab.smartmobility.billie.global.config.JwtTokenProvider;
 import com.lab.smartmobility.billie.board.dto.NestedReplyRegisterForm;
 import com.lab.smartmobility.billie.board.dto.ReplyModifyForm;
 import com.lab.smartmobility.billie.board.dto.ReplyRegisterForm;
-import com.lab.smartmobility.billie.entity.HttpBodyMessage;
+import com.lab.smartmobility.billie.global.dto.HttpBodyMessage;
 import com.lab.smartmobility.billie.board.service.ReplyService;
 import io.swagger.annotations.*;
 import lombok.RequiredArgsConstructor;

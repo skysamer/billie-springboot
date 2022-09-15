@@ -1,8 +1,8 @@
 package com.lab.smartmobility.billie.staff.controller;
 
 import com.lab.smartmobility.billie.global.config.JwtTokenProvider;
-import com.lab.smartmobility.billie.entity.HttpBodyMessage;
-import com.lab.smartmobility.billie.entity.Mail;
+import com.lab.smartmobility.billie.global.dto.HttpBodyMessage;
+import com.lab.smartmobility.billie.global.dto.Mail;
 import com.lab.smartmobility.billie.staff.domain.Staff;
 import com.lab.smartmobility.billie.staff.dto.*;
 import com.lab.smartmobility.billie.staff.service.StaffService;

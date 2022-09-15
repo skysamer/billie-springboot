@@ -5,7 +5,7 @@ import com.lab.smartmobility.billie.corporation.dto.CorporationHistoryForm;
 import com.lab.smartmobility.billie.corporation.dto.CorporationReturnForm;
 import com.lab.smartmobility.billie.corporation.dto.ExpenseClaimForm;
 import com.lab.smartmobility.billie.corporation.dto.ExpenseClaimHistoryForm;
-import com.lab.smartmobility.billie.entity.HttpBodyMessage;
+import com.lab.smartmobility.billie.global.dto.HttpBodyMessage;
 import com.lab.smartmobility.billie.corporation.service.CorporationCardReturnService;
 import io.swagger.annotations.*;
 import lombok.RequiredArgsConstructor;

@@ -2,7 +2,7 @@ package com.lab.smartmobility.billie.vehicle.controller;
 
 import com.lab.smartmobility.billie.vehicle.dto.NonBorrowableVehicle;
 import com.lab.smartmobility.billie.vehicle.dto.VehicleDTO;
-import com.lab.smartmobility.billie.entity.HttpBodyMessage;
+import com.lab.smartmobility.billie.global.dto.HttpBodyMessage;
 import com.lab.smartmobility.billie.vehicle.domain.Vehicle;
 import com.lab.smartmobility.billie.vehicle.service.VehicleService;
 import io.swagger.annotations.*;

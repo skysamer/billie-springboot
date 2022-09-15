@@ -1,7 +1,7 @@
 package com.lab.smartmobility.billie.vehicle.service;
 
 import com.lab.smartmobility.billie.vehicle.dto.VehicleReturnDTO;
-import com.lab.smartmobility.billie.entity.ImageVehicle;
+import com.lab.smartmobility.billie.vehicle.domain.ImageVehicle;
 import com.lab.smartmobility.billie.vehicle.domain.Vehicle;
 import com.lab.smartmobility.billie.vehicle.domain.VehicleReservation;
 import com.lab.smartmobility.billie.vehicle.repository.ReturnVehicleImageRepository;

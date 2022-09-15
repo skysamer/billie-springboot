@@ -4,7 +4,7 @@ import com.lab.smartmobility.billie.corporation.dto.CorporationCardForm;
 import com.lab.smartmobility.billie.corporation.dto.DisposalForm;
 import com.lab.smartmobility.billie.corporation.repository.CorporationCardRepository;
 import com.lab.smartmobility.billie.corporation.repository.CorporationCardRepositoryImpl;
-import com.lab.smartmobility.billie.entity.HttpBodyMessage;
+import com.lab.smartmobility.billie.global.dto.HttpBodyMessage;
 import com.lab.smartmobility.billie.corporation.domain.CorporationCard;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.logging.Log;

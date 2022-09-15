@@ -5,7 +5,7 @@ import com.lab.smartmobility.billie.global.dto.PageResult;
 import com.lab.smartmobility.billie.board.dto.BoardDetailsForm;
 import com.lab.smartmobility.billie.board.dto.BoardListForm;
 import com.lab.smartmobility.billie.board.dto.BoardRegisterForm;
-import com.lab.smartmobility.billie.entity.HttpBodyMessage;
+import com.lab.smartmobility.billie.global.dto.HttpBodyMessage;
 import com.lab.smartmobility.billie.board.service.BoardService;
 import io.swagger.annotations.*;
 import lombok.RequiredArgsConstructor;

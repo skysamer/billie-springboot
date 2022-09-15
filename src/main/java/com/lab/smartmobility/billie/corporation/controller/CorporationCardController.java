@@ -3,7 +3,7 @@ package com.lab.smartmobility.billie.corporation.controller;
 import com.lab.smartmobility.billie.corporation.dto.CorporationCardForm;
 import com.lab.smartmobility.billie.corporation.dto.DisposalForm;
 import com.lab.smartmobility.billie.corporation.domain.CorporationCard;
-import com.lab.smartmobility.billie.entity.HttpBodyMessage;
+import com.lab.smartmobility.billie.global.dto.HttpBodyMessage;
 import com.lab.smartmobility.billie.corporation.service.CorporationCardService;
 import io.swagger.annotations.*;
 import lombok.RequiredArgsConstructor;

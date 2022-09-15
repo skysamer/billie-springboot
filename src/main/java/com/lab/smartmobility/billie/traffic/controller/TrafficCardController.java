@@ -2,7 +2,7 @@ package com.lab.smartmobility.billie.traffic.controller;
 
 import com.lab.smartmobility.billie.traffic.dto.NonBorrowableTrafficCard;
 import com.lab.smartmobility.billie.traffic.dto.TrafficCardForm;
-import com.lab.smartmobility.billie.entity.HttpBodyMessage;
+import com.lab.smartmobility.billie.global.dto.HttpBodyMessage;
 import com.lab.smartmobility.billie.traffic.domain.TrafficCard;
 import com.lab.smartmobility.billie.traffic.service.TrafficCardService;
 import io.swagger.annotations.*;

@@ -20,8 +20,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.lab.smartmobility.billie.entity.QBoard.board;
-import static com.lab.smartmobility.billie.entity.QReply.reply;
+import static com.lab.smartmobility.billie.board.domain.QBoard.board;
+import static com.lab.smartmobility.billie.board.domain.QReply.reply;
 
 @Repository
 @Transactional(readOnly = true)

@@ -1,7 +1,7 @@
 package com.lab.smartmobility.billie.traffic.controller;
 
 import com.lab.smartmobility.billie.traffic.dto.ReturnTrafficCardDTO;
-import com.lab.smartmobility.billie.entity.HttpBodyMessage;
+import com.lab.smartmobility.billie.global.dto.HttpBodyMessage;
 import com.lab.smartmobility.billie.traffic.domain.TrafficCardReservation;
 import com.lab.smartmobility.billie.traffic.service.TrafficCardReturnService;
 import io.swagger.annotations.Api;

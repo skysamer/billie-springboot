@@ -1,6 +1,6 @@
 package com.lab.smartmobility.billie.global.util;
 
-import com.lab.smartmobility.billie.entity.Notification;
+import com.lab.smartmobility.billie.notification.domain.Notification;
 import com.lab.smartmobility.billie.staff.domain.Staff;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;

@@ -1,7 +1,7 @@
 package com.lab.smartmobility.billie.traffic.service;
 
 import com.lab.smartmobility.billie.traffic.dto.TrafficCardApplyDTO;
-import com.lab.smartmobility.billie.entity.HttpBodyMessage;
+import com.lab.smartmobility.billie.global.dto.HttpBodyMessage;
 import com.lab.smartmobility.billie.staff.domain.Staff;
 import com.lab.smartmobility.billie.traffic.domain.TrafficCard;
 import com.lab.smartmobility.billie.traffic.domain.TrafficCardReservation;

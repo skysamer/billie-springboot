@@ -3,7 +3,7 @@ package com.lab.smartmobility.billie.corporation.controller;
 import com.lab.smartmobility.billie.global.dto.TotalCount;
 import com.lab.smartmobility.billie.corporation.dto.ApprovalCardUseForm;
 import com.lab.smartmobility.billie.corporation.dto.CompanionCardUseForm;
-import com.lab.smartmobility.billie.entity.HttpBodyMessage;
+import com.lab.smartmobility.billie.global.dto.HttpBodyMessage;
 import com.lab.smartmobility.billie.corporation.domain.Application;
 import com.lab.smartmobility.billie.corporation.service.CorporationCardApprovalService;
 import io.swagger.annotations.*;

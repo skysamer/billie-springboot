@@ -1,7 +1,7 @@
 package com.lab.smartmobility.billie.vehicle.service;
 
 import com.lab.smartmobility.billie.vehicle.dto.ApplyRentalVehicleDTO;
-import com.lab.smartmobility.billie.entity.HttpBodyMessage;
+import com.lab.smartmobility.billie.global.dto.HttpBodyMessage;
 import com.lab.smartmobility.billie.staff.domain.Staff;
 import com.lab.smartmobility.billie.vehicle.domain.Vehicle;
 import com.lab.smartmobility.billie.vehicle.domain.VehicleReservation;

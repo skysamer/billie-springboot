@@ -3,7 +3,7 @@ package com.lab.smartmobility.billie.meeting.service;
 import com.lab.smartmobility.billie.meeting.dto.ApplyMeetingForm;
 import com.lab.smartmobility.billie.meeting.repository.MeetingQueryRepository;
 import com.lab.smartmobility.billie.meeting.repository.MeetingRepository;
-import com.lab.smartmobility.billie.entity.HttpBodyMessage;
+import com.lab.smartmobility.billie.global.dto.HttpBodyMessage;
 import com.lab.smartmobility.billie.meeting.domain.Meeting;
 import com.lab.smartmobility.billie.staff.repository.StaffRepository;
 import lombok.RequiredArgsConstructor;

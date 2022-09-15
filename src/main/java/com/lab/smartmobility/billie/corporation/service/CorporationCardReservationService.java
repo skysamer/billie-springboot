@@ -4,7 +4,7 @@ import com.lab.smartmobility.billie.corporation.repository.ApplicationRepository
 import com.lab.smartmobility.billie.corporation.repository.ApplicationRepositoryImpl;
 import com.lab.smartmobility.billie.global.dto.TotalCount;
 import com.lab.smartmobility.billie.corporation.dto.ApplyCorporationCardForm;
-import com.lab.smartmobility.billie.entity.HttpBodyMessage;
+import com.lab.smartmobility.billie.global.dto.HttpBodyMessage;
 import com.lab.smartmobility.billie.staff.domain.Staff;
 import com.lab.smartmobility.billie.corporation.domain.Application;
 import com.lab.smartmobility.billie.staff.repository.StaffRepository;
