@@ -45,9 +45,10 @@ public class Reply extends BaseTimeEntity {
         this.board = board;
     }
 
-    public void insertNested(Staff staff, Board board, Reply parent){
+    public void insertNested(Staff staff, Board board, Reply parent, int isAnonymous){
         this.staff = staff;
         this.board = board;
         this.parent = parent;
+        this.isAnonymous = isAnonymous;
     }
 }

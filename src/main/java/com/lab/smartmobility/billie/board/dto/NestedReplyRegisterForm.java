@@ -17,6 +17,9 @@ public class NestedReplyRegisterForm {
     @NotNull(message="해당 값은 null 일 수 없습니다.")
     private Long boardId;
 
+    @ApiModelProperty(value = "0: 실명, 1: 익명")
+    private int isAnonymous;
+
     @ApiModelProperty(value = "부모댓글 번호")
     @NotNull(message="해당 값은 null 일 수 없습니다.")
     private Long parentId;

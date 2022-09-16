@@ -51,7 +51,7 @@ public class ReplyService {
         Reply parent = replyRepository.findById(registerForm.getParentId()).orElse(null);
 
         board.plusReplyCnt();
-        reply.insertNested(staff, board, parent);
+        reply.insertNested(staff, board, parent, registerForm.getIsAnonymous());
         replyRepository.save(reply);
         return new HttpBodyMessage("success", "대댓글 등록 성공");
     }

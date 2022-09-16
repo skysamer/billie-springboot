@@ -6,7 +6,6 @@ import com.lab.smartmobility.billie.vacation.domain.ApprovalStatus;
 import com.lab.smartmobility.billie.vacation.dto.QVacationApproveListForm;
 import com.lab.smartmobility.billie.vacation.dto.VacationApproveListForm;
 import com.querydsl.core.types.dsl.BooleanExpression;
-import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.logging.Log;
