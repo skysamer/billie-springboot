@@ -36,6 +36,8 @@ public class VacationApplicationService {
     private final AssigneeToApprover assigneeToApprover;
     private final Log log;
 
+    private static final String DOMAIN_TYPE = "vacation";
+
     /*휴가 신청*/
     public HttpBodyMessage apply(VacationApplicationForm vacationApplicationForm){
         if(isEarlierDate(vacationApplicationForm.getStartDate())){
@@ -53,18 +55,8 @@ public class VacationApplicationService {
         Vacation vacation = modelMapper.map(vacationApplicationForm, Vacation.class);
 
         insertVacationEntity(applicant, vacation);
-        notificationSender.sendNotification("vacation", approval, 1);
+        notificationSender.sendNotification(DOMAIN_TYPE, approval, 1);
         return new HttpBodyMessage("success", "휴가 신청 성공");
-    }
-
-    private void calculateVacationCount(Staff applicant, String vacationType, int period){
-        if(vacationType.equals("반차")){
-            applicant.calculateVacation(0.5);
-        }else if(vacationType.equals("경조") || vacationType.equals("공가")){
-            applicant.calculateVacation(0);
-        }else{
-            applicant.calculateVacation(period + 1);
-        }
     }
 
     private boolean isEarlierDate(LocalDate startDate){

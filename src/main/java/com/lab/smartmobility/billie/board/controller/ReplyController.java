@@ -85,16 +85,17 @@ public class ReplyController {
 
     @ApiOperation(value = "댓글 삭제")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "id", value = "댓글 번호")
+            @ApiImplicitParam(name = "id", value = "댓글 번호"),
+            @ApiImplicitParam(name = "board-id", value = "게시글 번호")
     })
     @ApiResponses({
             @ApiResponse(code = 200, message = "댓글 삭제 성공"),
             @ApiResponse(code = 404, message = "댓글이 존재하지 않습니다")
     })
-    @DeleteMapping("/user/{id}")
-    public ResponseEntity<HttpBodyMessage> remove(@PathVariable Long id){
+    @DeleteMapping("/user/{id}/{board-id}")
+    public ResponseEntity<HttpBodyMessage> remove(@PathVariable Long id, @PathVariable("board-id") Long boardId){
 
-        HttpBodyMessage httpBodyMessage = service.remove(id);
+        HttpBodyMessage httpBodyMessage = service.remove(id, boardId);
         if(httpBodyMessage.getCode().equals("fail")){
             return new ResponseEntity<>(httpBodyMessage, HttpStatus.NOT_FOUND);
         }

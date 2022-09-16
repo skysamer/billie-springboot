@@ -8,7 +8,7 @@ import javax.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
-@Getter
+@Getter @ToString
 @Entity @Table(name = "tbl_vacation")
 @ApiModel(value = "휴가 관리 엔티티")
 public class Vacation {
@@ -67,5 +67,14 @@ public class Vacation {
 
     public void cancel(){
         this.approvalStatus = ApprovalStatus.CANCEL;
+    }
+
+    public void reject(String reason){
+        this.approvalStatus = ApprovalStatus.COMPANION;
+        this.companionReason = reason;
+    }
+
+    public void approve(ApprovalStatus approvalStatus){
+        this.approvalStatus = approvalStatus;
     }
 }

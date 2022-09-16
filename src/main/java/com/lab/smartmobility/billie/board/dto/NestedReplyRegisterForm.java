@@ -7,7 +7,7 @@ import lombok.Getter;
 import javax.validation.constraints.NotNull;
 
 @Getter
-@ApiModel(value = "댓글 등록 폼")
+@ApiModel(value = "대댓글 등록 폼")
 public class NestedReplyRegisterForm {
     @ApiModelProperty(value = "내용")
     @NotNull(message="해당 값은 null 일 수 없습니다.")

@@ -26,13 +26,12 @@ public class ReplyService {
 
     /*댓글 등록*/
     public HttpBodyMessage register(ReplyRegisterForm registerForm, String email){
-        Staff staff = staffRepository.findByEmail(email);
         Board board = boardRepository.findById(registerForm.getBoardId()).orElse(null);
         if(board == null){
             return new HttpBodyMessage("fail", "해당 게시글이 존재하지 않습니다");
         }
-
         Reply reply = modelMapper.map(registerForm, Reply.class);
+        Staff staff = staffRepository.findByEmail(email);
 
         board.plusReplyCnt();
         reply.insert(staff, board);
@@ -69,13 +68,15 @@ public class ReplyService {
     }
 
     /*댓글 삭제*/
-    public HttpBodyMessage remove(Long id){
+    public HttpBodyMessage remove(Long id, Long boardId){
         Reply reply = replyRepository.findById(id).orElse(null);
         if(reply == null){
             return new HttpBodyMessage("fail", "댓글이 존재하지 않습니다");
         }
 
         replyRepository.delete(reply);
+        Board board = boardRepository.findById(boardId).orElse(new Board());
+        board.minusReplyCnt();
         return new HttpBodyMessage("success", "댓글 삭제 성공");
     }
 }

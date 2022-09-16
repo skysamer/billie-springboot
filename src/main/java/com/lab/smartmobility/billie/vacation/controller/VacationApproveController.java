@@ -1,8 +1,10 @@
 package com.lab.smartmobility.billie.vacation.controller;
 
 import com.lab.smartmobility.billie.global.config.JwtTokenProvider;
+import com.lab.smartmobility.billie.global.dto.HttpBodyMessage;
 import com.lab.smartmobility.billie.global.dto.PageResult;
 import com.lab.smartmobility.billie.vacation.dto.VacationApproveListForm;
+import com.lab.smartmobility.billie.vacation.dto.VacationCompanionForm;
 import com.lab.smartmobility.billie.vacation.service.VacationApproveService;
 import io.swagger.annotations.*;
 import lombok.RequiredArgsConstructor;
@@ -10,6 +12,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @Api(tags = {"휴가 승인 api"})
 @RestController
@@ -49,5 +53,34 @@ public class VacationApproveController {
             return new ResponseEntity<>(vacationApproveList, HttpStatus.NO_CONTENT);
         }
         return new ResponseEntity<>(vacationApproveList, HttpStatus.OK);
+    }
+
+    @ApiOperation(value = "부서장의 휴가승인")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "id-list", value = "휴가 id list"),
+    })
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "휴가승인성공"),
+            @ApiResponse(code = 400, message = "토큰이 유효하지 않은 경우"),
+    })
+    @PatchMapping("/approve/manager/{id-list}")
+    public ResponseEntity<HttpBodyMessage> approveByManager(@RequestHeader("X-AUTH-TOKEN") String token, @PathVariable("id-list") List<Long> idList){
+        if(!jwtTokenProvider.validateToken(token)){
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+        String email = jwtTokenProvider.getUserPk(token);
+
+        HttpBodyMessage result = service.approveByManager(idList, email);
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
+    @ApiOperation(value = "휴가반려")
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "휴가반려")
+    })
+    @PatchMapping("/approve/manager")
+    public ResponseEntity<HttpBodyMessage> reject(@RequestBody List<VacationCompanionForm> companionFormList){
+        HttpBodyMessage result = service.reject(companionFormList);
+        return new ResponseEntity<>(result, HttpStatus.OK);
     }
 }

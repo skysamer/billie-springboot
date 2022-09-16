@@ -54,6 +54,10 @@ public class Board extends BaseTimeEntity {
         this.replyCnt++;
     }
 
+    public void minusReplyCnt(){
+        this.replyCnt--;
+    }
+
     public void plusLikes(){
         this.likes++;
     }

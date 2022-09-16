@@ -65,6 +65,33 @@ public class VacationApproveRepository {
                 .stream().count();
     }
 
+    /*부서장 휴가 승인*/
+    public void approveByManager(List<Long> vacationIdList){
+        jpaQueryFactory
+                .update(vacation)
+                .set(vacation.approvalStatus, ApprovalStatus.TEAM)
+                .where(vacation.vacationId.in(vacationIdList))
+                .execute();
+    }
+
+    /*관리자 휴가승인 요청관리 내역 조회*/
+    private List<VacationApproveListForm> getApproveListByAdmin(String baseDate, String department, String keyword, int isToggleOn, Pageable pageable){
+        return jpaQueryFactory
+                .select(new QVacationApproveListForm(vacation.vacationId, vacation.vacationType,
+                        vacation.startDate, vacation.endDate, vacation.workAt, vacation.homeAt, vacation.reason,
+                        vacation.approvalStatus.stringValue(), vacation.staff.name))
+                .from(vacation)
+                .where(vacation.staff.department.eq(department)
+                        .and(baseDateEq(baseDate))
+                        .and(keywordLike(keyword))
+                        .and(isToggleOnNe(isToggleOn))
+                )
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .orderBy(vacation.approvalStatus.desc(), vacation.vacationId.desc())
+                .fetch();
+    }
+
     private BooleanExpression baseDateEq(String baseYear) {
         if(baseYear.equals("all")){
             return null;
