@@ -38,9 +38,9 @@ public class VacationApproveRepository {
 
     private List<VacationApproveListForm> getApproveListByManager(String baseDate, String department, String keyword, Pageable pageable){
         return jpaQueryFactory
-                .select(new QVacationApproveListForm(vacation.vacationId, vacation.vacationType,
+                .select(new QVacationApproveListForm(vacation.vacationId, vacation.staff.name,
                         vacation.startDate, vacation.endDate, vacation.workAt, vacation.homeAt, vacation.reason,
-                        vacation.approvalStatus.stringValue(), vacation.staff.name))
+                        vacation.vacationType, vacation.approvalStatus.stringValue(), vacation.staff.employeeNumber))
                 .from(vacation)
                 .where(vacation.staff.department.eq(department)
                         .and(baseDateEq(baseDate))
@@ -54,9 +54,9 @@ public class VacationApproveRepository {
 
     private long countApproveListByManager(String baseDate, String department, String keyword){
         return jpaQueryFactory
-                .select(new QVacationApproveListForm(vacation.vacationId, vacation.vacationType,
+                .select(new QVacationApproveListForm(vacation.vacationId, vacation.staff.name,
                         vacation.startDate, vacation.endDate, vacation.workAt, vacation.homeAt, vacation.reason,
-                        vacation.approvalStatus.stringValue(), vacation.staff.name))
+                        vacation.vacationType, vacation.approvalStatus.stringValue(), vacation.staff.employeeNumber))
                 .from(vacation)
                 .where(vacation.staff.department.eq(department)
                         .and(baseDateEq(baseDate))
@@ -83,9 +83,9 @@ public class VacationApproveRepository {
 
     private List<VacationApproveListForm> getApproveListByAdmin(String baseDate, String department, String keyword, Pageable pageable){
         return jpaQueryFactory
-                .select(new QVacationApproveListForm(vacation.vacationId, vacation.vacationType,
+                .select(new QVacationApproveListForm(vacation.vacationId, vacation.staff.name,
                         vacation.startDate, vacation.endDate, vacation.workAt, vacation.homeAt, vacation.reason,
-                        vacation.approvalStatus.stringValue(), vacation.staff.name))
+                        vacation.vacationType, vacation.approvalStatus.stringValue(), vacation.staff.employeeNumber))
                 .from(vacation)
                 .where(Expressions.asBoolean(true).isTrue()
                         .and(baseDateEq(baseDate))
@@ -100,9 +100,9 @@ public class VacationApproveRepository {
 
     private long countApproveListByAdmin(String baseDate, String department, String keyword){
         return jpaQueryFactory
-                .select(new QVacationApproveListForm(vacation.vacationId, vacation.vacationType,
+                .select(new QVacationApproveListForm(vacation.vacationId, vacation.staff.name,
                         vacation.startDate, vacation.endDate, vacation.workAt, vacation.homeAt, vacation.reason,
-                        vacation.approvalStatus.stringValue(), vacation.staff.name))
+                        vacation.vacationType, vacation.approvalStatus.stringValue(), vacation.staff.employeeNumber))
                 .from(vacation)
                 .where(Expressions.asBoolean(true).isTrue()
                         .and(baseDateEq(baseDate))

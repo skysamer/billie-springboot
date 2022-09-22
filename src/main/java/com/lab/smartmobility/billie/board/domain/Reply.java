@@ -27,11 +27,11 @@ public class Reply extends BaseTimeEntity {
     @Column(name = "is_anonymous")
     private int isAnonymous;
 
-    @ManyToOne
+    @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "staff_num")
     private Staff staff;
 
-    @ManyToOne
+    @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "board_id")
     private Board board;
 

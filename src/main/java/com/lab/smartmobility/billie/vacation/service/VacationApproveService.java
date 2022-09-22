@@ -13,20 +13,16 @@ import com.lab.smartmobility.billie.vacation.dto.VacationCompanionForm;
 import com.lab.smartmobility.billie.vacation.dto.VacationExcelForm;
 import com.lab.smartmobility.billie.vacation.repository.VacationApproveRepository;
 import com.lab.smartmobility.billie.vacation.repository.VacationRepository;
-import com.lab.smartmobility.billie.vehicle.domain.VehicleReservation;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.logging.Log;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
 import java.time.Period;
 import java.util.List;
 
@@ -39,6 +35,7 @@ public class VacationApproveService {
     private final StaffRepository staffRepository;
     private final AssigneeToApprover assigneeToApprover;
     private final NotificationSender notificationSender;
+    private final Workbook workbook;
     private final Log log;
 
     private static final String DOMAIN_TYPE = "vacation";
@@ -105,7 +102,6 @@ public class VacationApproveService {
     public Workbook downloadExcel(String baseDate, String department){
         List<VacationExcelForm> excelFormList = approveRepository.excelDownloadList(baseDate, department);
 
-        Workbook workbook = new XSSFWorkbook();
         Sheet sheet = workbook.createSheet(baseDate);
         Row row;
         Cell cell;
@@ -126,6 +122,7 @@ public class VacationApproveService {
         cell.setCellValue("상태");
 
         for (VacationExcelForm excelForm : excelFormList) {
+            String status = convertToKorean(excelForm.getApprovalStatus());
             row = sheet.createRow(rowNum++);
 
             cell = row.createCell(0);
@@ -139,9 +136,23 @@ public class VacationApproveService {
             cell = row.createCell(4);
             cell.setCellValue(excelForm.getVacationType());
             cell = row.createCell(5);
-            cell.setCellValue(excelForm.getApprovalStatus());
+            cell.setCellValue(status);
         }
         return workbook;
+    }
+
+    private String convertToKorean(String status){
+        switch (status){
+            case "CANCEL":
+                return "취소";
+            case "WAITING":
+                return "대기중";
+            case "TEAM":
+                return "부장승인";
+            case "FINAL":
+                return "최종승인";
+        }
+        return "반려";
     }
 
 }

@@ -39,8 +39,12 @@ public class VacationApproveListForm {
     @ApiModelProperty(value = "승인상태(WAITING, DEPARTMENT, FINAL, COMPANION, CANCEL)")
     private final String approvalStatus;
 
+    @ApiModelProperty(value = "사번")
+    private final String employeeNumber;
+
     @QueryProjection
-    public VacationApproveListForm(Long vacationId, String name, LocalDate startDate, LocalDate endDate, LocalTime workAt, LocalTime homeAt, String reason, String vacationType, String approvalStatus) {
+    public VacationApproveListForm(Long vacationId, String name, LocalDate startDate, LocalDate endDate,
+                                   LocalTime workAt, LocalTime homeAt, String reason, String vacationType, String approvalStatus, String employeeNumber) {
         this.vacationId = vacationId;
         this.name = name;
         this.startDate = startDate;
@@ -50,5 +54,6 @@ public class VacationApproveListForm {
         this.reason = reason;
         this.vacationType = vacationType;
         this.approvalStatus = approvalStatus;
+        this.employeeNumber = employeeNumber;
     }
 }

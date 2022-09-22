@@ -125,13 +125,21 @@ public class VacationApproveController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @GetMapping("/excel/{base-date}/{department}")
+    @ApiOperation(value = "휴가요청내역 엑셀 다운로드")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "base-date", value = "연월 (yyyy-MM, 전체는 all)"),
+            @ApiImplicitParam(name = "department", value = "부서명 (전체는 all)"),
+    })
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "다운로드 성공")
+    })
+    @GetMapping("approve/excel/{base-date}/{department}")
     public void downloadExcel(@PathVariable("base-date") String baseDate,
                               @PathVariable String department, HttpServletResponse response) throws IOException {
         Workbook wb = service.downloadExcel(baseDate, department);
 
         response.setContentType("ms-vnd/excel");
-        response.setHeader("Content-Disposition", "attachment;filename="+baseDate+"_vehicle_history.xlsx");
+        response.setHeader("Content-Disposition", "attachment;filename="+baseDate+"_휴가요청내역.xlsx");
 
         wb.write(response.getOutputStream());
         wb.close();

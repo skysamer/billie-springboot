@@ -6,6 +6,8 @@ import lombok.Getter;
 
 import javax.persistence.*;
 
+import static javax.persistence.FetchType.LAZY;
+
 @Getter
 @Entity @Table(name = "tbl_announcement_attachment")
 @ApiModel(value = "공지 및 내규 첨부파일 엔티티")
@@ -25,7 +27,7 @@ public class Attachment {
     @ApiModelProperty(value = "파일경로")
     private String filepath;
 
-    @ManyToOne
+    @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "announcement_id")
     private Announcement announcement;
 
