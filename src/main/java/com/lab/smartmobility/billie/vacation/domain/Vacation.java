@@ -8,6 +8,8 @@ import javax.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
+import static javax.persistence.FetchType.LAZY;
+
 @Getter @ToString
 @Entity @Table(name = "tbl_vacation")
 @ApiModel(value = "휴가 관리 엔티티")
@@ -52,7 +54,7 @@ public class Vacation {
     @Column(name = "companion_reason")
     private String companionReason;
 
-    @ManyToOne
+    @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "staff_num")
     private Staff staff;
 

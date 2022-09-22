@@ -6,4 +6,5 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Transactional(readOnly = true)
 public interface ReplyRepository extends JpaRepository<Reply, Long> {
+    long countByIdOrParent(Long id, Reply parent);
 }

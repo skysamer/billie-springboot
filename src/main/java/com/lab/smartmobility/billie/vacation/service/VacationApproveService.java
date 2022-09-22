@@ -10,15 +10,24 @@ import com.lab.smartmobility.billie.vacation.domain.ApprovalStatus;
 import com.lab.smartmobility.billie.vacation.domain.Vacation;
 import com.lab.smartmobility.billie.vacation.dto.VacationApproveListForm;
 import com.lab.smartmobility.billie.vacation.dto.VacationCompanionForm;
+import com.lab.smartmobility.billie.vacation.dto.VacationExcelForm;
 import com.lab.smartmobility.billie.vacation.repository.VacationApproveRepository;
 import com.lab.smartmobility.billie.vacation.repository.VacationRepository;
+import com.lab.smartmobility.billie.vehicle.domain.VehicleReservation;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.logging.Log;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.Period;
 import java.util.List;
 
 @Service
@@ -35,9 +44,9 @@ public class VacationApproveService {
     private static final String DOMAIN_TYPE = "vacation";
 
     /*부서장의 승인 요청 목록 조회*/
-    public PageResult<VacationApproveListForm> getApproveListByManager(String baseDate, String email, String keyword, int isToggleOn, Pageable pageable){
+    public PageResult<VacationApproveListForm> getApproveListByManager(String baseDate, String email, String keyword, Pageable pageable){
         Staff manager = staffRepository.findByEmail(email);
-        return approveRepository.getApproveListByManagerResult(baseDate, manager.getDepartment(), keyword, isToggleOn, pageable);
+        return approveRepository.getApproveListByManagerResult(baseDate, manager.getDepartment(), keyword, pageable);
     }
 
     /*부서장의 휴가 승인*/
@@ -64,8 +73,22 @@ public class VacationApproveService {
     }
 
     /*관리자 휴가 승인 요청 목록 조회*/
-    public void getApproveListByAdmin(String baseDate, String department, String keyword, Pageable pageable){
+    public PageResult<VacationApproveListForm> getApproveListByAdmin(String baseDate, String department, String keyword, Pageable pageable){
+        return approveRepository.getApproveListByAdminResult(baseDate, department, keyword, pageable);
+    }
 
+    /*관리자 휴가 최종 승인*/
+    public HttpBodyMessage approveByAdmin(List<Long> vacationIdList){
+        for(Long id : vacationIdList){
+            Vacation vacation = vacationRepository.findByVacationId(id);
+            vacation.approve(ApprovalStatus.FINAL);
+            Staff applicant = vacation.getStaff();
+
+            Period period = Period.between(vacation.getStartDate(), vacation.getEndDate());
+            calculateVacationCount(applicant, vacation.getVacationType(), period.getDays());
+            notificationSender.sendNotification(DOMAIN_TYPE, vacation.getStaff(), 0);
+        }
+        return new HttpBodyMessage("success", "휴가승인성공");
     }
 
     private void calculateVacationCount(Staff applicant, String vacationType, int period){
@@ -77,4 +100,48 @@ public class VacationApproveService {
             applicant.calculateVacation(period + 1);
         }
     }
+
+    /*요청 관리내역 엑셀 다운로드*/
+    public Workbook downloadExcel(String baseDate, String department){
+        List<VacationExcelForm> excelFormList = approveRepository.excelDownloadList(baseDate, department);
+
+        Workbook workbook = new XSSFWorkbook();
+        Sheet sheet = workbook.createSheet(baseDate);
+        Row row;
+        Cell cell;
+        int rowNum = 0;
+
+        row = sheet.createRow(rowNum++);
+        cell = row.createCell(0);
+        cell.setCellValue("이름");
+        cell = row.createCell(1);
+        cell.setCellValue("사번");
+        cell = row.createCell(2);
+        cell.setCellValue("날짜");
+        cell = row.createCell(3);
+        cell.setCellValue("내용");
+        cell = row.createCell(4);
+        cell.setCellValue("종류");
+        cell = row.createCell(5);
+        cell.setCellValue("상태");
+
+        for (VacationExcelForm excelForm : excelFormList) {
+            row = sheet.createRow(rowNum++);
+
+            cell = row.createCell(0);
+            cell.setCellValue(excelForm.getName());
+            cell = row.createCell(1);
+            cell.setCellValue(excelForm.getEmployeeNumber());
+            cell = row.createCell(2);
+            cell.setCellValue(excelForm.getStartDate() + " - " + excelForm.getEndDate());
+            cell = row.createCell(3);
+            cell.setCellValue(excelForm.getReason());
+            cell = row.createCell(4);
+            cell.setCellValue(excelForm.getVacationType());
+            cell = row.createCell(5);
+            cell.setCellValue(excelForm.getApprovalStatus());
+        }
+        return workbook;
+    }
+
 }

@@ -48,9 +48,6 @@ public class VacationApplicationService {
             return new HttpBodyMessage("fail", "휴가 개수를 모두 소진했습니다");
         }
 
-//        Period period = Period.between(vacationApplicationForm.getStartDate(), vacationApplicationForm.getEndDate());
-//        calculateVacationCount(applicant, vacationApplicationForm.getVacationType(), period.getDays());
-
         Staff approval = assigneeToApprover.assignApproval(applicant);
         Vacation vacation = modelMapper.map(vacationApplicationForm, Vacation.class);
 

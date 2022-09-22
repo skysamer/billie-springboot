@@ -96,6 +96,10 @@ public class Staff implements UserDetails {
     @Column(name = "english_name")
     private String englishName;
 
+    @ApiModelProperty(value = "사번")
+    @Column(name = "employee_number")
+    private String employeeNumber;
+
     @JsonIgnore
     public String getPasswordToCheckMatch(){
         return password;

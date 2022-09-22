@@ -4,8 +4,11 @@ import com.lab.smartmobility.billie.global.dto.PageResult;
 import com.lab.smartmobility.billie.global.util.DateTimeUtil;
 import com.lab.smartmobility.billie.vacation.domain.ApprovalStatus;
 import com.lab.smartmobility.billie.vacation.dto.QVacationApproveListForm;
+import com.lab.smartmobility.billie.vacation.dto.QVacationExcelForm;
 import com.lab.smartmobility.billie.vacation.dto.VacationApproveListForm;
+import com.lab.smartmobility.billie.vacation.dto.VacationExcelForm;
 import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.logging.Log;
@@ -27,13 +30,13 @@ public class VacationApproveRepository {
     private final Log log;
 
     /*부서장의 휴가승인 요청 목록 조회*/
-    public PageResult<VacationApproveListForm> getApproveListByManagerResult(String baseDate, String department, String keyword, int isToggleOn, Pageable pageable){
-        List<VacationApproveListForm> content = getApproveListByManager(baseDate, department, keyword, isToggleOn, pageable);
-        long count = countApproveListByManager(baseDate, department, keyword, isToggleOn);
+    public PageResult<VacationApproveListForm> getApproveListByManagerResult(String baseDate, String department, String keyword, Pageable pageable){
+        List<VacationApproveListForm> content = getApproveListByManager(baseDate, department, keyword, pageable);
+        long count = countApproveListByManager(baseDate, department, keyword);
         return new PageResult<>(content, count);
     }
 
-    private List<VacationApproveListForm> getApproveListByManager(String baseDate, String department, String keyword, int isToggleOn, Pageable pageable){
+    private List<VacationApproveListForm> getApproveListByManager(String baseDate, String department, String keyword, Pageable pageable){
         return jpaQueryFactory
                 .select(new QVacationApproveListForm(vacation.vacationId, vacation.vacationType,
                         vacation.startDate, vacation.endDate, vacation.workAt, vacation.homeAt, vacation.reason,
@@ -42,7 +45,6 @@ public class VacationApproveRepository {
                 .where(vacation.staff.department.eq(department)
                         .and(baseDateEq(baseDate))
                         .and(keywordLike(keyword))
-                        .and(isToggleOnNe(isToggleOn))
                 )
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
@@ -50,7 +52,7 @@ public class VacationApproveRepository {
                 .fetch();
     }
 
-    private long countApproveListByManager(String baseDate, String department, String keyword, int isToggleOn){
+    private long countApproveListByManager(String baseDate, String department, String keyword){
         return jpaQueryFactory
                 .select(new QVacationApproveListForm(vacation.vacationId, vacation.vacationType,
                         vacation.startDate, vacation.endDate, vacation.workAt, vacation.homeAt, vacation.reason,
@@ -59,7 +61,6 @@ public class VacationApproveRepository {
                 .where(vacation.staff.department.eq(department)
                         .and(baseDateEq(baseDate))
                         .and(keywordLike(keyword))
-                        .and(isToggleOnNe(isToggleOn))
                 )
                 .stream().count();
     }
@@ -74,20 +75,53 @@ public class VacationApproveRepository {
     }
 
     /*관리자 휴가승인 요청관리 내역 조회*/
-    private List<VacationApproveListForm> getApproveListByAdmin(String baseDate, String department, String keyword, int isToggleOn, Pageable pageable){
+    public PageResult<VacationApproveListForm> getApproveListByAdminResult(String baseDate, String department, String keyword, Pageable pageable){
+        List<VacationApproveListForm> content = getApproveListByAdmin(baseDate, department, keyword, pageable);
+        long count = countApproveListByAdmin(baseDate, department, keyword);
+        return new PageResult<>(content, count);
+    }
+
+    private List<VacationApproveListForm> getApproveListByAdmin(String baseDate, String department, String keyword, Pageable pageable){
         return jpaQueryFactory
                 .select(new QVacationApproveListForm(vacation.vacationId, vacation.vacationType,
                         vacation.startDate, vacation.endDate, vacation.workAt, vacation.homeAt, vacation.reason,
                         vacation.approvalStatus.stringValue(), vacation.staff.name))
                 .from(vacation)
-                .where(vacation.staff.department.eq(department)
+                .where(Expressions.asBoolean(true).isTrue()
                         .and(baseDateEq(baseDate))
                         .and(keywordLike(keyword))
-                        .and(isToggleOnNe(isToggleOn))
+                        .and(departmentEq(department))
                 )
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .orderBy(vacation.approvalStatus.desc(), vacation.vacationId.desc())
+                .fetch();
+    }
+
+    private long countApproveListByAdmin(String baseDate, String department, String keyword){
+        return jpaQueryFactory
+                .select(new QVacationApproveListForm(vacation.vacationId, vacation.vacationType,
+                        vacation.startDate, vacation.endDate, vacation.workAt, vacation.homeAt, vacation.reason,
+                        vacation.approvalStatus.stringValue(), vacation.staff.name))
+                .from(vacation)
+                .where(Expressions.asBoolean(true).isTrue()
+                        .and(baseDateEq(baseDate))
+                        .and(keywordLike(keyword))
+                        .and(departmentEq(department))
+                )
+                .stream().count();
+    }
+
+    public List<VacationExcelForm> excelDownloadList(String baseDate, String department){
+        return jpaQueryFactory
+                .select(new QVacationExcelForm(vacation.vacationId, vacation.staff.name,
+                        vacation.startDate, vacation.endDate, vacation.reason,
+                        vacation.vacationType, vacation.approvalStatus.stringValue(), vacation.staff.employeeNumber))
+                .from(vacation)
+                .where(Expressions.asBoolean(true).isTrue()
+                        .and(baseDateEq(baseDate))
+                        .and(departmentEq(department))
+                )
                 .fetch();
     }
 
@@ -107,10 +141,5 @@ public class VacationApproveRepository {
 
     private BooleanExpression keywordLike(String keyword) {
         return keyword.equals("all") ? null : vacation.staff.name.eq(keyword);
-    }
-
-    private BooleanExpression isToggleOnNe(int isToggleOn){
-        return isToggleOn == 0 ?
-                vacation.approvalStatus.ne(ApprovalStatus.CANCEL).and(vacation.approvalStatus.ne(ApprovalStatus.CANCEL)) : null;
     }
 }

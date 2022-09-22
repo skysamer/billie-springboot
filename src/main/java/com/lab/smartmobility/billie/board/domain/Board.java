@@ -10,6 +10,8 @@ import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
+import static javax.persistence.FetchType.LAZY;
+
 @Getter
 @ApiModel(value = "자유게시판 엔티티")
 @Entity @Table(name = "tbl_board")
@@ -39,7 +41,7 @@ public class Board extends BaseTimeEntity {
     @ApiModelProperty(value = "좋아요 수")
     private long likes;
 
-    @ManyToOne
+    @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "staff_num")
     private Staff staff;
 
@@ -54,8 +56,8 @@ public class Board extends BaseTimeEntity {
         this.replyCnt++;
     }
 
-    public void minusReplyCnt(){
-        this.replyCnt--;
+    public void minusReplyCnt(long count){
+        this.replyCnt -= count;
     }
 
     public void plusLikes(){

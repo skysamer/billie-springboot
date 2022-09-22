@@ -65,7 +65,6 @@ public class BoardService {
     /*게시글 수정*/
     public HttpBodyMessage modify(Long id, String email, BoardRegisterForm registerForm){
         Board board = boardRepository.findById(id).orElse(null);
-        log.info(board.getId());
         if(board == null){
             return new HttpBodyMessage("fail", "게시글이 존재하지 않습니다");
         }

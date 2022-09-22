@@ -74,9 +74,10 @@ public class ReplyService {
             return new HttpBodyMessage("fail", "댓글이 존재하지 않습니다");
         }
 
+        long deletedCount = replyRepository.countByIdOrParent(reply.getId(), reply);
         replyRepository.delete(reply);
         Board board = boardRepository.findById(boardId).orElse(new Board());
-        board.minusReplyCnt();
+        board.minusReplyCnt(deletedCount);
         return new HttpBodyMessage("success", "댓글 삭제 성공");
     }
 }

@@ -10,6 +10,8 @@ import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
+import static javax.persistence.FetchType.LAZY;
+
 @Getter @ApiModel(value = "댓글 엔티티")
 @Entity @Table(name = "tbl_reply")
 public class Reply extends BaseTimeEntity {
@@ -33,7 +35,7 @@ public class Reply extends BaseTimeEntity {
     @JoinColumn(name = "board_id")
     private Board board;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "parent_id")
     private Reply parent;
 
