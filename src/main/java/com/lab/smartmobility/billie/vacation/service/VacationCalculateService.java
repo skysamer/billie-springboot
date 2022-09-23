@@ -42,7 +42,7 @@ public class VacationCalculateService {
                 .build();
     }
 
-    public double calculateTotalVacationCount(Staff staff){
+    private double calculateTotalVacationCount(Staff staff){
         long yearsOfService = ChronoUnit.YEARS.between(staff.getHireDate(), LocalDate.now());
         long period = ChronoUnit.MONTHS.between(staff.getHireDate(), LocalDate.now());
 
@@ -62,5 +62,21 @@ public class VacationCalculateService {
                 staff.getHireDate().get(ChronoField.MONTH_OF_YEAR),
                 staff.getHireDate().get(ChronoField.DAY_OF_MONTH))).isAfter(LocalDate.now()))
                 ? LocalDate.now().minusYears(1).getYear() : LocalDate.now().getYear();
+    }
+
+    /*소진된 휴가계산 (건별)*/
+    public double calculateVacationCount(Staff applicant, String vacationType, int period){
+        double count;
+        if(vacationType.equals("반차")){
+            count = 0.5;
+            applicant.calculateVacation(0.5);
+        }else if(vacationType.equals("경조") || vacationType.equals("공가")){
+            count = 0;
+            applicant.calculateVacation(0);
+        }else{
+            count = period + 1;
+            applicant.calculateVacation(period + 1);
+        }
+        return count;
     }
 }

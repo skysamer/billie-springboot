@@ -25,12 +25,12 @@ public class NotificationController {
     })
     @ApiResponses({
             @ApiResponse(code = 200, message = "조회 성공"),
-            @ApiResponse(code = 404, message = "조건에 맞는 데이터 없음")
+            @ApiResponse(code = 204, message = "데이터 없음")
     })
     public ResponseEntity<List<Notification>> getMyNotificationList(@PathVariable(value = "staff-num") Long staffNum){
         List<Notification> notificationList = notificationService.getMyNotificationList(staffNum);
         if(notificationList.size() == 0){
-            return new ResponseEntity<>(notificationList, HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(notificationList, HttpStatus.NO_CONTENT);
         }
         return new ResponseEntity<>(notificationList, HttpStatus.OK);
     }

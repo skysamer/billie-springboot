@@ -12,6 +12,7 @@ import com.lab.smartmobility.billie.vacation.dto.VacationApproveListForm;
 import com.lab.smartmobility.billie.vacation.dto.VacationCompanionForm;
 import com.lab.smartmobility.billie.vacation.dto.VacationExcelForm;
 import com.lab.smartmobility.billie.vacation.repository.VacationApproveRepository;
+import com.lab.smartmobility.billie.vacation.repository.VacationReportRepository;
 import com.lab.smartmobility.billie.vacation.repository.VacationRepository;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.logging.Log;
@@ -33,8 +34,11 @@ public class VacationApproveService {
     private final VacationRepository vacationRepository;
     private final VacationApproveRepository approveRepository;
     private final StaffRepository staffRepository;
+    private final VacationReportRepository reportRepository;
     private final AssigneeToApprover assigneeToApprover;
+    private final VacationCalculateService calculateService;
     private final NotificationSender notificationSender;
+    private final VacationReportService reportService;
     private final Workbook workbook;
     private final Log log;
 
@@ -82,20 +86,11 @@ public class VacationApproveService {
             Staff applicant = vacation.getStaff();
 
             Period period = Period.between(vacation.getStartDate(), vacation.getEndDate());
-            calculateVacationCount(applicant, vacation.getVacationType(), period.getDays());
+            double count = calculateService.calculateVacationCount(applicant, vacation.getVacationType(), period.getDays());
+            reportService.record(count, applicant, vacation);
             notificationSender.sendNotification(DOMAIN_TYPE, vacation.getStaff(), 0);
         }
         return new HttpBodyMessage("success", "휴가승인성공");
-    }
-
-    private void calculateVacationCount(Staff applicant, String vacationType, int period){
-        if(vacationType.equals("반차")){
-            applicant.calculateVacation(0.5);
-        }else if(vacationType.equals("경조") || vacationType.equals("공가")){
-            applicant.calculateVacation(0);
-        }else{
-            applicant.calculateVacation(period + 1);
-        }
     }
 
     /*요청 관리내역 엑셀 다운로드*/
