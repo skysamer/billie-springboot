@@ -46,7 +46,7 @@ public class AttachmentService {
 
         List<byte[]> fileList = new ArrayList<>();
         for(Attachment attachment : attachments){
-            File file = new File(LOCAL_UPLOAD_PATH + WINDOW_PATH + attachment.getFilename());
+            File file = new File(SERVER_UPLOAD_PATH + LINUX_PATH + attachment.getFilename());
 
             byte[] fileContent = FileUtils.readFileToByteArray(file);
             fileList.add(fileContent);
