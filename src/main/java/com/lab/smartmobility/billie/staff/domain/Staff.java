@@ -54,9 +54,9 @@ public class Staff implements UserDetails {
     @Column(name = "vacation_count")
     private double vacationCount;
 
-    @ApiModelProperty(value = "추가근무개수")
+    @ApiModelProperty(value = "추가근무시간 (단위 : 시간)")
     @Column(name = "overtime_count")
-    private double overtimeCount;
+    private double overtimeHour;
 
     @ApiModelProperty(value = "이메일인증토큰")
     @Column(name = "email_token")
@@ -120,6 +120,10 @@ public class Staff implements UserDetails {
 
     public void calculateVacation(double deductionCount){
         this.vacationCount -= deductionCount;
+    }
+
+    public void plusVacationCount(){
+        this.vacationCount++;
     }
 
     @Override

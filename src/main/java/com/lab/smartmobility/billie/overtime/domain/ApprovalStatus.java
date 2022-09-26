@@ -1,11 +1,11 @@
-package com.lab.smartmobility.billie.vacation.domain;
+package com.lab.smartmobility.billie.overtime.domain;
 
 public enum ApprovalStatus {
     WAITING("대기중"),
-    TEAM("부장승인"),
+    PRE("사전승인"),
+    CONFIRMATION("근무확정"),
     FINAL("최종승인"),
-    COMPANION("반려"),
-    CANCEL("취소");
+    COMPANION("반려");
 
     private final String value;
 

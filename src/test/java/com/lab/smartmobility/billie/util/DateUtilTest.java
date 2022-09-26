@@ -4,7 +4,10 @@ import com.lab.smartmobility.billie.vacation.domain.Vacation;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.time.Duration;
 import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.Period;
 import java.time.temporal.ChronoUnit;
 
 public class DateUtilTest {
@@ -31,5 +34,26 @@ public class DateUtilTest {
         System.out.println("hello");
         System.out.println(Thread.activeCount());
         System.out.println("bye");
+    }
+
+    @Test
+    @DisplayName("휴가계산 테스트")
+    void vacationCount() {
+        LocalDate start = LocalDate.of(2022,8,1);
+        LocalDate end = LocalDate.of(2022,10, 30);
+
+        Period period = Period.between(start, end);
+//        System.out.println("period = " + period.getMonths());
+        System.out.println("period = " + (double) ChronoUnit.MONTHS.between(start, end));
+    }
+
+    @Test
+    @DisplayName("추가근무 계산 테스트")
+    void overtimeCount() {
+        LocalTime start = LocalTime.of(18, 0);
+        LocalTime end = LocalTime.of(20, 30);
+
+        Duration duration = Duration.between(start, end);
+        System.out.println("duration = " + (double) duration.getSeconds() / (60 * 60));
     }
 }

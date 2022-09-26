@@ -50,7 +50,6 @@ public class VacationApplicationService {
 
         Staff approval = assigneeToApprover.assignApproval(applicant);
         Vacation vacation = modelMapper.map(vacationApplicationForm, Vacation.class);
-
         insertVacationEntity(applicant, vacation);
         notificationSender.sendNotification(DOMAIN_TYPE, approval, 1);
         return new HttpBodyMessage("success", "휴가 신청 성공");

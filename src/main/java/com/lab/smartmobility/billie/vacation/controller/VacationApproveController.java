@@ -139,7 +139,7 @@ public class VacationApproveController {
         Workbook wb = service.downloadExcel(baseDate, department);
 
         response.setContentType("ms-vnd/excel");
-        response.setHeader("Content-Disposition", "attachment;filename="+baseDate+"_휴가요청내역.xlsx");
+        response.setHeader("Content-Disposition", "attachment;filename="+baseDate+"_vacation.xlsx");
 
         wb.write(response.getOutputStream());
         wb.close();

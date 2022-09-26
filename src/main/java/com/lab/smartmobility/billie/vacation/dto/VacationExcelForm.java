@@ -1,5 +1,6 @@
 package com.lab.smartmobility.billie.vacation.dto;
 
+import com.lab.smartmobility.billie.vacation.domain.ApprovalStatus;
 import com.querydsl.core.annotations.QueryProjection;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
@@ -30,13 +31,13 @@ public class VacationExcelForm {
     private final String vacationType;
 
     @ApiModelProperty(value = "승인상태(WAITING, DEPARTMENT, FINAL, COMPANION, CANCEL)")
-    private final String approvalStatus;
+    private final ApprovalStatus approvalStatus;
 
     @ApiModelProperty(value = "사번")
     private final String employeeNumber;
 
     @QueryProjection
-    public VacationExcelForm(Long vacationId, String name, LocalDate startDate, LocalDate endDate, String reason, String vacationType, String approvalStatus, String employeeNumber) {
+    public VacationExcelForm(Long vacationId, String name, LocalDate startDate, LocalDate endDate, String reason, String vacationType, ApprovalStatus approvalStatus, String employeeNumber) {
         this.vacationId = vacationId;
         this.name = name;
         this.startDate = startDate;

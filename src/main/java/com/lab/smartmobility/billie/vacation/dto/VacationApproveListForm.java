@@ -1,6 +1,7 @@
 package com.lab.smartmobility.billie.vacation.dto;
 
 import com.querydsl.core.annotations.QueryProjection;
+import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 
@@ -9,6 +10,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 
 @Getter
+@ApiModel(value = "휴가 요청 관리 내역 목록 폼")
 public class VacationApproveListForm {
     @ApiModelProperty(value = "휴가 데이터 시퀀스")
     private final Long vacationId;

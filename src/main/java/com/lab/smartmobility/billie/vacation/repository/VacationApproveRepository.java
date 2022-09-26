@@ -116,7 +116,7 @@ public class VacationApproveRepository {
         return jpaQueryFactory
                 .select(new QVacationExcelForm(vacation.vacationId, vacation.staff.name,
                         vacation.startDate, vacation.endDate, vacation.reason,
-                        vacation.vacationType, vacation.approvalStatus.stringValue(), vacation.staff.employeeNumber))
+                        vacation.vacationType, vacation.approvalStatus, vacation.staff.employeeNumber))
                 .from(vacation)
                 .where(Expressions.asBoolean(true).isTrue()
                         .and(baseDateEq(baseDate))

@@ -42,18 +42,19 @@ public class VacationCalculateService {
                 .build();
     }
 
-    private double calculateTotalVacationCount(Staff staff){
+    /*직원 별 총 휴가개수 계산*/
+    public double calculateTotalVacationCount(Staff staff){
         long yearsOfService = ChronoUnit.YEARS.between(staff.getHireDate(), LocalDate.now());
         long period = ChronoUnit.MONTHS.between(staff.getHireDate(), LocalDate.now());
 
         if(period < 1){
             return 0;
         }else if(yearsOfService < 1){
-            return 11;
+            return staff.getVacationCount();
         }else if(yearsOfService < 3){
             return 15;
         }else{
-            return 15 + (int)((yearsOfService-3) / 2) + 1;
+            return 15 + (int)((yearsOfService - 3) / 2) + 1;
         }
     }
 

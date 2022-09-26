@@ -1,8 +1,8 @@
-package com.lab.smartmobility.billie.mypage.controller;
+package com.lab.smartmobility.billie.staff.controller;
 
 import com.lab.smartmobility.billie.staff.dto.StaffInfoForm;
 import com.lab.smartmobility.billie.global.dto.HttpBodyMessage;
-import com.lab.smartmobility.billie.mypage.service.MyPageService;
+import com.lab.smartmobility.billie.staff.service.MyPageService;
 import io.swagger.annotations.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;

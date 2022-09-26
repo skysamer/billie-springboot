@@ -1,4 +1,4 @@
-package com.lab.smartmobility.billie.mypage.service;
+package com.lab.smartmobility.billie.staff.service;
 
 import com.lab.smartmobility.billie.staff.dto.StaffInfoForm;
 import com.lab.smartmobility.billie.global.dto.HttpBodyMessage;

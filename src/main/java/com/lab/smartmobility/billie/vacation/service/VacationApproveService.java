@@ -117,7 +117,6 @@ public class VacationApproveService {
         cell.setCellValue("상태");
 
         for (VacationExcelForm excelForm : excelFormList) {
-            String status = convertToKorean(excelForm.getApprovalStatus());
             row = sheet.createRow(rowNum++);
 
             cell = row.createCell(0);
@@ -131,23 +130,23 @@ public class VacationApproveService {
             cell = row.createCell(4);
             cell.setCellValue(excelForm.getVacationType());
             cell = row.createCell(5);
-            cell.setCellValue(status);
+            cell.setCellValue(excelForm.getApprovalStatus().getValue());
         }
         return workbook;
     }
 
-    private String convertToKorean(String status){
-        switch (status){
-            case "CANCEL":
-                return "취소";
-            case "WAITING":
-                return "대기중";
-            case "TEAM":
-                return "부장승인";
-            case "FINAL":
-                return "최종승인";
-        }
-        return "반려";
-    }
+//    private String convertToKorean(String status){
+//        switch (status){
+//            case "CANCEL":
+//                return "취소";
+//            case "WAITING":
+//                return "대기중";
+//            case "TEAM":
+//                return "부장승인";
+//            case "FINAL":
+//                return "최종승인";
+//        }
+//        return "반려";
+//    }
 
 }

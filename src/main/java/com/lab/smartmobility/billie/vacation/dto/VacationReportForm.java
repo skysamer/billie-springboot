@@ -1,12 +1,14 @@
 package com.lab.smartmobility.billie.vacation.dto;
 
 import com.querydsl.core.annotations.QueryProjection;
+import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 
 import java.time.LocalDate;
 
 @Getter
+@ApiModel(value = "휴가 요청 내역 리포트 폼")
 public class VacationReportForm {
     @ApiModelProperty(value = "사용개수")
     private final double count;
