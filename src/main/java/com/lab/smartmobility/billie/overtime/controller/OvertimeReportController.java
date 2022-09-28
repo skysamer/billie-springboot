@@ -29,7 +29,7 @@ public class OvertimeReportController {
             @ApiResponse(code = 200, message = "조회성공"),
             @ApiResponse(code = 204, message = "조건에 맞는 데이터 없음"),
     })
-    @GetMapping("/approve/manager/{base-date}/{name}/{page}/{size}")
+    @GetMapping("/report/admin/{base-date}/{department}/{name}")
     public ResponseEntity<List<OvertimeReportForm>> getApproveListByManager(@PathVariable("base-date") String baseDate,
                                                                             @PathVariable String department,
                                                                             @PathVariable String name){
