@@ -3,16 +3,14 @@ package com.lab.smartmobility.billie.staff.service;
 import com.lab.smartmobility.billie.global.config.CommonEncoder;
 import com.lab.smartmobility.billie.global.dto.HttpBodyMessage;
 import com.lab.smartmobility.billie.staff.domain.Staff;
-import com.lab.smartmobility.billie.staff.dto.DepartmentDTO;
-import com.lab.smartmobility.billie.staff.dto.EmailTokenForm;
-import com.lab.smartmobility.billie.staff.dto.RankDTO;
-import com.lab.smartmobility.billie.staff.dto.SignUpForm;
+import com.lab.smartmobility.billie.staff.dto.*;
 import com.lab.smartmobility.billie.staff.repository.StaffRepository;
 import com.lab.smartmobility.billie.staff.repository.StaffRepositoryImpl;
 import com.lab.smartmobility.billie.global.util.CustomSimpleMailMessage;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -34,6 +32,7 @@ public class StaffService implements UserDetailsService {
     private final StaffRepositoryImpl staffRepositoryImpl;
     private final CommonEncoder passwordEncoder;
     private final JavaMailSender javaMailSender;
+    private final ModelMapper modelMapper;
 
     @Value("${spring.mail.username}")
     private String managerEmail;
@@ -144,23 +143,9 @@ public class StaffService implements UserDetailsService {
     }
 
     /*로그인 여부 체크*/
-    public HashMap<String, Object> checkLogin(String email) {
-        try {
-            Staff staff = staffRepository.findByEmail(email);
-
-            HashMap<String, Object> staffInfo = new HashMap<>();
-            staffInfo.put("name", staff.getName());
-            staffInfo.put("department", staff.getDepartment());
-            staffInfo.put("role", staff.getRole());
-            staffInfo.put("staffNum", staff.getStaffNum());
-            staffInfo.put("isAuth", true);
-            return staffInfo;
-        } catch (Exception e) {
-            e.printStackTrace();
-            HashMap<String, Object> staffInfo = new HashMap<>();
-            staffInfo.put("isAuth", false);
-            return staffInfo;
-        }
+    public UserInfoForm checkLogin(String email) {
+        Staff staff = staffRepository.findByEmail(email);
+        return modelMapper.map(staff, UserInfoForm.class);
     }
 
     /*부서 목록 조회*/

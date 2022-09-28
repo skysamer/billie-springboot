@@ -111,17 +111,17 @@ public class StaffController {
 
     @GetMapping("/check-login")
     @ApiOperation(value = "로그인 여부 체크", notes = "헤더에 사용중인 토큰 추가하여 전송")
-    public HashMap<String, Object> checkLogin(ServletRequest request){
-        String token = jwtTokenProvider.resolveToken((HttpServletRequest) request);
-        if (token == null || !jwtTokenProvider.validateToken(token)) {
-            log.info("error");
-
-            HashMap<String, Object> staffInfo=new HashMap<>();
-            staffInfo.put("isAuth", false);
-            return staffInfo;
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "조회성공"),
+            @ApiResponse(code = 400, message = "토큰이 유효하지 않은 경우"),
+    })
+    public ResponseEntity<UserInfoForm> checkLogin(@RequestHeader("X-AUTH-TOKEN") String token){
+        if(!jwtTokenProvider.validateToken(token)){
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
         String email = jwtTokenProvider.getUserPk(token);
-        return staffService.checkLogin(email);
+        UserInfoForm userInfo = staffService.checkLogin(email);
+        return new ResponseEntity<>(userInfo, HttpStatus.OK);
     }
 
     @GetMapping("/department")
