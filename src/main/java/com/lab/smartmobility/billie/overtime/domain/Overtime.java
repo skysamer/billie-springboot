@@ -10,7 +10,7 @@ import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
-import static com.lab.smartmobility.billie.overtime.domain.ApprovalStatus.WAITING;
+import static com.lab.smartmobility.billie.overtime.domain.ApprovalStatus.*;
 import static javax.persistence.FetchType.LAZY;
 
 @Getter
@@ -46,6 +46,10 @@ public class Overtime {
     @Column(name = "approval_status")
     private ApprovalStatus approvalStatus;
 
+    @ApiModelProperty(value = "반려사유")
+    @Column(name = "companion_reason")
+    private String companionReason;
+
     @ApiModelProperty(value = "제출시간")
     @Column(name = "sub_time")
     private double subTime;
@@ -71,5 +75,23 @@ public class Overtime {
             return;
         }
         this.subTime = subTime;
+    }
+
+    public void setApplicant(Staff applicant){
+        this.staff = applicant;
+    }
+
+    public void reject(String reason){
+        this.approvalStatus = COMPANION;
+        this.companionReason = reason;
+    }
+
+    public void confirm(){
+        this.approvalStatus = CONFIRMATION;
+    }
+
+    public void finalApprove(double admitTime){
+        this.admitTime = admitTime;
+        this.approvalStatus = FINAL;
     }
 }

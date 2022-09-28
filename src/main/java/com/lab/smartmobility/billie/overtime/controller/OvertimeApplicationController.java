@@ -5,7 +5,6 @@ import com.lab.smartmobility.billie.global.dto.HttpBodyMessage;
 import com.lab.smartmobility.billie.global.dto.PageResult;
 import com.lab.smartmobility.billie.overtime.dto.OvertimeApplicationListForm;
 import com.lab.smartmobility.billie.overtime.dto.OvertimeApplyForm;
-import com.lab.smartmobility.billie.overtime.dto.OvertimeHourDTO;
 import com.lab.smartmobility.billie.overtime.service.OvertimeApplicationService;
 import io.swagger.annotations.*;
 import lombok.RequiredArgsConstructor;
@@ -43,7 +42,7 @@ public class OvertimeApplicationController {
 
     @ApiOperation(value = "나의 추가근무 신청 목록 조회")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "base-date", value = "기준연월 (yyyy-MM)"),
+            @ApiImplicitParam(name = "base-date", value = "기준연월 (yyyy-MM, 전체는 all)"),
             @ApiImplicitParam(name = "page", value = "페이지 번호"),
             @ApiImplicitParam(name = "size", value = "페이지 당 데이터 수")
     })
@@ -52,8 +51,8 @@ public class OvertimeApplicationController {
             @ApiResponse(code = 400, message = "토큰이 유효하지 않는 경우"),
             @ApiResponse(code = 204, message = "조건에 맞는 데이터 없음"),
     })
-    @PostMapping("/application/user/{}/{}/{}")
-    public ResponseEntity<HttpBodyMessage> getApplicationList(@RequestHeader("X-AUTH-TOKEN") String token,
+    @GetMapping("/application/user/{base-date}/{page}/{size}")
+    public ResponseEntity<PageResult<OvertimeApplicationListForm>> getApplicationList(@RequestHeader("X-AUTH-TOKEN") String token,
                                                               @PathVariable("base-date") String baseDate,
                                                               @PathVariable Integer page,
                                                               @PathVariable Integer size){
@@ -61,8 +60,41 @@ public class OvertimeApplicationController {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
         String email = jwtTokenProvider.getUserPk(token);
-        PageResult<OvertimeApplicationListForm> result = service.getApplicationList(email, baseDate, PageRequest.of(page, size));
 
-        return new ResponseEntity<>(HttpStatus.OK);
+        PageResult<OvertimeApplicationListForm> result = service.getApplicationList(email, baseDate, PageRequest.of(page, size));
+        if(result.getCount() == 0){
+            return new ResponseEntity<>(result, HttpStatus.NO_CONTENT);
+        }
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
+    @ApiOperation(value = "추가근무 신청 내역 삭제")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "id", value = "추가근무 고유 번호"),
+    })
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "삭제성공")
+    })
+    @DeleteMapping("/application/user/{id}")
+    public ResponseEntity<HttpBodyMessage> remove(@PathVariable Long id){
+        HttpBodyMessage result = service.remove(id);
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
+    @ApiOperation(value = "근무확정")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "id", value = "추가근무 고유 번호"),
+    })
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "삭제성공")
+    })
+    @PutMapping("/application/user/{id}")
+    public ResponseEntity<HttpBodyMessage> confirm(@PathVariable Long id,
+                                                   @RequestBody OvertimeApplyForm applyForm){
+        HttpBodyMessage result = service.confirm(id, applyForm);
+        if(result.getCode().equals("fail")){
+            return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
+        }
+        return new ResponseEntity<>(result, HttpStatus.OK);
     }
 }

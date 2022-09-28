@@ -12,7 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.util.List;
 
-import static com.lab.smartmobility.billie.vacation.domain.ApprovalStatus.FINAL;
+import static com.lab.smartmobility.billie.vacation.domain.ApprovalStatus.*;
 import static com.lab.smartmobility.billie.vacation.domain.QVacation.vacation;
 
 @Repository
@@ -25,12 +25,14 @@ public class VacationCalendarRepository {
 
     public List<VacationCalendarForm> getCalendarList(LocalDate startDate, LocalDate endDate){
         return jpaQueryFactory
-                .select(new QVacationCalendarForm(vacation.vacationId, vacation.startDate, vacation.endDate,
-                        vacation.staff.name, vacation.staff.department))
+                .select(new QVacationCalendarForm(vacation.vacationId, vacation.vacationType,
+                        vacation.startDate, vacation.endDate, vacation.staff.name, vacation.staff.department))
                 .from(vacation)
-                .where(vacation.startDate.between(startDate, endDate)
-                        .or(vacation.endDate.between(startDate, endDate))
-                        .and(vacation.approvalStatus.eq(FINAL))
+                .where((vacation.startDate.between(startDate, endDate)
+                        .or(vacation.endDate.between(startDate, endDate)))
+                        .and(vacation.approvalStatus.ne(WAITING))
+                        .and(vacation.approvalStatus.ne(CANCEL))
+                        .and(vacation.approvalStatus.ne(COMPANION))
                 )
                 .fetch();
     }

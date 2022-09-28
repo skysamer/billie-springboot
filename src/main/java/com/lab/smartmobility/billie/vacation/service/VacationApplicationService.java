@@ -40,23 +40,16 @@ public class VacationApplicationService {
 
     /*휴가 신청*/
     public HttpBodyMessage apply(VacationApplicationForm vacationApplicationForm){
-        if(isEarlierDate(vacationApplicationForm.getStartDate())){
-            return new HttpBodyMessage("fail", "이전 날짜로 신청할 수 없습니다");
-        }
         Staff applicant = staffRepository.findByStaffNum(vacationApplicationForm.getStaffNum());
         if(applicant.getVacationCount() == 0){
             return new HttpBodyMessage("fail", "휴가 개수를 모두 소진했습니다");
         }
-
         Staff approval = assigneeToApprover.assignApproval(applicant);
         Vacation vacation = modelMapper.map(vacationApplicationForm, Vacation.class);
+
         insertVacationEntity(applicant, vacation);
         notificationSender.sendNotification(DOMAIN_TYPE, approval, 1);
         return new HttpBodyMessage("success", "휴가 신청 성공");
-    }
-
-    private boolean isEarlierDate(LocalDate startDate){
-        return startDate.isBefore(LocalDate.now());
     }
 
     private void insertVacationEntity(Staff applicant, Vacation vacation){
