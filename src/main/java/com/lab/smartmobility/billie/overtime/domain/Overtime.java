@@ -94,4 +94,8 @@ public class Overtime {
         this.admitTime = admitTime;
         this.approvalStatus = FINAL;
     }
+
+    public void preApprove(){
+        this.approvalStatus = PRE;
+    }
 }

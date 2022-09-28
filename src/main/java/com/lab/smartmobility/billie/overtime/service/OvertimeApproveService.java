@@ -39,9 +39,13 @@ public class OvertimeApproveService {
         return approveRepository.getApproveListPagingByManager(baseDate, staff.getDepartment(), name, pageable);
     }
 
-    /*부서장 승인*/
+    /*사전승인*/
     public HttpBodyMessage approveByManager(List<Long> ids, String email){
-        approveRepository.approveByManager(ids);
+        for(Long id : ids){
+            Overtime overtime = overtimeRepository.findById(id).orElseThrow();
+            overtime.preApprove();
+            overtime.getStaff().calculateOvertimeHour(overtime.getSubTime());
+        }
         sendNotification(email);
         return new HttpBodyMessage("success", "추가근무 사전승인");
     }

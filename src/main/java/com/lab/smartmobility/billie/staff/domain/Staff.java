@@ -126,6 +126,10 @@ public class Staff implements UserDetails {
         this.vacationCount++;
     }
 
+    public void calculateOvertimeHour(double overtimeHour){
+        this.overtimeHour += overtimeHour;
+    }
+
     @Override
     @JsonIgnore
     public Collection<? extends GrantedAuthority> getAuthorities() {

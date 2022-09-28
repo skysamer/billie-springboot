@@ -24,7 +24,7 @@ public class OvertimeApproveController {
     private final OvertimeApproveService service;
     private final JwtTokenProvider jwtTokenProvider;
 
-    @ApiOperation(value = "나의 추가근무 신청 목록 조회")
+    @ApiOperation(value = "부서장의 추가근무 승인 요청목록 조회")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "base-date", value = "기준연월 (yyyy-MM, 전체는 all)"),
             @ApiImplicitParam(name = "name", value = "검색어 (직원이름, 전체는 all)"),

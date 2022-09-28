@@ -6,7 +6,6 @@ import com.lab.smartmobility.billie.overtime.domain.ApprovalStatus;
 import com.lab.smartmobility.billie.overtime.dto.OvertimeApproveListForm;
 import com.lab.smartmobility.billie.overtime.dto.QOvertimeApproveListForm;
 import com.querydsl.core.types.dsl.BooleanExpression;
-import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.logging.Log;
@@ -61,15 +60,6 @@ public class OvertimeApproveRepository {
                         .and(nameLike(name))
                 )
                 .stream().count();
-    }
-
-    /*부서장의 휴가 승인*/
-    public void approveByManager(List<Long> ids){
-        jpaQueryFactory
-                .update(overtime)
-                .set(overtime.approvalStatus, ApprovalStatus.PRE)
-                .where(overtime.id.in(ids))
-                .execute();
     }
 
     /*관리자의 추가근무 승인 요청 목록 조회*/

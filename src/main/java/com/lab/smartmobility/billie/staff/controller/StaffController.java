@@ -90,7 +90,7 @@ public class StaffController {
     }
 
     private String setToken(int isAuto, Staff staff){
-        if(isAuto==1){
+        if(isAuto == 1){
             return jwtTokenProvider.createLongTermTokenLogin(staff.getEmail(), staff.getRole());
         }
         return jwtTokenProvider.createTokenLogin(staff.getEmail(), staff.getRole());

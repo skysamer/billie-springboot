@@ -36,4 +36,7 @@ public class UserInfoForm {
 
     @ApiModelProperty(value = "입사일")
     private LocalDate hireDate;
+
+    @ApiModelProperty(value = "인증여부")
+    private final Boolean isAuth = true;
 }
