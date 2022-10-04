@@ -5,7 +5,6 @@ import com.lab.smartmobility.billie.global.util.DateTimeUtil;
 import com.lab.smartmobility.billie.overtime.dto.OvertimeApplicationListForm;
 import com.lab.smartmobility.billie.overtime.dto.QOvertimeApplicationListForm;
 import com.querydsl.core.types.dsl.BooleanExpression;
-import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.logging.Log;
@@ -17,7 +16,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 import static com.lab.smartmobility.billie.overtime.domain.QOvertime.overtime;
-import static com.lab.smartmobility.billie.vacation.domain.QVacation.vacation;
+import static com.lab.smartmobility.billie.staff.domain.QStaff.staff;
 
 @Repository
 @Transactional(readOnly = true)
@@ -40,7 +39,9 @@ public class OvertimeApplicationRepository {
                         overtime.startTime, overtime.endTime, overtime.isMeal, overtime.content,
                         overtime.approvalStatus, overtime.subTime, overtime.admitTime))
                 .from(overtime)
-                .where(overtime.staff.email.eq(email)
+                .leftJoin(staff)
+                .on(overtime.staff.staffNum.eq(staff.staffNum))
+                .where(staff.email.eq(email)
                         .and(baseDateEq(baseDate))
                 )
                 .offset(pageable.getOffset())
@@ -55,7 +56,9 @@ public class OvertimeApplicationRepository {
                         overtime.startTime, overtime.endTime, overtime.isMeal, overtime.content,
                         overtime.approvalStatus, overtime.subTime, overtime.admitTime))
                 .from(overtime)
-                .where(overtime.staff.email.eq(email)
+                .leftJoin(staff)
+                .on(overtime.staff.staffNum.eq(staff.staffNum))
+                .where(staff.email.eq(email)
                         .and(baseDateEq(baseDate))
                 )
                 .stream().count();

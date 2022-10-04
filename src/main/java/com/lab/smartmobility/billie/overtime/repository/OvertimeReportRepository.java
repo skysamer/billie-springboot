@@ -4,7 +4,6 @@ import com.lab.smartmobility.billie.global.util.DateTimeUtil;
 import com.lab.smartmobility.billie.overtime.domain.ApprovalStatus;
 import com.lab.smartmobility.billie.overtime.dto.OvertimeReportForm;
 import com.lab.smartmobility.billie.overtime.dto.QOvertimeReportForm;
-import com.lab.smartmobility.billie.vacation.dto.QVacationReportForm;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;

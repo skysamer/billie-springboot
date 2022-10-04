@@ -9,11 +9,14 @@ import com.lab.smartmobility.billie.overtime.dto.OvertimeCompanionForm;
 import com.lab.smartmobility.billie.overtime.service.OvertimeApproveService;
 import io.swagger.annotations.*;
 import lombok.RequiredArgsConstructor;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.util.List;
 
 @Api(tags = {"추가근무 승인 api"})
@@ -88,7 +91,7 @@ public class OvertimeApproveController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @ApiOperation(value = "나의 추가근무 신청 목록 조회")
+    @ApiOperation(value = "관리부의 추가근무 승인요청 목록 조회")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "base-date", value = "기준연월 (yyyy-MM, 전체는 all)"),
             @ApiImplicitParam(name = "department", value = "부서명 (전체는 all)"),
@@ -114,7 +117,7 @@ public class OvertimeApproveController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @ApiOperation(value = "추가근무 사전승인")
+    @ApiOperation(value = "최종승인")
     @ApiResponses({
             @ApiResponse(code = 200, message = "최종승인")
     })
@@ -122,5 +125,25 @@ public class OvertimeApproveController {
     public ResponseEntity<HttpBodyMessage> approveByAdmin(@RequestBody OvertimeFinalApproveForm finalApproveForm){
         HttpBodyMessage result = service.approveByAdmin(finalApproveForm);
         return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
+    @ApiOperation(value = "추가근무 승인내역 엑셀 다운로드")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "base-date", value = "기준연월 (yyyy-MM, 전체는 all)"),
+            @ApiImplicitParam(name = "department", value = "부서명 (전체는 all)"),
+    })
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "다운로드성공"),
+    })
+    @GetMapping("/approve/admin/excel/{base-date}/{department}")
+    public void downloadExcel(@PathVariable("base-date") String baseDate,
+                              @PathVariable String department, HttpServletResponse response) throws IOException {
+        Workbook wb = service.downloadExcel(baseDate, department);
+
+        response.setContentType("ms-vnd/excel");
+        response.setHeader("Content-Disposition", "attachment;filename="+baseDate+"_overtime.xlsx");
+
+        wb.write(response.getOutputStream());
+        wb.close();
     }
 }

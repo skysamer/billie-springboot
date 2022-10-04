@@ -1,5 +1,7 @@
 package com.lab.smartmobility.billie.overtime.repository;
 
+import com.lab.smartmobility.billie.overtime.dto.OvertimeExcelForm;
+import com.lab.smartmobility.billie.overtime.dto.QOvertimeExcelForm;
 import com.lab.smartmobility.billie.global.dto.PageResult;
 import com.lab.smartmobility.billie.global.util.DateTimeUtil;
 import com.lab.smartmobility.billie.overtime.domain.ApprovalStatus;
@@ -17,6 +19,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 import static com.lab.smartmobility.billie.overtime.domain.QOvertime.overtime;
+import static com.lab.smartmobility.billie.staff.domain.QStaff.staff;
 
 @Repository
 @Transactional(readOnly = true)
@@ -35,10 +38,12 @@ public class OvertimeApproveRepository {
 
     private List<OvertimeApproveListForm> getApproveListByManager(String baseDate, String department, String name, Pageable pageable){
         return jpaQueryFactory
-                .select(new QOvertimeApproveListForm(overtime.id, overtime.staff.name, overtime.staff.employeeNumber,
+                .select(new QOvertimeApproveListForm(overtime.id, staff.name, staff.employeeNumber,
                         overtime.dayOfOvertime, overtime.startTime, overtime.endTime, overtime.isMeal, overtime.content,
                         overtime.approvalStatus, overtime.subTime, overtime.admitTime))
                 .from(overtime)
+                .leftJoin(staff)
+                .on(overtime.staff.staffNum.eq(staff.staffNum))
                 .where(overtime.staff.department.eq(department)
                         .and(baseDateEq(baseDate))
                         .and(nameLike(name))
@@ -51,10 +56,12 @@ public class OvertimeApproveRepository {
 
     private long getApproveCountByManager(String baseDate, String department, String name){
         return jpaQueryFactory
-                .select(new QOvertimeApproveListForm(overtime.id, overtime.staff.name, overtime.staff.employeeNumber,
+                .select(new QOvertimeApproveListForm(overtime.id, staff.name, staff.employeeNumber,
                         overtime.dayOfOvertime, overtime.startTime, overtime.endTime, overtime.isMeal, overtime.content,
                         overtime.approvalStatus, overtime.subTime, overtime.admitTime))
                 .from(overtime)
+                .leftJoin(staff)
+                .on(overtime.staff.staffNum.eq(staff.staffNum))
                 .where(overtime.staff.department.eq(department)
                         .and(baseDateEq(baseDate))
                         .and(nameLike(name))
@@ -71,10 +78,12 @@ public class OvertimeApproveRepository {
 
     private List<OvertimeApproveListForm> getApproveListByAdmin(String name, String department, String baseDate, Pageable pageable){
         return jpaQueryFactory
-                .select(new QOvertimeApproveListForm(overtime.id, overtime.staff.name, overtime.staff.employeeNumber,
+                .select(new QOvertimeApproveListForm(overtime.id, staff.name, staff.employeeNumber,
                         overtime.dayOfOvertime, overtime.startTime, overtime.endTime, overtime.isMeal, overtime.content,
                         overtime.approvalStatus, overtime.subTime, overtime.admitTime))
                 .from(overtime)
+                .leftJoin(staff)
+                .on(overtime.staff.staffNum.eq(staff.staffNum))
                 .where( (overtime.approvalStatus.eq(ApprovalStatus.CONFIRMATION).or(overtime.approvalStatus.eq(ApprovalStatus.FINAL)))
                         .and(baseDateEq(baseDate))
                         .and(departmentEq(department))
@@ -88,16 +97,32 @@ public class OvertimeApproveRepository {
 
     private long getApproveCountByAdmin(String name, String department, String baseDate){
         return jpaQueryFactory
-                .select(new QOvertimeApproveListForm(overtime.id, overtime.staff.name, overtime.staff.employeeNumber,
+                .select(new QOvertimeApproveListForm(overtime.id, staff.name, staff.employeeNumber,
                         overtime.dayOfOvertime, overtime.startTime, overtime.endTime, overtime.isMeal, overtime.content,
                         overtime.approvalStatus, overtime.subTime, overtime.admitTime))
                 .from(overtime)
+                .leftJoin(staff)
+                .on(overtime.staff.staffNum.eq(staff.staffNum))
                 .where( (overtime.approvalStatus.eq(ApprovalStatus.CONFIRMATION).or(overtime.approvalStatus.eq(ApprovalStatus.FINAL)))
                         .and(baseDateEq(baseDate))
                         .and(departmentEq(department))
                         .and(nameLike(name))
                 )
                 .stream().count();
+    }
+
+    /*엑셀 다운로드용 데이터*/
+    public List<OvertimeExcelForm> extractExcelData(String baseDate, String department){
+        return jpaQueryFactory
+                .select(new QOvertimeExcelForm(overtime.id, overtime.staff.name, overtime.staff.employeeNumber,
+                        overtime.dayOfOvertime, overtime.startTime, overtime.endTime, overtime.isMeal,
+                        overtime.content, overtime.approvalStatus, overtime.subTime, overtime.admitTime))
+                .from(overtime)
+                .where( (overtime.approvalStatus.eq(ApprovalStatus.CONFIRMATION).or(overtime.approvalStatus.eq(ApprovalStatus.FINAL)))
+                        .and(baseDateEq(baseDate))
+                        .and(departmentEq(department))
+                )
+                .fetch();
     }
 
     private BooleanExpression baseDateEq(String baseYear) {
@@ -111,10 +136,10 @@ public class OvertimeApproveRepository {
     }
 
     private BooleanExpression departmentEq(String department){
-        return department.equals("all") ? null : overtime.staff.department.eq(department);
+        return department.equals("all") ? null : staff.department.eq(department);
     }
 
     private BooleanExpression nameLike(String name) {
-        return name.equals("all") ? null : overtime.staff.name.eq(name);
+        return name.equals("all") ? null : staff.name.eq(name);
     }
 }

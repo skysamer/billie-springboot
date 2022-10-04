@@ -1,12 +1,10 @@
 package com.lab.smartmobility.billie.vacation.controller;
 
-import com.lab.smartmobility.billie.global.dto.HttpBodyMessage;
 import com.lab.smartmobility.billie.vacation.dto.VacationCalendarForm;
 import com.lab.smartmobility.billie.vacation.service.VacationCalendarService;
 import io.swagger.annotations.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 

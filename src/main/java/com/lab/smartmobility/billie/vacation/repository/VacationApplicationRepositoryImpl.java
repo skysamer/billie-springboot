@@ -15,6 +15,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 import static com.lab.smartmobility.billie.vacation.domain.QVacation.vacation;
+import static com.lab.smartmobility.billie.staff.domain.QStaff.staff;
 
 @Repository
 @Transactional(readOnly = true)
@@ -26,7 +27,7 @@ public class VacationApplicationRepositoryImpl {
 
     public PageResult<VacationApplicationListForm> getMyApplicationList(Long staffNum, String baseDate, String vacationType, Pageable pageable){
         List<VacationApplicationListForm> content = getApplicationList(staffNum, baseDate, vacationType, pageable);
-        long count = getApplicationListCount(staffNum, baseDate, vacationType);
+        long count = getApplicationCount(staffNum, baseDate, vacationType);
         return new PageResult<>(content, count);
     }
 
@@ -36,7 +37,9 @@ public class VacationApplicationRepositoryImpl {
                 .select(new QVacationApplicationListForm(vacation.vacationId, vacation.startDate, vacation.endDate,
                         vacation.reason, vacation.vacationType, vacation.approvalStatus))
                 .from(vacation)
-                .where(vacation.staff.staffNum.eq(staffNum)
+                .leftJoin(staff)
+                .on(vacation.staff.staffNum.eq(staff.staffNum))
+                .where(staff.staffNum.eq(staffNum)
                         .and(baseYearEq(baseDate))
                         .and(vacationTypeEq(vacationType))
                 )
@@ -46,10 +49,14 @@ public class VacationApplicationRepositoryImpl {
                 .fetch();
     }
 
-    private long getApplicationListCount(Long staffNum, String baseDate, String vacationType){
+    private long getApplicationCount(Long staffNum, String baseDate, String vacationType){
         return jpaQueryFactory
-                .selectFrom(vacation)
-                .where(vacation.staff.staffNum.eq(staffNum)
+                .select(new QVacationApplicationListForm(vacation.vacationId, vacation.startDate, vacation.endDate,
+                        vacation.reason, vacation.vacationType, vacation.approvalStatus))
+                .from(vacation)
+                .leftJoin(staff)
+                .on(vacation.staff.staffNum.eq(staff.staffNum))
+                .where(staff.staffNum.eq(staffNum)
                         .and(baseYearEq(baseDate))
                         .and(vacationTypeEq(vacationType))
                 )
@@ -73,7 +80,9 @@ public class VacationApplicationRepositoryImpl {
                 .select(new QMyRecentVacationForm(vacation.vacationId, vacation.startDate, vacation.endDate,
                         vacation.workAt, vacation.homeAt, vacation.vacationType, vacation.approvalStatus))
                 .from(vacation)
-                .where(vacation.staff.staffNum.eq(staffNum))
+                .leftJoin(staff)
+                .on(vacation.staff.staffNum.eq(staff.staffNum))
+                .where(staff.staffNum.eq(staffNum))
                 .limit(4)
                 .orderBy(vacation.startDate.desc())
                 .fetch();

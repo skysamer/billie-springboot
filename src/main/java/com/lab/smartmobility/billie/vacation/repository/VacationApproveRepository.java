@@ -20,6 +20,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 import static com.lab.smartmobility.billie.vacation.domain.QVacation.vacation;
+import static com.lab.smartmobility.billie.staff.domain.QStaff.staff;
 
 @Repository
 @Transactional(readOnly = true)
@@ -38,11 +39,13 @@ public class VacationApproveRepository {
 
     private List<VacationApproveListForm> getApproveListByManager(String baseDate, String department, String keyword, Pageable pageable){
         return jpaQueryFactory
-                .select(new QVacationApproveListForm(vacation.vacationId, vacation.staff.name,
+                .select(new QVacationApproveListForm(vacation.vacationId, staff.name,
                         vacation.startDate, vacation.endDate, vacation.workAt, vacation.homeAt, vacation.reason,
-                        vacation.vacationType, vacation.approvalStatus.stringValue(), vacation.staff.employeeNumber))
+                        vacation.vacationType, vacation.approvalStatus.stringValue(), staff.employeeNumber))
                 .from(vacation)
-                .where(vacation.staff.department.eq(department)
+                .leftJoin(staff)
+                .on(vacation.staff.staffNum.eq(staff.staffNum))
+                .where(staff.department.eq(department)
                         .and(baseDateEq(baseDate))
                         .and(keywordLike(keyword))
                 )
@@ -54,11 +57,13 @@ public class VacationApproveRepository {
 
     private long countApproveListByManager(String baseDate, String department, String keyword){
         return jpaQueryFactory
-                .select(new QVacationApproveListForm(vacation.vacationId, vacation.staff.name,
+                .select(new QVacationApproveListForm(vacation.vacationId, staff.name,
                         vacation.startDate, vacation.endDate, vacation.workAt, vacation.homeAt, vacation.reason,
-                        vacation.vacationType, vacation.approvalStatus.stringValue(), vacation.staff.employeeNumber))
+                        vacation.vacationType, vacation.approvalStatus.stringValue(), staff.employeeNumber))
                 .from(vacation)
-                .where(vacation.staff.department.eq(department)
+                .leftJoin(staff)
+                .on(vacation.staff.staffNum.eq(staff.staffNum))
+                .where(staff.department.eq(department)
                         .and(baseDateEq(baseDate))
                         .and(keywordLike(keyword))
                 )
@@ -83,10 +88,12 @@ public class VacationApproveRepository {
 
     private List<VacationApproveListForm> getApproveListByAdmin(String baseDate, String department, String keyword, Pageable pageable){
         return jpaQueryFactory
-                .select(new QVacationApproveListForm(vacation.vacationId, vacation.staff.name,
+                .select(new QVacationApproveListForm(vacation.vacationId, staff.name,
                         vacation.startDate, vacation.endDate, vacation.workAt, vacation.homeAt, vacation.reason,
-                        vacation.vacationType, vacation.approvalStatus.stringValue(), vacation.staff.employeeNumber))
+                        vacation.vacationType, vacation.approvalStatus.stringValue(), staff.employeeNumber))
                 .from(vacation)
+                .leftJoin(staff)
+                .on(vacation.staff.staffNum.eq(staff.staffNum))
                 .where(Expressions.asBoolean(true).isTrue()
                         .and(baseDateEq(baseDate))
                         .and(keywordLike(keyword))
@@ -100,10 +107,12 @@ public class VacationApproveRepository {
 
     private long countApproveListByAdmin(String baseDate, String department, String keyword){
         return jpaQueryFactory
-                .select(new QVacationApproveListForm(vacation.vacationId, vacation.staff.name,
+                .select(new QVacationApproveListForm(vacation.vacationId, staff.name,
                         vacation.startDate, vacation.endDate, vacation.workAt, vacation.homeAt, vacation.reason,
-                        vacation.vacationType, vacation.approvalStatus.stringValue(), vacation.staff.employeeNumber))
+                        vacation.vacationType, vacation.approvalStatus.stringValue(), staff.employeeNumber))
                 .from(vacation)
+                .leftJoin(staff)
+                .on(vacation.staff.staffNum.eq(staff.staffNum))
                 .where(Expressions.asBoolean(true).isTrue()
                         .and(baseDateEq(baseDate))
                         .and(keywordLike(keyword))
@@ -114,10 +123,12 @@ public class VacationApproveRepository {
 
     public List<VacationExcelForm> excelDownloadList(String baseDate, String department){
         return jpaQueryFactory
-                .select(new QVacationExcelForm(vacation.vacationId, vacation.staff.name,
+                .select(new QVacationExcelForm(vacation.vacationId, staff.name,
                         vacation.startDate, vacation.endDate, vacation.reason,
-                        vacation.vacationType, vacation.approvalStatus, vacation.staff.employeeNumber))
+                        vacation.vacationType, vacation.approvalStatus, staff.employeeNumber))
                 .from(vacation)
+                .leftJoin(staff)
+                .on(vacation.staff.staffNum.eq(staff.staffNum))
                 .where(Expressions.asBoolean(true).isTrue()
                         .and(baseDateEq(baseDate))
                         .and(departmentEq(department))
@@ -136,10 +147,10 @@ public class VacationApproveRepository {
     }
 
     private BooleanExpression departmentEq(String department){
-        return department.equals("all") ? null : vacation.staff.department.eq(department);
+        return department.equals("all") ? null : staff.department.eq(department);
     }
 
     private BooleanExpression keywordLike(String keyword) {
-        return keyword.equals("all") ? null : vacation.staff.name.eq(keyword);
+        return keyword.equals("all") ? null : staff.name.eq(keyword);
     }
 }
