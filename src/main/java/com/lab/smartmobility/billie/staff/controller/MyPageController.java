@@ -5,6 +5,8 @@ import com.lab.smartmobility.billie.global.dto.HttpBodyMessage;
 import com.lab.smartmobility.billie.staff.service.MyPageService;
 import io.swagger.annotations.*;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
@@ -16,7 +18,7 @@ public class MyPageController {
     private final MyPageService service;
 
     @ApiOperation(value = "전체 직원 정보 조회")
-    @GetMapping("/user/staff-list")
+    @GetMapping("/user")
     public List<StaffInfoForm> getStaffInfoList(){
         return service.getStaffInfoList();
     }
@@ -25,9 +27,13 @@ public class MyPageController {
     @ApiImplicitParams({
             @ApiImplicitParam(name = "staff-num", value = "직원 고유 번호"),
     })
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "조회성공"),
+    })
     @GetMapping("/user/{staff-num}")
-    public StaffInfoForm getStaffInfo(@PathVariable("staff-num") Long staffNum){
-        return service.getStaffInfo(staffNum);
+    public ResponseEntity<StaffInfoForm> getStaffInfo(@PathVariable("staff-num") Long staffNum){
+        StaffInfoForm staffInfo = service.getStaffInfo(staffNum);
+        return new ResponseEntity<>(staffInfo, HttpStatus.OK);
     }
 
     @ApiOperation(value = "신규직원 추가", notes = "고유번호와 퇴서여부는 전송x")

@@ -101,8 +101,20 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 //                        .antMatchers("/announcement/admin/**").hasRole("ADMIN")
 
                         /*------------------------------------------------------------------------------------자유 게시판-----------------------------------------------------------------------------------*/
-//                        .antMatchers("/reply/user/**").hasAnyRole("USER", "MANAGER", "ADMIN")
-//                        .antMatchers("/board/user/**").hasAnyRole("USER", "MANAGER", "ADMIN")
+                        .antMatchers("/reply/user/**").hasAnyRole("USER", "MANAGER", "ADMIN")
+                        .antMatchers("/board/user/**").hasAnyRole("USER", "MANAGER", "ADMIN")
+
+                        /*------------------------------------------------------------------------------------휴가-----------------------------------------------------------------------------------*/
+                        .antMatchers("/vacation/application/**").hasAnyRole("USER", "MANAGER", "ADMIN")
+                        .antMatchers("/vacation/calculate/**").hasAnyRole("USER", "MANAGER", "ADMIN")
+                        .antMatchers("/vacation/calendar/**").hasAnyRole("USER", "MANAGER", "ADMIN")
+
+                        .antMatchers("/vacation/report/**").hasAnyRole("ADMIN")
+                        .antMatchers("/vacation/approve/**").hasAnyRole("MANAGER", "ADMIN")
+
+                        /*------------------------------------------------------------------------------------추가근무-----------------------------------------------------------------------------------*/
+                        .antMatchers("/reply/user/**").hasAnyRole("USER", "MANAGER", "ADMIN")
+                        .antMatchers("/board/user/**").hasAnyRole("USER", "MANAGER", "ADMIN")
 
                         .and()
                         .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider),

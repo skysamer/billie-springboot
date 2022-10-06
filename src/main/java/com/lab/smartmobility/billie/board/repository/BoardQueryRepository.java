@@ -22,6 +22,7 @@ import java.util.stream.Collectors;
 
 import static com.lab.smartmobility.billie.board.domain.QBoard.board;
 import static com.lab.smartmobility.billie.board.domain.QReply.reply;
+import static com.lab.smartmobility.billie.staff.domain.QStaff.staff;
 
 @Repository
 @Transactional(readOnly = true)
@@ -70,8 +71,9 @@ public class BoardQueryRepository {
         BoardDetailsForm boardDetailsForm = jpaQueryFactory
                 .select(Projections.fields(BoardDetailsForm.class, board.id, board.title, board.content,
                         board.createdAt, board.modifiedAt, board.views, board.likes, board.replyCnt, board.isAnonymous,
-                        board.staff.staffNum, board.staff.name))
+                        staff.staffNum, staff.name))
                 .from(board)
+                .join(staff).on(board.staff.staffNum.eq(staff.staffNum))
                 .where(board.id.eq(id))
                 .fetchFirst();
         if(boardDetailsForm == null){
@@ -81,9 +83,10 @@ public class BoardQueryRepository {
         List<ReplyResponseForm> replyList = getReplyList(id);
 
         List<NestedReplyResponseForm> childrenReplyList = jpaQueryFactory.select(Projections.fields(NestedReplyResponseForm.class,
-                        reply.parent.id.as("parentId"), reply.id, reply.staff.staffNum, reply.staff.name,
+                        reply.parent.id.as("parentId"), reply.id, staff.staffNum, staff.name,
                         reply.content, reply.createdAt, reply.modifiedAt, reply.isAnonymous))
                 .from(reply)
+                .join(staff).on(reply.staff.staffNum.eq(staff.staffNum))
                 .where(reply.parent.id.isNotNull()
                         .and(reply.board.id.eq(id))
                 )
@@ -102,8 +105,9 @@ public class BoardQueryRepository {
     private List<ReplyResponseForm> getReplyList(Long id){
         return jpaQueryFactory
                 .select(Projections.fields(ReplyResponseForm.class, reply.parent.id, reply.id, reply.content,
-                        reply.createdAt, reply.modifiedAt, reply.staff.staffNum, reply.staff.name, reply.isAnonymous))
+                        reply.createdAt, reply.modifiedAt, staff.staffNum, staff.name, reply.isAnonymous))
                 .from(reply)
+                .join(staff).on(reply.staff.staffNum.eq(staff.staffNum))
                 .where(reply.board.id.eq(id)
                         .and(reply.parent.id.isNull())
                 )
@@ -125,8 +129,8 @@ public class BoardQueryRepository {
         BoardDetailsForm boardDetailsForm = jpaQueryFactory
                 .select(Projections.fields(BoardDetailsForm.class, board.id, board.title, board.content,
                         board.createdAt, board.modifiedAt, board.views, board.likes, board.replyCnt, board.isAnonymous,
-                        board.staff.staffNum, board.staff.name))
-                .from(board)
+                        staff.staffNum, staff.name))
+                .from(board).join(staff).on(board.staff.staffNum.eq(staff.staffNum))
                 .where(board.id.lt(id))
                 .orderBy(board.id.desc())
                 .fetchFirst();
@@ -137,9 +141,9 @@ public class BoardQueryRepository {
         List<ReplyResponseForm> replyList = getReplyList(boardDetailsForm.getId());
 
         List<NestedReplyResponseForm> childrenReplyList = jpaQueryFactory.select(Projections.fields(NestedReplyResponseForm.class,
-                        reply.parent.id.as("parentId"), reply.id, reply.staff.staffNum, reply.staff.name,
+                        reply.parent.id.as("parentId"), reply.id, staff.staffNum, staff.name,
                         reply.content, reply.createdAt, reply.modifiedAt, reply.isAnonymous))
-                .from(reply)
+                .from(reply).join(staff).on(reply.staff.staffNum.eq(staff.staffNum))
                 .where(reply.parent.id.isNotNull()
                         .and(reply.board.id.eq(boardDetailsForm.getId()))
                 )
@@ -160,8 +164,8 @@ public class BoardQueryRepository {
         BoardDetailsForm boardDetailsForm = jpaQueryFactory
                 .select(Projections.fields(BoardDetailsForm.class, board.id, board.title, board.content,
                         board.createdAt, board.modifiedAt, board.views, board.likes, board.replyCnt, board.isAnonymous,
-                        board.staff.staffNum, board.staff.name))
-                .from(board)
+                        staff.staffNum, staff.name))
+                .from(board).join(staff).on(board.staff.staffNum.eq(staff.staffNum))
                 .where(board.id.gt(id))
                 .orderBy(board.id.asc())
                 .fetchFirst();
@@ -172,9 +176,9 @@ public class BoardQueryRepository {
         List<ReplyResponseForm> replyList = getReplyList(boardDetailsForm.getId());
 
         List<NestedReplyResponseForm> childrenReplyList = jpaQueryFactory.select(Projections.fields(NestedReplyResponseForm.class,
-                        reply.parent.id.as("parentId"), reply.id, reply.staff.staffNum, reply.staff.name,
+                        reply.parent.id.as("parentId"), reply.id, staff.staffNum, staff.name,
                         reply.content, reply.createdAt, reply.modifiedAt, reply.isAnonymous))
-                .from(reply)
+                .from(reply).join(staff).on(reply.staff.staffNum.eq(staff.staffNum))
                 .where(reply.parent.id.isNotNull()
                         .and(reply.board.id.eq(boardDetailsForm.getId()))
                 )

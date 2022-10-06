@@ -3,6 +3,8 @@ package com.lab.smartmobility.billie.staff.dto;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+
+import javax.persistence.Column;
 import java.time.LocalDate;
 
 @Data @ApiModel(value = "마이페이지 직원정보 폼")
@@ -45,6 +47,9 @@ public class StaffInfoForm {
 
     @ApiModelProperty(value = "연구자번호")
     private String researcherNumber;
+
+    @ApiModelProperty(value = "사번")
+    private String employeeNumber;
 
     @ApiModelProperty(value = "퇴사여부 (0:퇴사x, 1:퇴사o)")
     private int isResigned;

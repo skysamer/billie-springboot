@@ -1,5 +1,6 @@
 package com.lab.smartmobility.billie.announcement.service;
 
+import com.lab.smartmobility.billie.announcement.dto.AnnouncementListForm;
 import com.lab.smartmobility.billie.global.dto.PageResult;
 import com.lab.smartmobility.billie.announcement.dto.AnnouncementDetailsForm;
 import com.lab.smartmobility.billie.announcement.dto.AnnouncementRegisterForm;
@@ -20,6 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.persistence.NamedNativeQuery;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
@@ -42,7 +44,7 @@ public class AnnouncementService {
     /*게시글 등록*/
     public HttpBodyMessage register(AnnouncementRegisterForm announcementRegisterForm, List<MultipartFile> attachments) throws IOException {
         if(announcementRegisterForm.getIsExceedMainCount() == 1){
-            cancelOldestMain(announcementRegisterForm);
+            cancelOldestMain();
         }
 
         Announcement announcement = modelMapper.map(announcementRegisterForm, Announcement.class);
@@ -55,9 +57,8 @@ public class AnnouncementService {
     }
 
     /*가장 오래된 메인 공지 취소*/
-    private void cancelOldestMain(AnnouncementRegisterForm announcementRegisterForm){
+    private void cancelOldestMain(){
         Announcement oldestMain = announcementRepository.findFirstByIsMainOrderByModifiedAt(1);
-        log.info(oldestMain.toString());
         oldestMain.cancelMain();
     }
 
@@ -66,7 +67,7 @@ public class AnnouncementService {
         File uploadPath = new File(SERVER_UPLOAD_PATH);
         for(MultipartFile attachment : attachments){
             String uuid = UUID.randomUUID().toString();
-            String filename = uuid+"_"+attachment.getOriginalFilename();
+            String filename = uuid + "_" + attachment.getOriginalFilename();
 
             saveAttachmentInfo(uuid, attachment.getOriginalFilename(), savedAnnouncement);
             File saveFile=new File(uploadPath, filename);
@@ -85,7 +86,7 @@ public class AnnouncementService {
     }
 
     /*게시글 목록 조회*/
-    public PageResult<Announcement> getAnnouncementList(String type, String date, String keyword, Pageable pageable){
+    public PageResult<AnnouncementListForm> getAnnouncementList(String type, String date, String keyword, Pageable pageable){
         return announcementRepositoryImpl.getAnnouncementPaging(type, date, keyword, pageable);
     }
 
@@ -120,7 +121,7 @@ public class AnnouncementService {
     /*게시글 수정*/
     public HttpBodyMessage modify(Long id, AnnouncementRegisterForm announcementRegisterForm, List<MultipartFile> attachments) throws IOException {
         if(announcementRegisterForm.getIsExceedMainCount() == 1){
-            cancelOldestMain(announcementRegisterForm);
+            cancelOldestMain();
         }
 
         Announcement announcement = announcementRepository.findById(id).orElse(null);
@@ -173,7 +174,9 @@ public class AnnouncementService {
     public AnnouncementDetailsForm movePrev(Long id, String email){
         List<AnnouncementDetailsForm> list = announcementRepositoryImpl.getListOrderByIsMainAndId();
         AnnouncementDetailsForm result = new AnnouncementDetailsForm();
-        for(int i=0; i<list.size(); i++){
+
+        int size = list.size();
+        for(int i=0; i<size; i++){
             try{
                 if(list.get(i).getId().equals(id)){
                     result = list.get(i + 1);
@@ -199,7 +202,8 @@ public class AnnouncementService {
     public AnnouncementDetailsForm moveNext(Long id, String email){
         List<AnnouncementDetailsForm> list = announcementRepositoryImpl.getListOrderByIsMainAndId();
         AnnouncementDetailsForm result = new AnnouncementDetailsForm();
-        for(int i=0; i<list.size(); i++){
+        int size = list.size();
+        for(int i=0; i<size; i++){
             try{
                 if(list.get(i).getId().equals(id)){
                     result = list.get(i - 1);

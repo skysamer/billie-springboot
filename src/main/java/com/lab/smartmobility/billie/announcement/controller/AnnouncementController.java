@@ -1,5 +1,6 @@
 package com.lab.smartmobility.billie.announcement.controller;
 
+import com.lab.smartmobility.billie.announcement.dto.AnnouncementListForm;
 import com.lab.smartmobility.billie.global.config.JwtTokenProvider;
 import com.lab.smartmobility.billie.global.dto.PageResult;
 import com.lab.smartmobility.billie.announcement.dto.AnnouncementDetailsForm;
@@ -70,12 +71,12 @@ public class AnnouncementController {
             @ApiResponse(code = 204, message = "조건에 맞는 데이터 없음")
     })
     @GetMapping("/user/{type}/{date}/{keyword}/{page}/{size}")
-    public ResponseEntity<PageResult<Announcement>> getAnnouncementList(@PathVariable String type,
-                                                        @PathVariable String date,
-                                                        @PathVariable String keyword,
-                                                        @PathVariable Integer page,
-                                                        @PathVariable Integer size){
-        PageResult<Announcement> pageResult = service.getAnnouncementList(type, date, keyword, PageRequest.of(page, size));
+    public ResponseEntity<PageResult<AnnouncementListForm>> getAnnouncementList(@PathVariable String type,
+                                                                                @PathVariable String date,
+                                                                                @PathVariable String keyword,
+                                                                                @PathVariable Integer page,
+                                                                                @PathVariable Integer size){
+        PageResult<AnnouncementListForm> pageResult = service.getAnnouncementList(type, date, keyword, PageRequest.of(page, size));
         if(pageResult.getCount() == 0){
             return new ResponseEntity<>(pageResult, HttpStatus.NO_CONTENT);
         }

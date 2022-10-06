@@ -1,5 +1,7 @@
 package com.lab.smartmobility.billie.announcement.repository;
 
+import com.lab.smartmobility.billie.announcement.dto.AnnouncementListForm;
+import com.lab.smartmobility.billie.announcement.dto.QAnnouncementListForm;
 import com.lab.smartmobility.billie.global.dto.PageResult;
 import com.lab.smartmobility.billie.announcement.dto.AnnouncementDetailsForm;
 import com.lab.smartmobility.billie.announcement.domain.Announcement;
@@ -27,15 +29,17 @@ public class AnnouncementRepositoryImpl {
     private final DateTimeUtil dateTimeUtil;
 
     /*게시글 목록 조회 (페이징)*/
-    public PageResult<Announcement> getAnnouncementPaging(String type, String date, String keyword, Pageable pageable){
-        List<Announcement> content = getAnnouncementList(type, date, keyword, pageable);
+    public PageResult<AnnouncementListForm> getAnnouncementPaging(String type, String date, String keyword, Pageable pageable){
+        List<AnnouncementListForm> content = getAnnouncementList(type, date, keyword, pageable);
         long count = getAnnouncementCount(type, date, keyword);
         return new PageResult<>(content, count);
     }
 
-    private List<Announcement> getAnnouncementList(String type, String date, String keyword, Pageable pageable){
+    private List<AnnouncementListForm> getAnnouncementList(String type, String date, String keyword, Pageable pageable){
         return jpaQueryFactory
-                .selectFrom(announcement)
+                .select(new QAnnouncementListForm(announcement.id, announcement.type, announcement.title,
+                        announcement.content, announcement.isMain, announcement.views, announcement.likes))
+                .from(announcement)
                 .where(Expressions.asBoolean(true).isTrue()
                         .and(typeEq(type))
                         .and(keywordLike(keyword))
@@ -55,7 +59,6 @@ public class AnnouncementRepositoryImpl {
                         .and(keywordLike(keyword))
                         .and(dateEq(date))
                 )
-                .orderBy(announcement.isMain.desc(), announcement.id.desc())
                 .stream().count();
     }
 

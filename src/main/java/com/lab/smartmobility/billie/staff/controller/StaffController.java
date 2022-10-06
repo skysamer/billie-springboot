@@ -6,10 +6,7 @@ import com.lab.smartmobility.billie.global.dto.Mail;
 import com.lab.smartmobility.billie.staff.domain.Staff;
 import com.lab.smartmobility.billie.staff.dto.*;
 import com.lab.smartmobility.billie.staff.service.StaffService;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
+import io.swagger.annotations.*;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.logging.Log;
 import org.springframework.beans.factory.annotation.Value;
@@ -133,4 +130,5 @@ public class StaffController {
     public List<RankDTO> getRankList(){
         return staffService.getRankList();
     }
+
 }
