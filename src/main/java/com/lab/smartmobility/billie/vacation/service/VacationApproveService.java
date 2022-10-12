@@ -20,6 +20,7 @@ import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,13 +35,10 @@ public class VacationApproveService {
     private final VacationRepository vacationRepository;
     private final VacationApproveRepository approveRepository;
     private final StaffRepository staffRepository;
-    private final VacationReportRepository reportRepository;
     private final AssigneeToApprover assigneeToApprover;
     private final VacationCalculateService calculateService;
     private final NotificationSender notificationSender;
     private final VacationReportService reportService;
-    private final Workbook workbook;
-    private final Log log;
 
     private static final String DOMAIN_TYPE = "vacation";
 
@@ -97,6 +95,7 @@ public class VacationApproveService {
     public Workbook downloadExcel(String baseDate, String department){
         List<VacationExcelForm> excelFormList = approveRepository.excelDownloadList(baseDate, department);
 
+        Workbook workbook = new XSSFWorkbook();
         Sheet sheet = workbook.createSheet(baseDate);
         Row row;
         Cell cell;

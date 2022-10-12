@@ -18,6 +18,7 @@ import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,8 +34,6 @@ public class OvertimeApproveService {
     private final OvertimeApproveRepository approveRepository;
     private final AssigneeToApprover assigneeToApprover;
     private final NotificationSender notificationSender;
-    private final Workbook workbook;
-
     private static final String DOMAIN_TYPE = "overtime";
 
     /*부서장의 요청관리 목록 조회*/
@@ -86,6 +85,7 @@ public class OvertimeApproveService {
     public Workbook downloadExcel(String baseDate, String department){
         List<OvertimeExcelForm> excelFormList = approveRepository.extractExcelData(baseDate, department);
 
+        Workbook workbook = new XSSFWorkbook();
         Sheet sheet = workbook.createSheet(baseDate);
         Row row;
         Cell cell;
