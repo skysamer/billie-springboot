@@ -39,7 +39,7 @@ public class VacationApproveRepository {
 
     private List<VacationApproveListForm> getApproveListByManager(String baseDate, String department, String keyword, Pageable pageable){
         return jpaQueryFactory
-                .select(new QVacationApproveListForm(vacation.vacationId, staff.name,
+                .select(new QVacationApproveListForm(vacation.vacationId, staff.name, staff.role,
                         vacation.startDate, vacation.endDate, vacation.workAt, vacation.homeAt, vacation.reason,
                         vacation.vacationType, vacation.approvalStatus.stringValue(), staff.employeeNumber))
                 .from(vacation)
@@ -57,7 +57,7 @@ public class VacationApproveRepository {
 
     private long countApproveListByManager(String baseDate, String department, String keyword){
         return jpaQueryFactory
-                .select(new QVacationApproveListForm(vacation.vacationId, staff.name,
+                .select(new QVacationApproveListForm(vacation.vacationId, staff.name, staff.role,
                         vacation.startDate, vacation.endDate, vacation.workAt, vacation.homeAt, vacation.reason,
                         vacation.vacationType, vacation.approvalStatus.stringValue(), staff.employeeNumber))
                 .from(vacation)
@@ -88,7 +88,7 @@ public class VacationApproveRepository {
 
     private List<VacationApproveListForm> getApproveListByAdmin(String baseDate, String department, String keyword, Pageable pageable){
         return jpaQueryFactory
-                .select(new QVacationApproveListForm(vacation.vacationId, staff.name,
+                .select(new QVacationApproveListForm(vacation.vacationId, staff.name, staff.role,
                         vacation.startDate, vacation.endDate, vacation.workAt, vacation.homeAt, vacation.reason,
                         vacation.vacationType, vacation.approvalStatus.stringValue(), staff.employeeNumber))
                 .from(vacation)
@@ -107,7 +107,7 @@ public class VacationApproveRepository {
 
     private long countApproveListByAdmin(String baseDate, String department, String keyword){
         return jpaQueryFactory
-                .select(new QVacationApproveListForm(vacation.vacationId, staff.name,
+                .select(new QVacationApproveListForm(vacation.vacationId, staff.name, staff.role,
                         vacation.startDate, vacation.endDate, vacation.workAt, vacation.homeAt, vacation.reason,
                         vacation.vacationType, vacation.approvalStatus.stringValue(), staff.employeeNumber))
                 .from(vacation)

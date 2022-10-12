@@ -18,6 +18,9 @@ public class OvertimeApproveListForm {
     @ApiModelProperty(value = "이름")
     private final String name;
 
+    @ApiModelProperty(value = "권한등급")
+    private final String role;
+
     @ApiModelProperty(value = "사번")
     private final String employeeNumber;
 
@@ -46,11 +49,12 @@ public class OvertimeApproveListForm {
     private final Double admitTime;
 
     @QueryProjection
-    public OvertimeApproveListForm(Long id, String name, String employeeNumber, LocalDate dayOfOvertime,
+    public OvertimeApproveListForm(Long id, String name, String role, String employeeNumber, LocalDate dayOfOvertime,
                                    LocalTime startTime, LocalTime endTime, boolean isMeal, String content,
                                    ApprovalStatus approvalStatus, double subTime, Double admitTime) {
         this.id = id;
         this.name = name;
+        this.role = role;
         this.employeeNumber = employeeNumber;
         this.dayOfOvertime = dayOfOvertime;
         this.startTime = startTime;
