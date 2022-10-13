@@ -1,5 +1,7 @@
 package com.lab.smartmobility.billie.staff.repository;
 
+import com.lab.smartmobility.billie.global.dto.NameDropdownForm;
+import com.lab.smartmobility.billie.global.dto.QNameDropdownForm;
 import com.lab.smartmobility.billie.staff.dto.DepartmentDTO;
 import com.lab.smartmobility.billie.staff.dto.RankDTO;
 import com.lab.smartmobility.billie.staff.dto.StaffInfoForm;
@@ -43,6 +45,14 @@ public class StaffRepositoryImpl {
                 .select(Projections.fields(RankDTO.class, staff.rank))
                 .from(staff)
                 .groupBy(staff.rank)
+                .fetch();
+    }
+
+    public List<NameDropdownForm> getNameList(){
+        return jpaQueryFactory
+                .select(new QNameDropdownForm(staff.name))
+                .from(staff)
+                .orderBy(staff.employeeNumber.asc())
                 .fetch();
     }
 }

@@ -134,18 +134,4 @@ public class VacationApproveService {
         return workbook;
     }
 
-//    private String convertToKorean(String status){
-//        switch (status){
-//            case "CANCEL":
-//                return "취소";
-//            case "WAITING":
-//                return "대기중";
-//            case "TEAM":
-//                return "부장승인";
-//            case "FINAL":
-//                return "최종승인";
-//        }
-//        return "반려";
-//    }
-
 }
