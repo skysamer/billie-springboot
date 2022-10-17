@@ -97,8 +97,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                         .antMatchers("/my-page/admin/**").hasRole("ADMIN")
 
                         /*------------------------------------------------------------------------------------공지 및 내규-----------------------------------------------------------------------------------*/
-//                        .antMatchers("/announcement/user/**").hasAnyRole("USER", "MANAGER", "ADMIN")
-//                        .antMatchers("/announcement/admin/**").hasRole("ADMIN")
+                        .antMatchers("/announcement/user/**").hasAnyRole("USER", "MANAGER", "ADMIN")
+                        .antMatchers("/announcement/admin/**").hasRole("ADMIN")
 
                         /*------------------------------------------------------------------------------------자유 게시판-----------------------------------------------------------------------------------*/
                         .antMatchers("/reply/user/**").hasAnyRole("USER", "MANAGER", "ADMIN")
@@ -109,12 +109,16 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                         .antMatchers("/vacation/calculate/**").hasAnyRole("USER", "MANAGER", "ADMIN")
                         .antMatchers("/vacation/calendar/**").hasAnyRole("USER", "MANAGER", "ADMIN")
 
-                        .antMatchers("/vacation/report/**").hasAnyRole("ADMIN")
+                        .antMatchers("/vacation/report/**").hasAnyRole("ADMIN", "MANAGER")
                         .antMatchers("/vacation/approve/**").hasAnyRole("MANAGER", "ADMIN")
 
                         /*------------------------------------------------------------------------------------추가근무-----------------------------------------------------------------------------------*/
-                        .antMatchers("/reply/user/**").hasAnyRole("USER", "MANAGER", "ADMIN")
-                        .antMatchers("/board/user/**").hasAnyRole("USER", "MANAGER", "ADMIN")
+                        .antMatchers("/overtime/application/**").hasAnyRole("USER", "MANAGER", "ADMIN")
+                        .antMatchers("/overtime/calculate/**").hasAnyRole("USER", "MANAGER", "ADMIN")
+                        .antMatchers("/overtime/calendar/**").hasAnyRole("USER", "MANAGER", "ADMIN")
+
+                        .antMatchers("/overtime/report/**").hasAnyRole("ADMIN", "MANAGER")
+                        .antMatchers("/overtime/approve/**").hasAnyRole("MANAGER", "ADMIN")
 
                         .and()
                         .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider),

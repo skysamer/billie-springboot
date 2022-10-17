@@ -64,7 +64,7 @@ public class VacationApplicationController {
         return new ResponseEntity<>(pageResult, HttpStatus.OK);
     }
 
-    @ApiOperation(value = "나의 휴가 신청 내역 상세 조회")
+    @ApiOperation(value = "휴가 신청 내역 상세 조회")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "vacation-id", value = "각 휴가 데이터의 고유 시퀀스")
     })

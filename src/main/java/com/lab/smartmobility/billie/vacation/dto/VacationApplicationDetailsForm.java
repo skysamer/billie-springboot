@@ -15,6 +15,12 @@ public class VacationApplicationDetailsForm {
     @ApiModelProperty(value = "휴가 데이터 시퀀스")
     private final Long vacationId;
 
+    @ApiModelProperty(value = "이름")
+    private String name;
+
+    @ApiModelProperty(value = "부서")
+    private String department;
+
     @ApiModelProperty(value = "휴가 시작일")
     private final LocalDate startDate;
 
@@ -40,9 +46,11 @@ public class VacationApplicationDetailsForm {
     private final ApprovalStatus approvalStatus;
 
     @QueryProjection
-    public VacationApplicationDetailsForm(Long vacationId, LocalDate startDate, LocalDate endDate, LocalTime workAt, LocalTime homeAt,
+    public VacationApplicationDetailsForm(Long vacationId, String name, String department, LocalDate startDate, LocalDate endDate, LocalTime workAt, LocalTime homeAt,
                                           String contact, String reason, String vacationType, ApprovalStatus approvalStatus) {
         this.vacationId = vacationId;
+        this.name = name;
+        this.department = department;
         this.startDate = startDate;
         this.endDate = endDate;
         this.workAt = workAt;

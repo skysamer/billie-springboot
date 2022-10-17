@@ -66,10 +66,12 @@ public class VacationApplicationRepositoryImpl {
     /*나의 신청 목록 상세 조회*/
     public VacationApplicationDetailsForm findById(Long vacationId){
         return jpaQueryFactory
-                .select(new QVacationApplicationDetailsForm(vacation.vacationId, vacation.startDate, vacation.endDate,
-                        vacation.workAt, vacation.homeAt, vacation.contact,
+                .select(new QVacationApplicationDetailsForm(vacation.vacationId, staff.name, staff.department,
+                        vacation.startDate, vacation.endDate, vacation.workAt, vacation.homeAt, vacation.contact,
                         vacation.reason, vacation.vacationType, vacation.approvalStatus))
                 .from(vacation)
+                .innerJoin(staff)
+                .on(vacation.staff.eq(staff))
                 .where(vacation.vacationId.eq(vacationId))
                 .fetchFirst();
     }
