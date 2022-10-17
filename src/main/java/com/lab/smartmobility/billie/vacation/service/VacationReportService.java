@@ -24,7 +24,7 @@ public class VacationReportService {
             VacationReport report = VacationReport.builder()
                     .count(count)
                     .startDate(vacation.getStartDate()).endDate(vacation.getEndDate())
-                    .note(vacation.getVacationType()).staff(staff)
+                    .note(vacation.getVacationType()).staff(staff).reason(vacation.getReason())
                     .build();
             reportRepository.save(report);
     }

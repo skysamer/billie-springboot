@@ -34,6 +34,9 @@ public class VacationReport {
     @ApiModelProperty(value = "휴가종류")
     private String note;
 
+    @ApiModelProperty(value = "사유")
+    private String reason;
+
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "staff_num")
     private Staff staff;
