@@ -38,7 +38,8 @@ public class AnnouncementRepositoryImpl {
     private List<AnnouncementListForm> getAnnouncementList(String type, String date, String keyword, Pageable pageable){
         return jpaQueryFactory
                 .select(new QAnnouncementListForm(announcement.id, announcement.type, announcement.title,
-                        announcement.content, announcement.isMain, announcement.views, announcement.likes))
+                        announcement.content, announcement.isMain, announcement.views, announcement.likes,
+                        announcement.createdAt, announcement.modifiedAt))
                 .from(announcement)
                 .where(Expressions.asBoolean(true).isTrue()
                         .and(typeEq(type))

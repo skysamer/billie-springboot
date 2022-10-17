@@ -6,7 +6,6 @@ import com.lab.smartmobility.billie.vacation.dto.VacationApplicationDetailsForm;
 import com.lab.smartmobility.billie.vacation.dto.VacationApplicationForm;
 import com.lab.smartmobility.billie.global.dto.HttpBodyMessage;
 import com.lab.smartmobility.billie.staff.domain.Staff;
-import com.lab.smartmobility.billie.vacation.domain.ApprovalStatus;
 import com.lab.smartmobility.billie.vacation.domain.Vacation;
 import com.lab.smartmobility.billie.staff.repository.StaffRepository;
 import com.lab.smartmobility.billie.vacation.repository.VacationRepository;
@@ -21,7 +20,11 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Period;
 import java.util.List;
+
+import static com.lab.smartmobility.billie.vacation.domain.ApprovalStatus.FINAL;
+import static com.lab.smartmobility.billie.vacation.domain.ApprovalStatus.WAITING;
 
 @Service
 @Transactional
@@ -33,6 +36,7 @@ public class VacationApplicationService {
     private final NotificationSender notificationSender;
     private final ModelMapper modelMapper;
     private final AssigneeToApprover assigneeToApprover;
+    private final VacationCalculateService calculateService;
     private final Log log;
 
     private static final String DOMAIN_TYPE = "vacation";
@@ -74,12 +78,20 @@ public class VacationApplicationService {
     /*휴가 신청 내역 취소*/
     public HttpBodyMessage cancel(Long vacationId){
         Vacation vacation = vacationRepository.findByVacationId(vacationId);
-        if(vacation.getApprovalStatus().equals(ApprovalStatus.WAITING)){
+        if(vacation.getApprovalStatus().equals(WAITING)){
             vacationRepository.delete(vacation);
             return new HttpBodyMessage("success", "휴가 삭제 완료");
+        }else if(vacation.getApprovalStatus().equals(FINAL)){
+            restoreVacationCount(vacation);
         }
 
         vacation.cancel();
         return new HttpBodyMessage("success", "승인된 휴가에 대한 취소 처리 완료");
+    }
+
+    private void restoreVacationCount(Vacation vacation){
+        Staff staff = staffRepository.findByStaffNum(vacation.getStaff().getStaffNum());
+        Period period = Period.between(vacation.getStartDate(), vacation.getEndDate());
+        calculateService.restoreVacationCount(staff, vacation.getVacationType(), period.getDays());
     }
 }

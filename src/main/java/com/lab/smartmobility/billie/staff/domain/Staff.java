@@ -122,6 +122,10 @@ public class Staff implements UserDetails {
         this.vacationCount -= deductionCount;
     }
 
+    public void restoreVacationCount(double count){
+        this.vacationCount += count;
+    }
+
     public void plusVacationCount(){
         this.vacationCount++;
     }

@@ -80,4 +80,18 @@ public class VacationCalculateService {
         }
         return count;
     }
+
+    public void restoreVacationCount(Staff applicant, String vacationType, int period){
+        double count;
+        if(vacationType.equals("반차")){
+            count = 0.5;
+            applicant.restoreVacationCount(0.5);
+        }else if(vacationType.equals("경조") || vacationType.equals("공가")){
+            count = 0;
+            applicant.restoreVacationCount(0);
+        }else{
+            count = period + 1;
+            applicant.restoreVacationCount(period + 1);
+        }
+    }
 }
