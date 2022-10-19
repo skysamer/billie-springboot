@@ -50,7 +50,7 @@ public class StaffRepositoryImpl {
 
     public List<NameDropdownForm> getNameList(){
         return jpaQueryFactory
-                .select(new QNameDropdownForm(staff.name))
+                .select(new QNameDropdownForm(staff.name, staff.vacationCount))
                 .from(staff)
                 .orderBy(staff.employeeNumber.asc())
                 .fetch();

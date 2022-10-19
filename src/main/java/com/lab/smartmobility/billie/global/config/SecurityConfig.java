@@ -97,8 +97,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                         .antMatchers("/my-page/admin/**").hasRole("ADMIN")
 
                         /*------------------------------------------------------------------------------------공지 및 내규-----------------------------------------------------------------------------------*/
-//                        .antMatchers("/announcement/user/**").hasAnyRole("USER", "MANAGER", "ADMIN")
-//                        .antMatchers("/announcement/admin/**").hasRole("ADMIN")
+                        .antMatchers("/announcement/user/**").hasAnyRole("USER", "MANAGER", "ADMIN")
+                        .antMatchers("/announcement/admin/**").hasRole("ADMIN")
 
                         /*------------------------------------------------------------------------------------자유 게시판-----------------------------------------------------------------------------------*/
                         .antMatchers("/reply/user/**").hasAnyRole("USER", "MANAGER", "ADMIN")

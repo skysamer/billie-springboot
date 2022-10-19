@@ -11,8 +11,12 @@ public class NameDropdownForm {
     @ApiModelProperty(value = "직원이름")
     private final String name;
 
+    @ApiModelProperty(value = "잔여휴가 개수")
+    private final double vacationCount;
+
     @QueryProjection
-    public NameDropdownForm(String name) {
+    public NameDropdownForm(String name, double vacationCount) {
         this.name = name;
+        this.vacationCount = vacationCount;
     }
 }
