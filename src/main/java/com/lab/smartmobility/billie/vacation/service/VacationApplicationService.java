@@ -1,6 +1,7 @@
 package com.lab.smartmobility.billie.vacation.service;
 
 import com.lab.smartmobility.billie.global.dto.PageResult;
+import com.lab.smartmobility.billie.vacation.domain.VacationReport;
 import com.lab.smartmobility.billie.vacation.dto.MyRecentVacationForm;
 import com.lab.smartmobility.billie.vacation.dto.VacationApplicationDetailsForm;
 import com.lab.smartmobility.billie.vacation.dto.VacationApplicationForm;
@@ -8,6 +9,7 @@ import com.lab.smartmobility.billie.global.dto.HttpBodyMessage;
 import com.lab.smartmobility.billie.staff.domain.Staff;
 import com.lab.smartmobility.billie.vacation.domain.Vacation;
 import com.lab.smartmobility.billie.staff.repository.StaffRepository;
+import com.lab.smartmobility.billie.vacation.repository.VacationReportRepository;
 import com.lab.smartmobility.billie.vacation.repository.VacationRepository;
 import com.lab.smartmobility.billie.vacation.repository.VacationApplicationRepositoryImpl;
 import com.lab.smartmobility.billie.global.util.AssigneeToApprover;
@@ -37,6 +39,7 @@ public class VacationApplicationService {
     private final ModelMapper modelMapper;
     private final AssigneeToApprover assigneeToApprover;
     private final VacationCalculateService calculateService;
+    private final VacationReportRepository reportRepository;
     private final Log log;
 
     private static final String DOMAIN_TYPE = "vacation";
@@ -83,6 +86,8 @@ public class VacationApplicationService {
             return new HttpBodyMessage("success", "휴가 삭제 완료");
         }else if(vacation.getApprovalStatus().equals(FINAL)){
             restoreVacationCount(vacation);
+            VacationReport report = reportRepository.findByStartDateAndEndDateAndStaff(vacation.getStartDate(), vacation.getEndDate(), vacation.getStaff());
+            reportRepository.delete(report);
         }
 
         vacation.cancel();

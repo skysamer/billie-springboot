@@ -21,13 +21,4 @@ public class ExceptionController {
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
     }
-
-   /* @ExceptionHandler(Exception.class)
-    protected ResponseEntity<?> handleNoSuchElementFoundException(Exception e) {
-        final HttpMessage errorResponse = HttpMessage.builder()
-                .code("fail")
-                .message(e.getMessage()).build();
-
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
-    }*/
 }

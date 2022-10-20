@@ -38,19 +38,19 @@ public class VacationCalculateService {
                 .totalVacationCount(totalVacationCount)
                 .numberOfUses(totalVacationCount - staff.getVacationCount())
                 .startDate(LocalDate.of(baseYear, staff.getHireDate().get(ChronoField.MONTH_OF_YEAR), staff.getHireDate().get(ChronoField.DAY_OF_MONTH)))
-                .endDate(LocalDate.of(baseYear+1, staff.getHireDate().get(ChronoField.MONTH_OF_YEAR), staff.getHireDate().get(ChronoField.DAY_OF_MONTH)).minusDays(1))
+                .endDate(LocalDate.of(baseYear + 1, staff.getHireDate().get(ChronoField.MONTH_OF_YEAR), staff.getHireDate().get(ChronoField.DAY_OF_MONTH)).minusDays(1))
                 .build();
     }
 
     /*직원 별 총 휴가개수 계산*/
     public double calculateTotalVacationCount(Staff staff){
         long yearsOfService = ChronoUnit.YEARS.between(staff.getHireDate(), LocalDate.now());
-        long period = ChronoUnit.MONTHS.between(staff.getHireDate(), LocalDate.now());
+        long monthPeriod = ChronoUnit.MONTHS.between(staff.getHireDate(), LocalDate.now());
 
-        if(period < 1){
+        if(monthPeriod < 1){
             return 0;
         }else if(yearsOfService < 1){
-            return staff.getVacationCount();
+            return monthPeriod;
         }else if(yearsOfService < 3){
             return 15;
         }else{
@@ -82,16 +82,13 @@ public class VacationCalculateService {
     }
 
     public void restoreVacationCount(Staff applicant, String vacationType, int period){
-        double count;
         if(vacationType.equals("반차")){
-            count = 0.5;
             applicant.restoreVacationCount(0.5);
         }else if(vacationType.equals("경조") || vacationType.equals("공가")){
-            count = 0;
             applicant.restoreVacationCount(0);
         }else{
-            count = period + 1;
             applicant.restoreVacationCount(period + 1);
         }
     }
+
 }
