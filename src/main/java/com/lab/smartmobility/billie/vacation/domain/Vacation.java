@@ -60,7 +60,11 @@ public class Vacation {
 
     @PrePersist
     public void prePersist(){
-        this.approvalStatus = this.approvalStatus == null ? ApprovalStatus.WAITING : this.approvalStatus;
+        if(this.approvalStatus == null && this.staff.getRole().equals("ROLE_MANAGER")){
+            this.approvalStatus = ApprovalStatus.TEAM;
+        }else if(this.approvalStatus == null){
+            this.approvalStatus = ApprovalStatus.WAITING;
+        }
     }
 
     public void register(Staff staff){
