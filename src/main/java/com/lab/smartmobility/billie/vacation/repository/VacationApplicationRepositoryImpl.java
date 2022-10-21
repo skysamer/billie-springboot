@@ -68,7 +68,7 @@ public class VacationApplicationRepositoryImpl {
         return jpaQueryFactory
                 .select(new QVacationApplicationDetailsForm(vacation.vacationId, staff.name, staff.department,
                         vacation.startDate, vacation.endDate, vacation.workAt, vacation.homeAt, vacation.contact,
-                        vacation.reason, vacation.vacationType, vacation.approvalStatus))
+                        vacation.reason, vacation.companionReason, vacation.vacationType, vacation.approvalStatus))
                 .from(vacation)
                 .innerJoin(staff)
                 .on(vacation.staff.eq(staff))

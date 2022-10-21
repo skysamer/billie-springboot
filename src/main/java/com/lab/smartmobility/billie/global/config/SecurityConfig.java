@@ -105,8 +105,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                         .antMatchers("/board/user/**").hasAnyRole("USER", "MANAGER", "ADMIN")
 
                         /*------------------------------------------------------------------------------------휴가-----------------------------------------------------------------------------------*/
-//                        .antMatchers("/vacation/application/**").hasAnyRole("USER", "MANAGER", "ADMIN")
-                        .antMatchers("/vacation/calculate/**").hasAnyRole("USER", "MANAGER", "ADMIN")
+                        .antMatchers("/vacation/application/**").hasAnyRole("USER", "MANAGER", "ADMIN")
+                        .antMatchers("/vacation/user/calculate/**").hasAnyRole("USER", "MANAGER", "ADMIN")
                         .antMatchers("/vacation/calendar/**").hasAnyRole("USER", "MANAGER", "ADMIN")
 
                         .antMatchers("/vacation/report/**").hasAnyRole("ADMIN", "MANAGER")

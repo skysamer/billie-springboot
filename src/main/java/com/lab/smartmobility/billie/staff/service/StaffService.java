@@ -40,10 +40,7 @@ public class StaffService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        if (staffRepository.existsByEmail(email)) {
-            return staffRepository.findByEmail(email);
-        }
-        return null;
+        return staffRepository.findByEmail(email);
     }
 
     /*로그인*/

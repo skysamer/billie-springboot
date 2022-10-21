@@ -6,6 +6,7 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 
+import javax.persistence.Column;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
@@ -16,10 +17,10 @@ public class VacationApplicationDetailsForm {
     private final Long vacationId;
 
     @ApiModelProperty(value = "이름")
-    private String name;
+    private final String name;
 
     @ApiModelProperty(value = "부서")
-    private String department;
+    private final String department;
 
     @ApiModelProperty(value = "휴가 시작일")
     private final LocalDate startDate;
@@ -39,6 +40,9 @@ public class VacationApplicationDetailsForm {
     @ApiModelProperty(value = "사유")
     private final String reason;
 
+    @ApiModelProperty(value = "반려 사유")
+    private String companionReason;
+
     @ApiModelProperty(value = "휴가종류")
     private final String vacationType;
 
@@ -46,8 +50,9 @@ public class VacationApplicationDetailsForm {
     private final ApprovalStatus approvalStatus;
 
     @QueryProjection
-    public VacationApplicationDetailsForm(Long vacationId, String name, String department, LocalDate startDate, LocalDate endDate, LocalTime workAt, LocalTime homeAt,
-                                          String contact, String reason, String vacationType, ApprovalStatus approvalStatus) {
+    public VacationApplicationDetailsForm(Long vacationId, String name, String department, LocalDate startDate, LocalDate endDate,
+                                          LocalTime workAt, LocalTime homeAt, String contact, String reason,
+                                          String companionReason, String vacationType, ApprovalStatus approvalStatus) {
         this.vacationId = vacationId;
         this.name = name;
         this.department = department;
@@ -57,6 +62,7 @@ public class VacationApplicationDetailsForm {
         this.homeAt = homeAt;
         this.contact = contact;
         this.reason = reason;
+        this.companionReason = companionReason;
         this.vacationType = vacationType;
         this.approvalStatus = approvalStatus;
     }
