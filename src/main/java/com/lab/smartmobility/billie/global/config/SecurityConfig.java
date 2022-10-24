@@ -109,7 +109,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                         .antMatchers("/vacation/user/calculate/**").hasAnyRole("USER", "MANAGER", "ADMIN")
                         .antMatchers("/vacation/calendar/**").hasAnyRole("USER", "MANAGER", "ADMIN")
 
-                        .antMatchers("/vacation/report/**").hasAnyRole("ADMIN", "MANAGER")
+                        .antMatchers("/vacation/report/**").hasAnyRole("ADMIN", "MANAGER", "USER")
                         .antMatchers("/vacation/approve/**").hasAnyRole("MANAGER", "ADMIN")
 
                         /*------------------------------------------------------------------------------------추가근무-----------------------------------------------------------------------------------*/
@@ -117,7 +117,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                         .antMatchers("/overtime/calculate/**").hasAnyRole("USER", "MANAGER", "ADMIN")
                         .antMatchers("/overtime/calendar/**").hasAnyRole("USER", "MANAGER", "ADMIN")
 
-                        .antMatchers("/overtime/report/**").hasAnyRole("ADMIN", "MANAGER")
+                        .antMatchers("/overtime/report/**").hasAnyRole("ADMIN", "MANAGER", "USER")
                         .antMatchers("/overtime/approve/**").hasAnyRole("MANAGER", "ADMIN")
 
                         .and()

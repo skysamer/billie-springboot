@@ -95,8 +95,8 @@ public class VacationApplicationRepositoryImpl {
             return null;
         }
 
-        LocalDate startDate=dateTimeUtil.getStartDate(baseYear);
-        LocalDate endDate=dateTimeUtil.getEndDate(baseYear);
+        LocalDate startDate = dateTimeUtil.getStartDate(baseYear);
+        LocalDate endDate = dateTimeUtil.getEndDate(baseYear);
         return vacation.startDate.between(startDate, endDate);
     }
 
