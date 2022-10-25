@@ -11,7 +11,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Collection;
 
-@Getter @Setter @Builder
+@Getter @Builder
 @NoArgsConstructor @AllArgsConstructor
 @Entity @ApiModel(value = "직원 정보 엔티티") @Table(name = "tbl_staff")
 public class Staff implements UserDetails {
@@ -52,7 +52,7 @@ public class Staff implements UserDetails {
 
     @ApiModelProperty(value = "휴가개수")
     @Column(name = "vacation_count")
-    private double vacationCount;
+    private Double vacationCount;
 
     @ApiModelProperty(value = "추가근무시간 (단위 : 시간)")
     @Column(name = "overtime_count")
@@ -105,6 +105,14 @@ public class Staff implements UserDetails {
         return password;
     }
 
+    public void insertPassword(String password){
+        this.password = password;
+    }
+
+    public void insertRole(String role){
+        this.role = role;
+    }
+
     public void resign(int isResigned){
         this.isResigned = isResigned;
     }
@@ -118,16 +126,16 @@ public class Staff implements UserDetails {
         this.isVerified = isVerified;
     }
 
+    public void giveVacation(double vacationCount){
+        this.vacationCount += vacationCount;
+    }
+
     public void calculateVacation(double deductionCount){
         this.vacationCount -= deductionCount;
     }
 
     public void restoreVacationCount(double count){
         this.vacationCount += count;
-    }
-
-    public void plusVacationCount(){
-        this.vacationCount++;
     }
 
     public void calculateOvertimeHour(double overtimeHour){

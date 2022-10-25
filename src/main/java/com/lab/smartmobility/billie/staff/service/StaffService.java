@@ -61,7 +61,7 @@ public class StaffService implements UserDetailsService {
     /*이메일 토큰 전송*/
     public int sendEmailToken(String email){
         Staff staff=staffRepository.findByEmail(email);
-        if(staff==null){
+        if(staff == null){
             return 9999;
         }
         staff.insert(UUID.randomUUID().toString(), LocalDateTime.now());
@@ -79,7 +79,7 @@ public class StaffService implements UserDetailsService {
 
     /*이메일 토큰 검증*/
     public int verifyEmailToken(EmailTokenForm emailTokenForm){
-        Staff staff=staffRepository.findByEmail(emailTokenForm.getEmail());
+        Staff staff = staffRepository.findByEmail(emailTokenForm.getEmail());
         if(!staff.getEmailToken().equals(emailTokenForm.getEmailToken())){
             return 9999;
         }else if(ChronoUnit.MINUTES.between(staff.getEmailTokenGeneratedAt(), LocalDateTime.now())>=10){
@@ -92,7 +92,7 @@ public class StaffService implements UserDetailsService {
 
     /*회원가입*/
     public HttpBodyMessage joinIn(SignUpForm signUpForm) {
-        Staff staff=staffRepository.findByEmail(signUpForm.getEmail());
+        Staff staff = staffRepository.findByEmail(signUpForm.getEmail());
         if(staff.getPasswordToCheckMatch() != null && staff.getRole() != null){
             return new HttpBodyMessage("fail", "exists join info");
         }else if(staff.getIsVerified() == 0){
@@ -100,14 +100,14 @@ public class StaffService implements UserDetailsService {
         }
 
         if (staff.getDepartment().equals("관리부") || staff.getStaffNum().equals(4L) || staff.getRank().equals("대표")) {
-            staff.setRole("ROLE_ADMIN");
+            staff.insertRole("ROLE_ADMIN");
         }else if (staff.getRank().equals("책임연구원") || staff.getRank().equals("실장") || staff.getRank().equals("부장")) {
-            staff.setRole("ROLE_MANAGER");
+            staff.insertRole("ROLE_MANAGER");
         }else {
-            staff.setRole("ROLE_USER");
+            staff.insertRole("ROLE_USER");
         }
 
-        staff.setPassword(passwordEncoder.encode(signUpForm.getPassword()));
+        staff.insertPassword(passwordEncoder.encode(signUpForm.getPassword()));
         staffRepository.save(staff);
         return new HttpBodyMessage("success", "success sign up");
     }
@@ -126,7 +126,7 @@ public class StaffService implements UserDetailsService {
                 .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
                 .toString();
 
-        staff.setPassword(passwordEncoder.encode(generatedString));
+        staff.insertPassword(passwordEncoder.encode(generatedString));
         staffRepository.save(staff);
 
         CustomSimpleMailMessage mailMessage = CustomSimpleMailMessage.builder()

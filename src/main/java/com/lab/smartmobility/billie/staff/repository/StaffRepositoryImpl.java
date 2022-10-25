@@ -27,7 +27,8 @@ public class StaffRepositoryImpl {
                 .select(Projections.fields(StaffInfoForm.class,
                         staff.staffNum, staff.name, staff.role, staff.email, staff.phone, staff.department,
                         staff.birth, staff.hireDate, staff.degree, staff.graduationSchool, staff.graduationYear,
-                        staff.major, staff.researcherNumber, staff.englishName))
+                        staff.major, staff.researcherNumber, staff.englishName, staff.rank, staff.employeeNumber,
+                        staff.vacationCount, staff.overtimeHour))
                 .from(staff)
                 .fetch();
     }

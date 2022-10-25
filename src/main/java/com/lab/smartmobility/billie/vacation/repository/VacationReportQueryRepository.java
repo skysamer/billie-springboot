@@ -28,7 +28,7 @@ public class VacationReportQueryRepository {
     public List<VacationReportForm> getReport(String baseDate, String department, String name){
         return jpaQueryFactory
                 .select(new QVacationReportForm(vacationReport.count, vacationReport.startDate, vacationReport.endDate,
-                        vacationReport.note, vacationReport.reason, staff.name, staff.department, staff.vacationCount))
+                        vacationReport.note, vacationReport.reason, staff.staffNum, staff.name, staff.department, staff.vacationCount))
                 .from(vacationReport)
                 .innerJoin(staff)
                 .on(vacationReport.staff.eq(staff))

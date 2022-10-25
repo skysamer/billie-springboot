@@ -33,6 +33,12 @@ public class StaffInfoForm {
     @ApiModelProperty(value = "입사일")
     private LocalDate hireDate;
 
+    @ApiModelProperty(value = "휴가개수")
+    private Double vacationCount;
+
+    @ApiModelProperty(value = "추가근무시간 (단위 : 시간)")
+    private double overtimeHour;
+
     @ApiModelProperty(value = "최종학위")
     private String degree;
 

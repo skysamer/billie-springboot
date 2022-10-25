@@ -33,34 +33,9 @@ public class VacationScheduler {
             double totalVacationCount = calculateService.calculateTotalVacationCount(staff);
 
             if(staff.getHireDate().equals(today)){
-                staff.setVacationCount(totalVacationCount);
+                staff.giveVacation(totalVacationCount);
             }
         }
         log.info("직원 휴가개수 업데이트 완료");
-    }
-
-    @Scheduled(cron = "0 0 2 * * *")
-    private void updateNewcomerVacationCount(){
-        List<Staff> staffList = staffRepository.findAll();
-
-        List<Staff> newcomerList = new ArrayList<>();
-        for(Staff staff : staffList){
-            long yearsOfService = ChronoUnit.YEARS.between(staff.getHireDate(), LocalDate.now());
-            long period = ChronoUnit.MONTHS.between(staff.getHireDate(), LocalDate.now());
-
-            if(yearsOfService < 1){
-                newcomerList.add(staff);
-            }
-        }
-
-        LocalDate today = LocalDate.now();
-        for(Staff staff : newcomerList){
-            LocalDate hireDate = staff.getHireDate();
-            Period period = Period.between(hireDate, today);
-            if(period.getDays() == 0){
-                staff.plusVacationCount();
-            }
-        }
-        log.info("신입직원 휴가개수 업데이트 완료");
     }
 }

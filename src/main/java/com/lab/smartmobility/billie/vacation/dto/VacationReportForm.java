@@ -25,6 +25,8 @@ public class VacationReportForm {
     @ApiModelProperty(value = "사유")
     private final String reason;
 
+    @ApiModelProperty(value = "직원번호")
+    private final Long staffNum;
     @ApiModelProperty(value = "이름")
     private final String name;
 
@@ -35,12 +37,14 @@ public class VacationReportForm {
     private final double vacationCount;
 
     @QueryProjection
-    public VacationReportForm(double count, LocalDate startDate, LocalDate endDate, String note, String reason, String name, String department, double vacationCount) {
+    public VacationReportForm(double count, LocalDate startDate, LocalDate endDate, String note, String reason,
+                              Long staffNum, String name, String department, double vacationCount) {
         this.count = count;
         this.startDate = startDate;
         this.endDate = endDate;
         this.note = note;
         this.reason = reason;
+        this.staffNum = staffNum;
         this.name = name;
         this.department = department;
         this.vacationCount = vacationCount;
