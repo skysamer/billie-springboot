@@ -42,16 +42,16 @@ public class VacationReportQueryRepository {
     }
 
     private BooleanExpression departmentEq(String department){
-        return department.equals("all") ? null : vacationReport.staff.department.eq(department);
+        return department.equals("all") ? null : staff.department.eq(department);
     }
 
     private BooleanExpression nameEq(String name){
-        return name.equals("all") ? null : vacationReport.staff.name.eq(name);
+        return name.equals("all") ? null : vacation.staff.name.eq(name);
     }
 
     private BooleanExpression baseDateEq(String baseYear) {
         LocalDate startDate = dateTimeUtil.getStartDate(baseYear);
         LocalDate endDate = dateTimeUtil.getEndDate(baseYear);
-        return (vacationReport.startDate.between(startDate, endDate).or(vacationReport.endDate.between(startDate, endDate)));
+        return (vacation.startDate.between(startDate, endDate).or(vacation.endDate.between(startDate, endDate)));
     }
 }
