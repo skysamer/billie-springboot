@@ -1,6 +1,7 @@
 package com.lab.smartmobility.billie.vacation.repository;
 
 import com.lab.smartmobility.billie.global.util.DateTimeUtil;
+import com.lab.smartmobility.billie.vacation.domain.ApprovalStatus;
 import com.lab.smartmobility.billie.vacation.dto.QVacationReportForm;
 import com.lab.smartmobility.billie.vacation.dto.VacationReportForm;
 import com.querydsl.core.types.dsl.BooleanExpression;
@@ -33,7 +34,7 @@ public class VacationReportQueryRepository {
                 .from(vacation)
                 .innerJoin(staff)
                 .on(vacation.staff.eq(staff))
-                .where(Expressions.asBoolean(true).isTrue()
+                .where(vacation.approvalStatus.eq(ApprovalStatus.FINAL)
                         .and(baseDateEq(baseDate))
                         .and((departmentEq(department)))
                         .and(nameEq(name))
