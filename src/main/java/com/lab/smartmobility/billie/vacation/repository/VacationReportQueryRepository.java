@@ -14,7 +14,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.util.List;
 
-import static com.lab.smartmobility.billie.vacation.domain.QVacationReport.vacationReport;
 import static com.lab.smartmobility.billie.vacation.domain.QVacation.vacation;
 import static com.lab.smartmobility.billie.staff.domain.QStaff.staff;
 

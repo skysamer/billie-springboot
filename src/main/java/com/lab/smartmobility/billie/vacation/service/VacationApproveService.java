@@ -12,10 +12,8 @@ import com.lab.smartmobility.billie.vacation.dto.VacationApproveListForm;
 import com.lab.smartmobility.billie.vacation.dto.VacationCompanionForm;
 import com.lab.smartmobility.billie.vacation.dto.VacationExcelForm;
 import com.lab.smartmobility.billie.vacation.repository.VacationApproveRepository;
-import com.lab.smartmobility.billie.vacation.repository.VacationReportRepository;
 import com.lab.smartmobility.billie.vacation.repository.VacationRepository;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.logging.Log;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -25,7 +23,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.Period;
 import java.util.List;
 
 @Service
@@ -36,7 +33,6 @@ public class VacationApproveService {
     private final VacationApproveRepository approveRepository;
     private final StaffRepository staffRepository;
     private final AssigneeToApprover assigneeToApprover;
-    private final VacationCalculateService calculateService;
     private final NotificationSender notificationSender;
     private final VacationReportService reportService;
 
@@ -81,6 +77,10 @@ public class VacationApproveService {
         for(Long id : vacationIdList){
             Vacation vacation = vacationRepository.findByVacationId(id);
             vacation.approve(ApprovalStatus.FINAL);
+
+            Staff applicant = staffRepository.findByStaffNum(vacation.getStaff().getStaffNum());
+            applicant.minusVacation(vacation.getCount());
+
             notificationSender.sendNotification(DOMAIN_TYPE, vacation.getStaff(), 0);
         }
         return new HttpBodyMessage("success", "휴가승인성공");

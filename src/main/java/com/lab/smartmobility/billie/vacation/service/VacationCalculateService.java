@@ -67,13 +67,10 @@ public class VacationCalculateService {
         double count;
         if(vacationType.equals("반차")){
             count = 0.5;
-            applicant.calculateVacation(0.5);
         }else if(vacationType.equals("경조") || vacationType.equals("공가")){
             count = 0;
-            applicant.calculateVacation(0);
         }else{
             count = period + 1;
-            applicant.calculateVacation(period + 1);
         }
         return count;
     }

@@ -130,7 +130,7 @@ public class Staff implements UserDetails {
         this.vacationCount += vacationCount;
     }
 
-    public void calculateVacation(double deductionCount){
+    public void minusVacation(double deductionCount){
         this.vacationCount -= deductionCount;
     }
 
