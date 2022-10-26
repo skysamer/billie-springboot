@@ -61,11 +61,13 @@ public class VacationApplicationService {
     private void calculateCount(Vacation vacation, Staff applicant){
         Period period = Period.between(vacation.getStartDate(), vacation.getEndDate());
         double count = calculateService.calculateVacationCount(applicant, vacation.getVacationType(), period.getDays());
+        log.info("count = "+count);
         vacation.setCount(count);
     }
 
     private void insertVacationEntity(Staff applicant, Vacation vacation){
         vacation.register(applicant);
+        log.info("save = "+vacation.getCount());
         vacationRepository.save(vacation);
     }
 
