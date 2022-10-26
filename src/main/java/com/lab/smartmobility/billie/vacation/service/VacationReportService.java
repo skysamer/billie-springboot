@@ -33,4 +33,9 @@ public class VacationReportService {
     public List<VacationReportForm> getReport(String baseDate, String department, String name){
         return reportQueryRepository.getReport(baseDate, department, name);
     }
+
+    /*개인별 휴가데이터 월별 조회 (출력용)*/
+    public List<VacationReportForm> getVacation(String baseDate, String name){
+        return reportQueryRepository.getVacation(baseDate, name);
+    }
 }

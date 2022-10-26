@@ -40,6 +40,20 @@ public class VacationReportQueryRepository {
                 .fetch();
     }
 
+    public List<VacationReportForm> getVacation(String baseDate, String name){
+        return jpaQueryFactory
+                .select(new QVacationReportForm(vacation.count, vacation.startDate, vacation.endDate,
+                        vacation.vacationType.as("note"), vacation.reason, staff.staffNum, staff.name, staff.department, staff.vacationCount))
+                .from(vacation)
+                .innerJoin(staff)
+                .on(vacation.staff.eq(staff))
+                .where(vacation.approvalStatus.eq(ApprovalStatus.FINAL)
+                        .and(startDateEq(baseDate))
+                        .and(staff.name.eq(name))
+                )
+                .fetch();
+    }
+
     private BooleanExpression departmentEq(String department){
         return department.equals("all") ? null : staff.department.eq(department);
     }
@@ -52,5 +66,11 @@ public class VacationReportQueryRepository {
         LocalDate startDate = dateTimeUtil.getStartDate(baseYear);
         LocalDate endDate = dateTimeUtil.getEndDate(baseYear);
         return (vacation.startDate.between(startDate, endDate).or(vacation.endDate.between(startDate, endDate)));
+    }
+
+    private BooleanExpression startDateEq(String baseDate) {
+        LocalDate startDate = dateTimeUtil.getStartDate(baseDate);
+        LocalDate endDate = dateTimeUtil.getEndDate(baseDate);
+        return vacation.startDate.between(startDate, endDate);
     }
 }

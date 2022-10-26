@@ -8,7 +8,6 @@ import com.lab.smartmobility.billie.global.dto.HttpBodyMessage;
 import com.lab.smartmobility.billie.staff.domain.Staff;
 import com.lab.smartmobility.billie.vacation.domain.Vacation;
 import com.lab.smartmobility.billie.staff.repository.StaffRepository;
-import com.lab.smartmobility.billie.vacation.repository.VacationReportRepository;
 import com.lab.smartmobility.billie.vacation.repository.VacationRepository;
 import com.lab.smartmobility.billie.vacation.repository.VacationApplicationRepositoryImpl;
 import com.lab.smartmobility.billie.global.util.AssigneeToApprover;
@@ -45,10 +44,6 @@ public class VacationApplicationService {
     /*휴가 신청*/
     public HttpBodyMessage apply(VacationApplicationForm vacationApplicationForm){
         Staff applicant = staffRepository.findByStaffNum(vacationApplicationForm.getStaffNum());
-        if(applicant.getVacationCount() == 0 &&
-                (vacationApplicationForm.getVacationType().equals("연차") || vacationApplicationForm.getVacationType().equals("반차"))){
-            return new HttpBodyMessage("fail", "휴가 개수를 모두 소진했습니다");
-        }
         Staff approval = assigneeToApprover.assignApproval(applicant);
         Vacation vacation = modelMapper.map(vacationApplicationForm, Vacation.class);
 

@@ -33,10 +33,29 @@ public class VacationReportController {
             @ApiResponse(code = 204, message = "결과값없음"),
     })
     @GetMapping("/report/admin/{base-date}/{department}/{name}")
-    public ResponseEntity<List<VacationReportForm>> getCalendarList(@PathVariable("base-date") String baseDate,
+    public ResponseEntity<List<VacationReportForm>> getReport(@PathVariable("base-date") String baseDate,
                                                                     @PathVariable String department,
                                                                     @PathVariable String name){
         List<VacationReportForm> reportList = service.getReport(baseDate, department, name);
+        if(reportList.size() == 0){
+            return new ResponseEntity<>(reportList, NO_CONTENT);
+        }
+        return new ResponseEntity<>(reportList, OK);
+    }
+
+    @ApiOperation(value = "직원별 휴가 리포트 조회 (출력용)")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "base-date", value = "연월 (yyyy-MM)"),
+            @ApiImplicitParam(name = "name", value = "검색어 (직원이름, 전체는 all)")
+    })
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "조회성공"),
+            @ApiResponse(code = 204, message = "결과값없음"),
+    })
+    @GetMapping("/report/user/{base-date}/{name}")
+    public ResponseEntity<List<VacationReportForm>> getVacation(@PathVariable("base-date") String baseDate,
+                                                                @PathVariable String name){
+        List<VacationReportForm> reportList = service.getVacation(baseDate, name);
         if(reportList.size() == 0){
             return new ResponseEntity<>(reportList, NO_CONTENT);
         }
