@@ -55,7 +55,7 @@ public class VacationApplicationService {
         calculateCount(vacation, applicant);
         insertVacationEntity(applicant, vacation);
         notificationSender.sendNotification(DOMAIN_TYPE, approval, 1);
-        return new HttpBodyMessage("success", "휴가 신청 성공123");
+        return new HttpBodyMessage("success", "휴가 신청 성공");
     }
 
     private void calculateCount(Vacation vacation, Staff applicant){
