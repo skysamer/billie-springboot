@@ -19,6 +19,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalTime;
+
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -62,11 +64,19 @@ public class OvertimeApplicationService {
     public HttpBodyMessage confirm(Long id, OvertimeApplyForm applyForm){
         Overtime overtime = overtimeRepository.findById(id).orElseThrow();
         if(overtime.getApprovalStatus().equals(ApprovalStatus.PRE)){
+            LocalTime finalEndTime = calculateFinalEndTime(applyForm.getEndTime());
             modelMapper.map(applyForm, overtime);
-            overtime.calculateSubTime(applyForm.getStartTime(), applyForm.getEndTime(), applyForm.getIsMeal());
-            overtime.confirm();
+            overtime.calculateSubTime(applyForm.getStartTime(), finalEndTime, applyForm.getIsMeal());
+            overtime.confirm(finalEndTime);
             return new HttpBodyMessage("fail", "근무확정");
         }
         return new HttpBodyMessage("success", "사전승인이 되어야만 근무확정을 할 수 있습니다");
+    }
+
+    private LocalTime calculateFinalEndTime(LocalTime endTime){
+        if(endTime.getMinute() < 30){
+            return LocalTime.of(endTime.getHour(), 0);
+        }
+        return LocalTime.of(endTime.getHour(), 30);
     }
 }

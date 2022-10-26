@@ -54,6 +54,9 @@ public class Vacation {
     @Column(name = "companion_reason")
     private String companionReason;
 
+    @ApiModelProperty(value = "사용개수")
+    private double count;
+
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "staff_num")
     private Staff staff;
@@ -62,6 +65,8 @@ public class Vacation {
     public void prePersist(){
         if(this.approvalStatus == null && this.staff.getRole().equals("ROLE_MANAGER")){
             this.approvalStatus = ApprovalStatus.TEAM;
+        }else if(this.approvalStatus == null && this.staff.getRole().equals("ROLE_ADMIN") && this.staff.getStaffNum() != 4L){
+            this.approvalStatus = ApprovalStatus.TEAM;
         }else if(this.approvalStatus == null){
             this.approvalStatus = ApprovalStatus.WAITING;
         }
@@ -69,6 +74,10 @@ public class Vacation {
 
     public void register(Staff staff){
         this.staff = staff;
+    }
+
+    public void setCount(double count){
+        this.count = count;
     }
 
     public void cancel(){

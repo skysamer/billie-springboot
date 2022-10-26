@@ -15,6 +15,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 import static com.lab.smartmobility.billie.vacation.domain.QVacationReport.vacationReport;
+import static com.lab.smartmobility.billie.vacation.domain.QVacation.vacation;
 import static com.lab.smartmobility.billie.staff.domain.QStaff.staff;
 
 @Repository
@@ -27,11 +28,11 @@ public class VacationReportQueryRepository {
 
     public List<VacationReportForm> getReport(String baseDate, String department, String name){
         return jpaQueryFactory
-                .select(new QVacationReportForm(vacationReport.count, vacationReport.startDate, vacationReport.endDate,
-                        vacationReport.note, vacationReport.reason, staff.staffNum, staff.name, staff.department, staff.vacationCount))
-                .from(vacationReport)
+                .select(new QVacationReportForm(vacation.count, vacation.startDate, vacation.endDate,
+                        vacation.vacationType.as("note"), vacation.reason, staff.staffNum, staff.name, staff.department, staff.vacationCount))
+                .from(vacation)
                 .innerJoin(staff)
-                .on(vacationReport.staff.eq(staff))
+                .on(vacation.staff.eq(staff))
                 .where(Expressions.asBoolean(true).isTrue()
                         .and(baseDateEq(baseDate))
                         .and((departmentEq(department)))

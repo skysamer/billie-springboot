@@ -39,7 +39,7 @@ public class OvertimeHomeController {
         return new ResponseEntity<>(overtimeHourDTO, HttpStatus.OK);
     }
 
-    @ApiOperation(value = "나의 추가근무 개수 반환")
+    @ApiOperation(value = "추가근무 내역 상세 조회")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "id", value = "추가근무 고유 시퀀스")
     })

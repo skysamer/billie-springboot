@@ -1,7 +1,6 @@
 package com.lab.smartmobility.billie.vacation.service;
 
 import com.lab.smartmobility.billie.global.dto.PageResult;
-import com.lab.smartmobility.billie.vacation.domain.VacationReport;
 import com.lab.smartmobility.billie.vacation.dto.MyRecentVacationForm;
 import com.lab.smartmobility.billie.vacation.dto.VacationApplicationDetailsForm;
 import com.lab.smartmobility.billie.vacation.dto.VacationApplicationForm;
@@ -39,7 +38,6 @@ public class VacationApplicationService {
     private final ModelMapper modelMapper;
     private final AssigneeToApprover assigneeToApprover;
     private final VacationCalculateService calculateService;
-    private final VacationReportRepository reportRepository;
     private final Log log;
 
     private static final String DOMAIN_TYPE = "vacation";
@@ -47,15 +45,23 @@ public class VacationApplicationService {
     /*휴가 신청*/
     public HttpBodyMessage apply(VacationApplicationForm vacationApplicationForm){
         Staff applicant = staffRepository.findByStaffNum(vacationApplicationForm.getStaffNum());
-        if(applicant.getVacationCount() == 0){
+        if(applicant.getVacationCount() == 0 &&
+                (vacationApplicationForm.getVacationType().equals("연차") || vacationApplicationForm.getVacationType().equals("반차"))){
             return new HttpBodyMessage("fail", "휴가 개수를 모두 소진했습니다");
         }
         Staff approval = assigneeToApprover.assignApproval(applicant);
         Vacation vacation = modelMapper.map(vacationApplicationForm, Vacation.class);
 
+        calculateCount(vacation, applicant);
         insertVacationEntity(applicant, vacation);
         notificationSender.sendNotification(DOMAIN_TYPE, approval, 1);
         return new HttpBodyMessage("success", "휴가 신청 성공");
+    }
+
+    private void calculateCount(Vacation vacation, Staff applicant){
+        Period period = Period.between(vacation.getStartDate(), vacation.getEndDate());
+        double count = calculateService.calculateVacationCount(applicant, vacation.getVacationType(), period.getDays());
+        vacation.setCount(count);
     }
 
     private void insertVacationEntity(Staff applicant, Vacation vacation){
@@ -86,8 +92,6 @@ public class VacationApplicationService {
             return new HttpBodyMessage("success", "휴가 삭제 완료");
         }else if(vacation.getApprovalStatus().equals(FINAL)){
             restoreVacationCount(vacation);
-            VacationReport report = reportRepository.findByStartDateAndEndDateAndStaff(vacation.getStartDate(), vacation.getEndDate(), vacation.getStaff());
-            reportRepository.delete(report);
         }
 
         vacation.cancel();

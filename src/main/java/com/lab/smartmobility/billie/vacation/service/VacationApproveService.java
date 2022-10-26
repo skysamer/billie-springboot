@@ -81,11 +81,6 @@ public class VacationApproveService {
         for(Long id : vacationIdList){
             Vacation vacation = vacationRepository.findByVacationId(id);
             vacation.approve(ApprovalStatus.FINAL);
-            Staff applicant = vacation.getStaff();
-
-            Period period = Period.between(vacation.getStartDate(), vacation.getEndDate());
-            double count = calculateService.calculateVacationCount(applicant, vacation.getVacationType(), period.getDays());
-            reportService.record(count, applicant, vacation);
             notificationSender.sendNotification(DOMAIN_TYPE, vacation.getStaff(), 0);
         }
         return new HttpBodyMessage("success", "휴가승인성공");
