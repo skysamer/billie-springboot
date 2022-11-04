@@ -47,15 +47,15 @@ public class VacationApplicationService {
         Staff approval = assigneeToApprover.assignApproval(applicant);
         Vacation vacation = modelMapper.map(vacationApplicationForm, Vacation.class);
 
-        calculateCount(vacation, applicant);
+        calculateCount(vacation);
         insertVacationEntity(applicant, vacation);
         notificationSender.sendNotification(DOMAIN_TYPE, approval, 1);
         return new HttpBodyMessage("success", "휴가 신청 성공");
     }
 
-    private void calculateCount(Vacation vacation, Staff applicant){
+    private void calculateCount(Vacation vacation){
         Period period = Period.between(vacation.getStartDate(), vacation.getEndDate());
-        double count = calculateService.calculateVacationCount(applicant, vacation.getVacationType(), period.getDays());
+        double count = calculateService.calculateVacationCount(vacation.getVacationType(), period.getDays());
         vacation.setCount(count);
     }
 

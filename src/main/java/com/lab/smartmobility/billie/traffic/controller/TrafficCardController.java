@@ -38,7 +38,7 @@ public class TrafficCardController {
             @ApiResponse(code = 200, message = "등록 성공 or 등록 실패")
     })
     public HttpBodyMessage register(@RequestBody TrafficCardForm trafficCardForm){
-        if(service.registerCard(trafficCardForm)==9999){
+        if(service.registerCard(trafficCardForm) == 9999){
             return new HttpBodyMessage("fail", "등록 실패");
         }
         return new HttpBodyMessage("success", "등록 성공");

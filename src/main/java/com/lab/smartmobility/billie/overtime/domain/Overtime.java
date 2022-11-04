@@ -86,8 +86,7 @@ public class Overtime {
         this.companionReason = reason;
     }
 
-    public void confirm(LocalTime finalEndTime){
-        this.endTime = finalEndTime;
+    public void confirm(){
         this.approvalStatus = CONFIRMATION;
     }
 

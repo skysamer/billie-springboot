@@ -26,7 +26,7 @@ public class CorporationCardService {
     /*신규 법인카드 등록*/
     public int createCard(CorporationCardForm corporationCardForm){
         try{
-            CorporationCard newCorporationCard=modelMapper.map(corporationCardForm, CorporationCard.class);
+            CorporationCard newCorporationCard = modelMapper.map(corporationCardForm, CorporationCard.class);
             cardRepository.save(newCorporationCard);
         }catch (Exception e){
             log.error("fail : "+e);
@@ -61,7 +61,7 @@ public class CorporationCardService {
     /*법인카드 폐기*/
     public int abrogate(Long cardId, DisposalForm disposalForm){
         try{
-            CorporationCard card=cardRepository.findByCardId(cardId);
+            CorporationCard card = cardRepository.findByCardId(cardId);
             card.discard(99, disposalForm.getReasonForDisposal());
             cardRepository.save(card);
         }catch (Exception e){

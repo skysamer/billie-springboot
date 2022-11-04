@@ -36,8 +36,7 @@ public class TrafficCardService {
     /*신규 교통카드 등록*/
     public int registerCard(TrafficCardForm trafficCardForm){
         try {
-            TrafficCard trafficCard=new TrafficCard();
-            modelMapper.map(trafficCardForm, trafficCard);
+            TrafficCard trafficCard = modelMapper.map(trafficCardForm, TrafficCard.class);
             cardRepository.save(trafficCard);
             return 0;
         }catch (Exception e){

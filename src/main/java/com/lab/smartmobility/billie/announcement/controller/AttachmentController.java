@@ -20,7 +20,7 @@ import java.util.List;
 public class AttachmentController {
     private final AttachmentService service;
 
-    @ApiOperation(value = "게시글 목록 조회")
+    @ApiOperation(value = "첨부파일 변환")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "id", value = "글번호"),
     })

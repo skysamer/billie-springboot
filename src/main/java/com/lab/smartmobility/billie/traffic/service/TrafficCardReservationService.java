@@ -64,7 +64,7 @@ public class TrafficCardReservationService {
     public List<TrafficCardReservation> getCardRentalList(LocalDate startDate, LocalDate endDate){
         LocalDateTime startDateTime=LocalDateTime.of(startDate.getYear(), startDate.getMonth(), startDate.getDayOfMonth(),
                 0, 0, 0);
-        LocalDateTime endDateTime=LocalDateTime.of(endDate.getYear(), endDate.getMonth(), endDate.getDayOfMonth(),
+        LocalDateTime endDateTime = LocalDateTime.of(endDate.getYear(), endDate.getMonth(), endDate.getDayOfMonth(),
                 23, 59, 59);
         return reservationRepository.findAllByRentedAtBetween(startDateTime, endDateTime);
     }

@@ -34,7 +34,7 @@ public class TrafficCardReturnController {
             @ApiResponse(code = 200, message = "반납 신청 실패 or 반납 신청 완료")
     })
     public HttpBodyMessage applyCardReturn(@Valid @RequestBody ReturnTrafficCardDTO returnTrafficCard){
-        if(service.applyCardReturn(returnTrafficCard)==9999){
+        if(service.applyCardReturn(returnTrafficCard) == 9999){
             return new HttpBodyMessage("fail", "반납 신청 실패");
         }
         return new HttpBodyMessage("success", "반납 신청 완료");

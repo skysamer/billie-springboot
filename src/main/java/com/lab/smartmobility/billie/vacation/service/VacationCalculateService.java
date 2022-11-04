@@ -63,16 +63,13 @@ public class VacationCalculateService {
     }
 
     /*소진된 휴가계산 (건별)*/
-    public double calculateVacationCount(Staff applicant, String vacationType, int period){
-        double count;
+    public double calculateVacationCount(String vacationType, int period){
         if(vacationType.equals("반차")){
-            count = 0.5;
+            return 0.5;
         }else if(vacationType.equals("경조") || vacationType.equals("공가")){
-            count = 0;
-        }else{
-            count = period + 1;
+            return 0;
         }
-        return count;
+        return period + 1;
     }
 
     public void restoreVacationCount(Staff applicant, String vacationType, int period){

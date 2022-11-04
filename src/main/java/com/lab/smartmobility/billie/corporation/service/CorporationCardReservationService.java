@@ -43,8 +43,8 @@ public class CorporationCardReservationService {
             return new HttpBodyMessage("fail", "cannot-reservation-earlier-day");
         }
 
-        Application application=modelMapper.map(applyCorporationCardForm, Application.class);
-        Staff requester=staffRepository.findByStaffNum(applyCorporationCardForm.getStaffNum());
+        Application application = modelMapper.map(applyCorporationCardForm, Application.class);
+        Staff requester = staffRepository.findByStaffNum(applyCorporationCardForm.getStaffNum());
 
         application.assignRequester(requester);
         Staff approval = assignApproval(requester);

@@ -39,7 +39,7 @@ public class CorporationCardReturnService {
     /*법인카드 반납*/
     public HttpBodyMessage returnCorporationCard(CorporationReturnForm corporationReturnForm){
         Application application=applicationRepository.findByApplicationId(corporationReturnForm.getApplicationId());
-        if(application.getApprovalStatus()=='w' || application.getApprovalStatus()=='t'){
+        if(application.getApprovalStatus() == 'w' || application.getApprovalStatus() == 't'){
             return new HttpBodyMessage("fail", "not-approved-application");
         }
 

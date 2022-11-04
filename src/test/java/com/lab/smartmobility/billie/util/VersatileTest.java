@@ -14,7 +14,9 @@ public class VersatileTest {
     @Test
     @DisplayName("다용도 테스트")
     void versatile(){
-        Period period = Period.between(LocalDate.of(2022, 8, 30), LocalDate.of(2022, 9, 2));
-        System.out.println(period.getDays());
+        LocalDate now = LocalDate.now();
+        LocalDate test = LocalDate.of(2010, 12, 5);
+        System.out.println(now.getDayOfMonth() == test.getDayOfMonth());
+        System.out.println(now.getMonth().equals(test.getMonth()));
     }
 }

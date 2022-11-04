@@ -72,7 +72,7 @@ public class VehicleReturnService {
 
     /*반납 이력 전체 조회*/
     public List<VehicleReservation> getReturnList(int disposalInfo, Long vehicleNum, String baseDate, PageRequest pageRequest){
-        Vehicle vehicle=vehicleRepository.findByVehicleNum(vehicleNum);
+        Vehicle vehicle = vehicleRepository.findByVehicleNum(vehicleNum);
         if(baseDate.equals("all")){
             return reservationRepositoryImpl.findAll(vehicle, disposalInfo, pageRequest);
         }

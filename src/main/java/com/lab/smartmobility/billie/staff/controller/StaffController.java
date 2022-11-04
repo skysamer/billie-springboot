@@ -47,10 +47,10 @@ public class StaffController {
     })
     @PostMapping("/verify-email-token")
     public HttpBodyMessage verifyEmailToken(@RequestBody EmailTokenForm emailTokenForm){
-        int isVerified=staffService.verifyEmailToken(emailTokenForm);
-        if(isVerified==9999){
+        int isVerified = staffService.verifyEmailToken(emailTokenForm);
+        if(isVerified == 9999){
             return new HttpBodyMessage("fail", "not equal email token");
-        }else if(isVerified==500){
+        }else if(isVerified == 500){
             return new HttpBodyMessage("fail", "time out");
         }
         return new HttpBodyMessage("success", "equal token");
@@ -94,9 +94,9 @@ public class StaffController {
     @ApiOperation(value = "비밀번호 찾기")
     @PostMapping(value = "/findPassword", produces = MediaType.APPLICATION_JSON_VALUE)
     public HttpBodyMessage findPassword(@RequestBody Mail mail){
-        int initializationPassword= staffService.findPassword(mail.getAddress());
+        int initializationPassword = staffService.findPassword(mail.getAddress());
 
-        if(initializationPassword==0){
+        if(initializationPassword == 0){
             return new HttpBodyMessage("fail", "존재하지 않는 이메일입니다.");
         }
         else{

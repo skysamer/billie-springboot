@@ -74,7 +74,7 @@ public class TrafficCardReservationController {
         return service.removeReservationByAdmin(reservationNum);
     }
 
-    @ApiOperation(value = "관리자의 대여 신청 정보 수정 ")
+    @ApiOperation(value = "관리자의 대여 신청 정보 수정")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "reservation-num", value = "교통카드 예약 시퀀스")
     })

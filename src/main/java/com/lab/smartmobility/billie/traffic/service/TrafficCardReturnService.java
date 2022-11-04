@@ -67,7 +67,7 @@ public class TrafficCardReturnService {
 
     /*교통카드 반납 목록 조회*/
     public List<TrafficCardReservation> getCardReturnList(int disposalInfo, Long cardNum, String baseDate, PageRequest pageRequest){
-        TrafficCard trafficCard=cardRepository.findByCardNum(cardNum);
+        TrafficCard trafficCard = cardRepository.findByCardNum(cardNum);
         if(baseDate.equals("all")){
             return reservationRepositoryImpl.findAll(trafficCard, disposalInfo, pageRequest);
         }

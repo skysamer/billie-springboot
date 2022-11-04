@@ -34,7 +34,6 @@ public class VacationApproveService {
     private final StaffRepository staffRepository;
     private final AssigneeToApprover assigneeToApprover;
     private final NotificationSender notificationSender;
-    private final VacationReportService reportService;
 
     private static final String DOMAIN_TYPE = "vacation";
 

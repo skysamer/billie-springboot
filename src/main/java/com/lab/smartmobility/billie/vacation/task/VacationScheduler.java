@@ -32,7 +32,7 @@ public class VacationScheduler {
             LocalDate today = LocalDate.now();
             double totalVacationCount = calculateService.calculateTotalVacationCount(staff);
 
-            if(staff.getHireDate().equals(today)){
+            if(staff.getHireDate().getMonth().equals(today.getMonth()) && staff.getHireDate().getDayOfMonth() == today.getDayOfMonth()){
                 staff.giveVacation(totalVacationCount);
             }
         }
