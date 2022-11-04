@@ -33,8 +33,7 @@ public class OvertimeHomeService {
 
     /*추가근무 내역 개별 상세 조회*/
     public OvertimeDetailsForm getOvertime(Long id){
-        Overtime overtime = overtimeRepository.findById(id).orElseThrow();
-        return modelMapper.map(overtime, OvertimeDetailsForm.class);
+        return homeRepository.getOvertime(id);
     }
 
     /*월별 추가근무 내역 캘린더*/

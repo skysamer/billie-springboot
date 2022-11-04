@@ -77,12 +77,10 @@ public class OvertimeApproveController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @ApiOperation(value = "추가근무 사전승인")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "ids", value = "승인하려는 추가근무 시퀀스 목록")
-    })
+    @ApiOperation(value = "근무반려")
+
     @ApiResponses({
-            @ApiResponse(code = 200, message = "추가근무 사전승인"),
+            @ApiResponse(code = 200, message = "반려성공"),
             @ApiResponse(code = 400, message = "토큰이 유효하지 않는 경우"),
     })
     @PatchMapping("/approve/manager")
