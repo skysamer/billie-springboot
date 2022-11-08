@@ -142,6 +142,11 @@ public class Staff implements UserDetails {
         this.overtimeHour += overtimeHour;
     }
 
+    public void confirmOvertimeHour(double oldHour, double newHour){
+        this.overtimeHour -= oldHour;
+        this.overtimeHour += newHour;
+    }
+
     @Override
     @JsonIgnore
     public Collection<? extends GrantedAuthority> getAuthorities() {

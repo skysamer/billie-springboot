@@ -25,7 +25,7 @@ public class OvertimeDetailsForm {
     private final LocalTime endTime;
 
     @ApiModelProperty(value = "식사여부")
-    private final boolean isMeal;
+    private final int isMeal;
 
     @ApiModelProperty(value = "내용 (사유)")
     private final String content;
@@ -38,7 +38,7 @@ public class OvertimeDetailsForm {
 
     @QueryProjection
     public OvertimeDetailsForm(Long id, LocalDate dayOfOvertime, LocalTime startTime, LocalTime endTime,
-                               boolean isMeal, String content, ApprovalStatus approvalStatus, Long staffNum) {
+                               int isMeal, String content, ApprovalStatus approvalStatus, Long staffNum) {
         this.id = id;
         this.dayOfOvertime = dayOfOvertime;
         this.startTime = startTime;

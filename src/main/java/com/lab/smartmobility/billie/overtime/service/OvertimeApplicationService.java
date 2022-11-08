@@ -8,6 +8,7 @@ import com.lab.smartmobility.billie.overtime.domain.ApprovalStatus;
 import com.lab.smartmobility.billie.overtime.domain.Overtime;
 import com.lab.smartmobility.billie.overtime.dto.OvertimeApplicationListForm;
 import com.lab.smartmobility.billie.overtime.dto.OvertimeApplyForm;
+import com.lab.smartmobility.billie.overtime.dto.OvertimeConfirmationForm;
 import com.lab.smartmobility.billie.overtime.repository.OvertimeApplicationRepository;
 import com.lab.smartmobility.billie.overtime.repository.OvertimeRepository;
 import com.lab.smartmobility.billie.staff.domain.Staff;
@@ -61,14 +62,14 @@ public class OvertimeApplicationService {
     }
 
     /*근무확정*/
-    public HttpBodyMessage confirm(Long id, OvertimeApplyForm applyForm){
+    public HttpBodyMessage confirm(Long id, OvertimeConfirmationForm confirmationForm){
         Overtime overtime = overtimeRepository.findById(id).orElseThrow();
         if(overtime.getApprovalStatus().equals(ApprovalStatus.PRE)){
-            modelMapper.map(applyForm, overtime);
-            overtime.calculateSubTime(applyForm.getStartTime(), applyForm.getEndTime(), applyForm.getIsMeal());
-            overtime.confirm();
-            return new HttpBodyMessage("fail", "근무확정");
+            overtime.calculateSubTime(confirmationForm.getStartTime(), confirmationForm.getEndTime(), overtime.getIsMeal());
+            overtime.confirm(confirmationForm.getStartTime(), confirmationForm.getEndTime());
+            overtime.getStaff().calculateOvertimeHour(overtime.getSubTime());
+            return new HttpBodyMessage("success", "근무확정");
         }
-        return new HttpBodyMessage("success", "사전승인이 되어야만 근무확정을 할 수 있습니다");
+        return new HttpBodyMessage("fail", "사전승인이 되어야만 근무확정을 할 수 있습니다");
     }
 }

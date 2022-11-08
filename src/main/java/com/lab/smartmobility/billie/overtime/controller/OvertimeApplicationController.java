@@ -5,6 +5,7 @@ import com.lab.smartmobility.billie.global.dto.HttpBodyMessage;
 import com.lab.smartmobility.billie.global.dto.PageResult;
 import com.lab.smartmobility.billie.overtime.dto.OvertimeApplicationListForm;
 import com.lab.smartmobility.billie.overtime.dto.OvertimeApplyForm;
+import com.lab.smartmobility.billie.overtime.dto.OvertimeConfirmationForm;
 import com.lab.smartmobility.billie.overtime.service.OvertimeApplicationService;
 import io.swagger.annotations.*;
 import lombok.RequiredArgsConstructor;
@@ -30,7 +31,7 @@ public class OvertimeApplicationController {
     })
     @PostMapping("/application/user")
     public ResponseEntity<HttpBodyMessage> apply(@RequestHeader("X-AUTH-TOKEN") String token,
-                                                                   @Valid @RequestBody OvertimeApplyForm applyForm){
+                                                 @Valid @RequestBody OvertimeApplyForm applyForm){
         if(!jwtTokenProvider.validateToken(token)){
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
@@ -90,8 +91,8 @@ public class OvertimeApplicationController {
     })
     @PutMapping("/application/user/{id}")
     public ResponseEntity<HttpBodyMessage> confirm(@PathVariable Long id,
-                                                   @RequestBody OvertimeApplyForm applyForm){
-        HttpBodyMessage result = service.confirm(id, applyForm);
+                                                   @RequestBody OvertimeConfirmationForm confirmationForm){
+        HttpBodyMessage result = service.confirm(id, confirmationForm);
         if(result.getCode().equals("fail")){
             return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
         }

@@ -36,7 +36,7 @@ public class Overtime {
 
     @ApiModelProperty(value = "식사여부")
     @Column(name = "is_meal")
-    private boolean isMeal;
+    private int isMeal;
 
     @ApiModelProperty(value = "내용 (사유)")
     private String content;
@@ -86,7 +86,9 @@ public class Overtime {
         this.companionReason = reason;
     }
 
-    public void confirm(){
+    public void confirm(LocalTime startTime, LocalTime endTime){
+        this.startTime = startTime;
+        this.endTime = endTime;
         this.approvalStatus = CONFIRMATION;
     }
 

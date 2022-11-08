@@ -47,7 +47,6 @@ public class OvertimeApproveService {
         for(Long id : ids){
             Overtime overtime = overtimeRepository.findById(id).orElseThrow();
             overtime.preApprove();
-            overtime.getStaff().calculateOvertimeHour(overtime.getSubTime());
         }
         sendNotification(email);
         return new HttpBodyMessage("success", "추가근무 사전승인");
@@ -125,7 +124,7 @@ public class OvertimeApproveService {
             cell = row.createCell(4);
             cell.setCellValue(excelForm.getStartTime().toString() + "-" + excelForm.getEndTime().toString());
             cell = row.createCell(5);
-            cell.setCellValue(excelForm.isMeal());
+            cell.setCellValue(excelForm.getId() == 1);
             cell = row.createCell(6);
             cell.setCellValue(excelForm.getSubTime());
             cell = row.createCell(7);

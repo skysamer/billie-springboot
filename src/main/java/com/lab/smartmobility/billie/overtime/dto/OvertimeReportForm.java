@@ -30,7 +30,7 @@ public class OvertimeReportForm {
     private final LocalDate dayOfOvertime;
 
     @ApiModelProperty(value = "식사여부")
-    private final boolean isMeal;
+    private final int isMeal;
 
     @ApiModelProperty(value = "제출시간")
     private final double subTime;
@@ -40,7 +40,7 @@ public class OvertimeReportForm {
 
     @QueryProjection
     public OvertimeReportForm(Long id, Long staffNum, String name, String department,
-                              double overtimeHour, LocalDate dayOfOvertime, boolean isMeal,
+                              double overtimeHour, LocalDate dayOfOvertime, int isMeal,
                               double subTime, Double admitTime) {
         this.id = id;
         this.staffNum = staffNum;
