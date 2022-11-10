@@ -17,7 +17,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Component
-@Transactional
 @RequiredArgsConstructor
 public class VacationScheduler {
     private final StaffRepository staffRepository;
@@ -25,6 +24,7 @@ public class VacationScheduler {
     private final Log log = LogFactory.getLog(getClass());
 
     @Scheduled(cron = "0 0 1 * * *")
+
     private void updateVacationCount(){
         List<Staff> staffList = staffRepository.findAll();
 
@@ -33,7 +33,9 @@ public class VacationScheduler {
             double totalVacationCount = calculateService.calculateTotalVacationCount(staff);
 
             if(staff.getHireDate().getMonth().equals(today.getMonth()) && staff.getHireDate().getDayOfMonth() == today.getDayOfMonth()){
+                log.info("휴가개수가 업데이트된 직원 이름 = " + staff.getName());
                 staff.giveVacation(totalVacationCount);
+                staffRepository.save(staff);
             }
         }
         log.info("직원 휴가개수 업데이트 완료");

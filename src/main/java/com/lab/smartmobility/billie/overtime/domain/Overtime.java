@@ -64,7 +64,13 @@ public class Overtime {
 
     @PrePersist
     public void prePersist(){
-        this.approvalStatus = this.approvalStatus == null ? WAITING : this.approvalStatus;
+        if(this.approvalStatus == null && this.staff.getRole().equals("ROLE_MANAGER")){
+            this.approvalStatus = PRE;
+        }else if(this.approvalStatus == null && this.staff.getRole().equals("ROLE_ADMIN") && this.staff.getStaffNum() != 4L){
+            this.approvalStatus = PRE;
+        }else if(this.approvalStatus == null){
+            this.approvalStatus = WAITING;
+        }
     }
 
     public void calculateSubTime(LocalTime startTime, LocalTime endTime, int isMeal){
