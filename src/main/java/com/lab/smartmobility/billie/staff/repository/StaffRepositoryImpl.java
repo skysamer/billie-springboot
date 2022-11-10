@@ -8,7 +8,6 @@ import com.lab.smartmobility.billie.staff.dto.StaffInfoForm;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.logging.Log;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
@@ -20,7 +19,6 @@ import static com.lab.smartmobility.billie.staff.domain.QStaff.staff;
 @RequiredArgsConstructor
 public class StaffRepositoryImpl {
     private final JPAQueryFactory jpaQueryFactory;
-    private final Log log;
 
     public List<StaffInfoForm> getStaffInfoList(){
         return jpaQueryFactory
@@ -51,7 +49,7 @@ public class StaffRepositoryImpl {
 
     public List<NameDropdownForm> getNameList(){
         return jpaQueryFactory
-                .select(new QNameDropdownForm(staff.name, staff.vacationCount))
+                .select(new QNameDropdownForm(staff.name, staff.vacationCount, staff.overtimeHour))
                 .from(staff)
                 .orderBy(staff.employeeNumber.asc())
                 .fetch();

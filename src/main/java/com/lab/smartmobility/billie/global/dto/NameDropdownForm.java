@@ -14,9 +14,13 @@ public class NameDropdownForm {
     @ApiModelProperty(value = "잔여휴가 개수")
     private final double vacationCount;
 
+    @ApiModelProperty(value = "이번달 추가근무 시간")
+    private final double overtimeHour;
+
     @QueryProjection
-    public NameDropdownForm(String name, double vacationCount) {
+    public NameDropdownForm(String name, double vacationCount, double overtimeHour) {
         this.name = name;
         this.vacationCount = vacationCount;
+        this.overtimeHour = overtimeHour;
     }
 }
