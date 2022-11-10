@@ -33,12 +33,15 @@ public class OvertimeDetailsForm {
     @ApiModelProperty(value = "결제상태 (WAITING, PRE, CONFIRMATION, FINAL, COMPANION")
     private final ApprovalStatus approvalStatus;
 
+    @ApiModelProperty(value = "반려사유")
+    private final String companionReason;
+
     @ApiModelProperty(value = "직원고유번호")
     private final Long staffNum;
 
     @QueryProjection
     public OvertimeDetailsForm(Long id, LocalDate dayOfOvertime, LocalTime startTime, LocalTime endTime,
-                               int isMeal, String content, ApprovalStatus approvalStatus, Long staffNum) {
+                               int isMeal, String content, ApprovalStatus approvalStatus, String companionReason, Long staffNum) {
         this.id = id;
         this.dayOfOvertime = dayOfOvertime;
         this.startTime = startTime;
@@ -46,6 +49,7 @@ public class OvertimeDetailsForm {
         this.isMeal = isMeal;
         this.content = content;
         this.approvalStatus = approvalStatus;
+        this.companionReason = companionReason;
         this.staffNum = staffNum;
     }
 }

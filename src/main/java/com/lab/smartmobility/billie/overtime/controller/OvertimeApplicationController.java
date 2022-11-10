@@ -74,11 +74,15 @@ public class OvertimeApplicationController {
             @ApiImplicitParam(name = "id", value = "추가근무 고유 번호"),
     })
     @ApiResponses({
-            @ApiResponse(code = 200, message = "삭제성공")
+            @ApiResponse(code = 200, message = "삭제성공"),
+            @ApiResponse(code = 400, message = "이미 확정된 추가근무내역")
     })
     @DeleteMapping("/application/user/{id}")
     public ResponseEntity<HttpBodyMessage> remove(@PathVariable Long id){
         HttpBodyMessage result = service.remove(id);
+        if(result.getCode().equals("fail")){
+            return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
+        }
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 

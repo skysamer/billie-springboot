@@ -39,7 +39,7 @@ public class OvertimeHomeRepository {
         return jpaQueryFactory
                 .select(new QOvertimeDetailsForm(overtime.id, overtime.dayOfOvertime,
                         overtime.startTime, overtime.endTime, overtime.isMeal, overtime.content,
-                        overtime.approvalStatus, staff.staffNum))
+                        overtime.approvalStatus, overtime.companionReason, staff.staffNum))
                 .from(overtime)
                 .join(staff).on(overtime.staff.eq(staff))
                 .where(overtime.id.eq(id))

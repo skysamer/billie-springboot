@@ -57,8 +57,11 @@ public class OvertimeApplicationService {
     /*추가근무 신청 내역 삭제*/
     public HttpBodyMessage remove(Long id){
         Overtime overtime = overtimeRepository.findById(id).orElseThrow();
-        overtimeRepository.delete(overtime);
-        return new HttpBodyMessage("success", "삭제성공");
+        if(overtime.getApprovalStatus().equals(ApprovalStatus.WAITING) || overtime.getApprovalStatus().equals(ApprovalStatus.PRE)){
+            overtimeRepository.delete(overtime);
+            return new HttpBodyMessage("success", "삭제성공");
+        }
+        return new HttpBodyMessage("fail", "이미 확정된 추가근무내역");
     }
 
     /*근무확정*/
