@@ -27,7 +27,7 @@ public class HomeController {
     @GetMapping("/")
     @ApiOperation(value = "서버 통신 테스트")
     public String index(){
-        return "hello billie";
+        return "hello billie 0.0.1";
     }
 
     @GetMapping("/util-test")
