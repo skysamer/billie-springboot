@@ -10,6 +10,7 @@
 ## 1. 제작 기간 & 참여 인원
 - 2022년 2월 1일 ~ 6월 27일 (1차 런칭)
 - 2022년 8월 22일 ~ 10월 14일 (2차 런칭)
+- 2022년 10월 24일 ~ 11월 11일 (3차 런칭)
 - 사내 프로젝트
 - 백엔드 1명(본인), 프론트엔드 1명, 기획 및 디자인 2명
 
@@ -17,14 +18,14 @@
 
 ## 2. 사용 기술
 #### `Back-end`
-  - Java 11
-  - Spring Boot 2.6.2
-  - Gradle
-  - Spring Data JPA
-  - QueryDSL
-  - MariaDB
-  - Spring Security
-  - Swagger 3.0
+- Java 11
+- Spring Boot 2.6.2
+- Gradle
+- Spring Data JPA
+- QueryDSL
+- MariaDB
+- Spring Security
+- Swagger 3.0
 
 </br>
 
@@ -33,11 +34,12 @@
 
 
 ## 4. 핵심 기능
-- 1차 런칭에서는 차량, 법인카드, 교통카드 및 회의실을 예약하고 반납할 수 있는 기능을 런칭했습니다.
+- 1차 런칭에서는 차량, 법인카드, 교통카드 및 회의실을 예약하고 반납할 수 있는 기능을 런칭했습니다. 예약한 시간대에 따라 자동으로 대여 상태를 변경하고 예약일자를 캘린더에 표출합니다.
 - 2차 런칭에서는 사내 자유게시판 및 공지 게시판, 직원들의 휴가/추가근무 관리 기능을 추가로 런칭했습니다.
+- 3차 런칭에서는 휴가 및 추가근무를 관리하는 시스템을 런칭했습니다.
 
 </br>
-  
+
 
 ## 5. 트러블 슈팅
 
@@ -52,10 +54,10 @@
 ### 5.2. 예약시간이 중복되는 경우를 체크해야 하는 문제
 - 신규 예약 시간이 기존 예약시간과 겹치는 경우 예약을 금지시켜야 했습니다.
 - 중복이되는 케이스는 총 4가지로 구분 할 수 있었습니다.  
-      1. 시작 ~ 종료 안에 :시작, :종료가 포함되는 경우  
-      2. 시작 ~ 종료 안에 :시작이 포함되는 경우  
-      3. 시작 ~ 종료 안에 :종료가 포함되는 경우  
-      4. 시작 ~ 종료 를 :시작, :종료가 포함하는 경우  
+  1. 시작 ~ 종료 안에 :시작, :종료가 포함되는 경우  
+  2. 시작 ~ 종료 안에 :시작이 포함되는 경우  
+  3. 시작 ~ 종료 안에 :종료가 포함되는 경우  
+  4. 시작 ~ 종료 를 :시작, :종료가 포함하는 경우
 - 사실 위 4가지는 '시작이 :종료보다 작고 종료는 :시작보다 큰 경우'로 통일됩니다.
 - 따라서 다음의 sql 쿼리를 작성하여 중복예약시간을 체크하는 로직을 추가했습니다.
 
@@ -92,48 +94,48 @@ WHERE
 <div markdown="1">
 
 ~~~java
-  
+
 public BoardDetailsForm getBoard(Long id){
         BoardDetailsForm boardDetailsForm = jpaQueryFactory
-                .select(Projections.fields(BoardDetailsForm.class, board.id, board.title, board.content,
-                        board.createdAt, board.modifiedAt, board.views, board.likes, board.replyCnt, board.isAnonymous,
-                        board.staff.staffNum, board.staff.name))
-                .from(board)
-                .where(board.id.eq(id))
-                .fetchFirst();
+        .select(Projections.fields(BoardDetailsForm.class, board.id, board.title, board.content,
+        board.createdAt, board.modifiedAt, board.views, board.likes, board.replyCnt, board.isAnonymous,
+        board.staff.staffNum, board.staff.name))
+        .from(board)
+        .where(board.id.eq(id))
+        .fetchFirst();
         if(boardDetailsForm == null){
-            return null;
+        return null;
         }
 
         List<ReplyResponseForm> replyList = getReplyList(id);
 
         replyList.forEach(replyResponseForm -> {
-            List<NestedReplyResponseForm> children = jpaQueryFactory.select(Projections.fields(NestedReplyResponseForm.class,
-                    reply.id, reply.staff.staffNum, reply.staff.name, reply.content, reply.createdAt, reply.modifiedAt, reply.isAnonymous))
-                    .from(reply)
-                    .where(reply.parent.id.eq(replyResponseForm.getId())
-                            .and(reply.board.id.eq(id))
-                    )
-                    .fetch();
-            replyResponseForm.addChildren(children);
+        List<NestedReplyResponseForm> children = jpaQueryFactory.select(Projections.fields(NestedReplyResponseForm.class,
+        reply.id, reply.staff.staffNum, reply.staff.name, reply.content, reply.createdAt, reply.modifiedAt, reply.isAnonymous))
+        .from(reply)
+        .where(reply.parent.id.eq(replyResponseForm.getId())
+        .and(reply.board.id.eq(id))
+        )
+        .fetch();
+        replyResponseForm.addChildren(children);
         });
 
         boardDetailsForm.addReply(replyList);
         return boardDetailsForm;
-    }
+        }
 
-    private List<ReplyResponseForm> getReplyList(Long id){
+private List<ReplyResponseForm> getReplyList(Long id){
         return jpaQueryFactory
-                .select(Projections.fields(ReplyResponseForm.class, reply.parent.id, reply.id, reply.content,
-                        reply.createdAt, reply.modifiedAt, reply.staff.staffNum, reply.staff.name, reply.isAnonymous))
-                .from(reply)
-                .where(reply.board.id.eq(id)
-                        .and(reply.parent.id.isNull())
-                )
-                .orderBy(reply.id.asc())
-                .fetch();
-    }
-  
+        .select(Projections.fields(ReplyResponseForm.class, reply.parent.id, reply.id, reply.content,
+        reply.createdAt, reply.modifiedAt, reply.staff.staffNum, reply.staff.name, reply.isAnonymous))
+        .from(reply)
+        .where(reply.board.id.eq(id)
+        .and(reply.parent.id.isNull())
+        )
+        .orderBy(reply.id.asc())
+        .fetch();
+        }
+
 ~~~
 
 </div>
@@ -149,59 +151,59 @@ public BoardDetailsForm getBoard(Long id){
 <div markdown="1">
 
 ~~~java
-  
+
 public BoardDetailsForm getBoard(Long id){
         BoardDetailsForm boardDetailsForm = jpaQueryFactory
-                .select(Projections.fields(BoardDetailsForm.class, board.id, board.title, board.content,
-                        board.createdAt, board.modifiedAt, board.views, board.likes, board.replyCnt, board.isAnonymous,
-                        board.staff.staffNum, board.staff.name))
-                .from(board)
-                .where(board.id.eq(id))
-                .fetchFirst();
+        .select(Projections.fields(BoardDetailsForm.class, board.id, board.title, board.content,
+        board.createdAt, board.modifiedAt, board.views, board.likes, board.replyCnt, board.isAnonymous,
+        board.staff.staffNum, board.staff.name))
+        .from(board)
+        .where(board.id.eq(id))
+        .fetchFirst();
         if(boardDetailsForm == null){
-            return null;
+        return null;
         }
 
         List<ReplyResponseForm> replyList = getReplyList(id);
 
         List<NestedReplyResponseForm> childrenReplyList = jpaQueryFactory.select(Projections.fields(NestedReplyResponseForm.class,
-                        reply.parent.id.as("parentId"), reply.id, reply.staff.staffNum, reply.staff.name,
-                        reply.content, reply.createdAt, reply.modifiedAt, reply.isAnonymous))
-                .from(reply)
-                .where(reply.parent.id.isNotNull()
-                        .and(reply.board.id.eq(id))
-                )
-                .fetch();
+        reply.parent.id.as("parentId"), reply.id, reply.staff.staffNum, reply.staff.name,
+        reply.content, reply.createdAt, reply.modifiedAt, reply.isAnonymous))
+        .from(reply)
+        .where(reply.parent.id.isNotNull()
+        .and(reply.board.id.eq(id))
+        )
+        .fetch();
 
         replyList.forEach(parent -> {
-                            parent.addChildren(childrenReplyList.stream()
-                                    .filter(child -> child.getParentId().equals(parent.getId()))
-                                    .collect(Collectors.toList()));
-                        });
+        parent.addChildren(childrenReplyList.stream()
+        .filter(child -> child.getParentId().equals(parent.getId()))
+        .collect(Collectors.toList()));
+        });
 
         boardDetailsForm.addReply(replyList);
         return boardDetailsForm;
-    }
+        }
 
-    private List<ReplyResponseForm> getReplyList(Long id){
+private List<ReplyResponseForm> getReplyList(Long id){
         return jpaQueryFactory
-                .select(Projections.fields(ReplyResponseForm.class, reply.parent.id, reply.id, reply.content,
-                        reply.createdAt, reply.modifiedAt, reply.staff.staffNum, reply.staff.name, reply.isAnonymous))
-                .from(reply)
-                .where(reply.board.id.eq(id)
-                        .and(reply.parent.id.isNull())
-                )
-                .orderBy(reply.id.asc())
-                .fetch();
-    }
-  
+        .select(Projections.fields(ReplyResponseForm.class, reply.parent.id, reply.id, reply.content,
+        reply.createdAt, reply.modifiedAt, reply.staff.staffNum, reply.staff.name, reply.isAnonymous))
+        .from(reply)
+        .where(reply.board.id.eq(id)
+        .and(reply.parent.id.isNull())
+        )
+        .orderBy(reply.id.asc())
+        .fetch();
+        }
+
 ~~~
 
 </div>
 </details>
 
 </br>
-	
+
 ### 5.4. 게시판의 현재 글에서 정렬된 순으로 이전글, 다음글이 표출되지 않는 문제(신규기능)
 - 공지 게시판 목록은 메인공지 글을 우선적으로 정렬하고, 그 다음 순번의 역순으로 총 2번 정렬합니다.
 - 또한 게시글이 중간에 삭제가 될 수 있기 때문에 현재글의 다음 번호 혹은 이전 번호를 가지고 이전글과 다음글을 조회하면 정렬된 순서와 맞지 않는 오류가 발생했습니다.
@@ -214,47 +216,47 @@ public BoardDetailsForm getBoard(Long id){
 <div markdown="1">
 
 ~~~java
-  
+
 public List<AnnouncementDetailsForm> getListOrderByIsMainAndId(){
         return jpaQueryFactory
-                .select(Projections.fields(AnnouncementDetailsForm.class, announcement.id, announcement.title,
-                        announcement.content, announcement.isMain, announcement.type,
-                        announcement.createdAt, announcement.modifiedAt, announcement.likes, announcement.views))
-                .from(announcement)
-                .orderBy(announcement.isMain.desc(), announcement.id.desc())
-                .fetch();
-}
-  
+        .select(Projections.fields(AnnouncementDetailsForm.class, announcement.id, announcement.title,
+        announcement.content, announcement.isMain, announcement.type,
+        announcement.createdAt, announcement.modifiedAt, announcement.likes, announcement.views))
+        .from(announcement)
+        .orderBy(announcement.isMain.desc(), announcement.id.desc())
+        .fetch();
+        }
+
 ~~~
 
 </div>
 </details>
-	
+
 <details>
 <summary><b>인덱스 부여</b></summary>
 <div markdown="1">
 
 ~~~java
-  
+
 public AnnouncementDetailsForm movePrev(Long id){
         List<AnnouncementDetailsForm> list = announcementRepositoryImpl.getListOrderByIsMainAndId();
         AnnouncementDetailsForm result = new AnnouncementDetailsForm();
         for(int i=0; i<list.size(); i++){
-            try{
-                if(list.get(i).getId().equals(id)){
-                    result = list.get(i + 1);
-                    break;
-                }
-            }catch (IndexOutOfBoundsException e){
-                return null;
-            }
+        try{
+        if(list.get(i).getId().equals(id)){
+        result = list.get(i + 1);
+        break;
+        }
+        }catch (IndexOutOfBoundsException e){
+        return null;
+        }
         }
 
         addFilename(result);
         announcementRepositoryImpl.updateViewsCount(result.getId());
         return result;
-    }
-  
+        }
+
 ~~~
 
 </div>
@@ -296,7 +298,7 @@ public AnnouncementDetailsForm movePrev(Long id){
 
 </div>
 </details>
-	
+
 <details>
 <summary>실시간 알림을 전송해야 하는 문제</summary>
 <div markdown="3">
@@ -307,7 +309,7 @@ public AnnouncementDetailsForm movePrev(Long id){
 
 </div>
 </details>
-	
+
 <details>
 <summary>데이터베이스 용량 full 문제</summary>
 <div markdown="3">
@@ -360,7 +362,7 @@ public AnnouncementDetailsForm movePrev(Long id){
 - 또한 모두 200 상태코드를 반환하는 것이 아닌 상황에 따라 적절한 http 상태 코드를 반환해야 한다는 것을 배웠습니다.
 - 가령, 클라이언트쪽 오류를 캐치하여 적절한 400에러를 반환하고, 201 혹은 204를 상황에 맞게 사용하는 것입니다.
 - 따라서 신규 기능은 이러한 설계원칙을 고려하여 개발중이고, 이후 기존 기능또한 리팩토링할 예정입니다. -->
-    
+
 </br>
 
 
