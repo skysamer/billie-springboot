@@ -7,6 +7,7 @@ import lombok.Getter;
 
 import javax.persistence.Column;
 import java.time.LocalDate;
+import java.time.LocalTime;
 
 @Getter
 @ApiModel(value = "추가근무 월별 리포트 폼")
@@ -29,6 +30,15 @@ public class OvertimeReportForm {
     @ApiModelProperty(value = "날짜")
     private final LocalDate dayOfOvertime;
 
+    @ApiModelProperty(value = "시작시간")
+    private final LocalTime startTime;
+
+    @ApiModelProperty(value = "종료시간")
+    private final LocalTime endTime;
+
+    @ApiModelProperty(value = "내용 (사유)")
+    private final String content;
+
     @ApiModelProperty(value = "식사여부")
     private final int isMeal;
 
@@ -41,7 +51,8 @@ public class OvertimeReportForm {
     @QueryProjection
     public OvertimeReportForm(Long id, Long staffNum, String name, String department,
                               double overtimeHour, LocalDate dayOfOvertime, int isMeal,
-                              double subTime, Double admitTime) {
+                              double subTime, Double admitTime, LocalTime startTime,
+                              LocalTime endTime, String content) {
         this.id = id;
         this.staffNum = staffNum;
         this.name = name;
@@ -51,5 +62,8 @@ public class OvertimeReportForm {
         this.isMeal = isMeal;
         this.subTime = subTime;
         this.admitTime = admitTime;
+        this.startTime = startTime;
+        this.endTime = endTime;
+        this.content = content;
     }
 }

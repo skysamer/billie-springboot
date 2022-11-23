@@ -56,6 +56,7 @@ public class VacationApplicationService {
     private void calculateCount(Vacation vacation){
         Period period = Period.between(vacation.getStartDate(), vacation.getEndDate());
         double count = calculateService.calculateVacationCount(vacation.getVacationType(), period.getDays());
+        log.info(count);
         vacation.setCount(count);
     }
 

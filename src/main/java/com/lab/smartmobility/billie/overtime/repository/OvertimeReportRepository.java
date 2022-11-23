@@ -28,7 +28,8 @@ public class OvertimeReportRepository {
         return jpaQueryFactory.
                 select(new QOvertimeReportForm(overtime.id, staff.staffNum, staff.name,
                         staff.department, staff.overtimeHour, overtime.dayOfOvertime,
-                        overtime.isMeal, overtime.subTime, overtime.admitTime))
+                        overtime.isMeal, overtime.subTime, overtime.admitTime, overtime.startTime,
+                        overtime.endTime, overtime.content))
                 .from(overtime)
                 .join(staff).on(overtime.staff.eq(staff))
                 .where(overtime.approvalStatus.eq(ApprovalStatus.FINAL)
