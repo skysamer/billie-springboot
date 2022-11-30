@@ -41,7 +41,7 @@ public class OvertimeApplicationService {
         Staff applicant = staffRepository.findByEmail(email);
         Overtime overtime = modelMapper.map(applyForm, Overtime.class);
         overtime.setApplicant(applicant);
-        overtime.calculateSubTime(applyForm.getStartTime(), applyForm.getEndTime(), applyForm.getIsMeal());
+        overtime.calculateSubTime(applyForm.getStartTime(), applyForm.getEndTime());
 
         Staff approval = assigneeToApprover.assignApproval(applicant);
         notificationSender.sendNotification(DOMAIN_TYPE, approval, 1);
@@ -68,7 +68,7 @@ public class OvertimeApplicationService {
     public HttpBodyMessage confirm(Long id, OvertimeConfirmationForm confirmationForm){
         Overtime overtime = overtimeRepository.findById(id).orElseThrow();
         if(overtime.getApprovalStatus().equals(ApprovalStatus.PRE)){
-            overtime.calculateSubTime(confirmationForm.getStartTime(), confirmationForm.getEndTime(), overtime.getIsMeal());
+            overtime.calculateSubTime(confirmationForm.getStartTime(), confirmationForm.getEndTime());
             overtime.confirm(confirmationForm.getStartTime(), confirmationForm.getEndTime());
             overtime.getStaff().calculateOvertimeHour(overtime.getSubTime());
             return new HttpBodyMessage("success", "근무확정");

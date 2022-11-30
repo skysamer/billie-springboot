@@ -19,10 +19,10 @@ public class OvertimeApplicationListForm {
     private final LocalDate dayOfOvertime;
 
     @ApiModelProperty(value = "시작시간")
-    private final LocalTime startTime;
+    private final String startTime;
 
     @ApiModelProperty(value = "종료시간")
-    private final LocalTime endTime;
+    private final String endTime;
 
     @ApiModelProperty(value = "식사여부")
     private final int isMeal;
@@ -40,7 +40,7 @@ public class OvertimeApplicationListForm {
     private final Double admitTime;
 
     @QueryProjection
-    public OvertimeApplicationListForm(Long id, LocalDate dayOfOvertime, LocalTime startTime, LocalTime endTime, int isMeal,
+    public OvertimeApplicationListForm(Long id, LocalDate dayOfOvertime, String startTime, String endTime, int isMeal,
                                        String content, ApprovalStatus approvalStatus, double subTime, Double admitTime) {
         this.id = id;
         this.dayOfOvertime = dayOfOvertime;

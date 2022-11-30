@@ -10,11 +10,11 @@ import java.time.LocalTime;
 @Getter
 @ApiModel(value = "근무확정 폼")
 public class OvertimeConfirmationForm {
-    @ApiModelProperty(value = "시작시간")
+    @ApiModelProperty(value = "시작시간 (hh:mm)")
     @NotNull(message="해당 값은 null 일 수 없습니다.")
-    private LocalTime startTime;
+    private String startTime;
 
-    @ApiModelProperty(value = "종료시간")
+    @ApiModelProperty(value = "종료시간 (hh:mm)")
     @NotNull(message="해당 값은 null 일 수 없습니다.")
-    private LocalTime endTime;
+    private String endTime;
 }

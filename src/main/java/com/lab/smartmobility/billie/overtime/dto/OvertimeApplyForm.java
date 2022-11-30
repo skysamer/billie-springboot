@@ -15,17 +15,17 @@ public class OvertimeApplyForm {
     @NotNull(message="해당 값은 null 일 수 없습니다.")
     private LocalDate dayOfOvertime;
 
-    @ApiModelProperty(value = "시작시간")
+    @ApiModelProperty(value = "시작시간 (hh:mm)")
     @NotNull(message="해당 값은 null 일 수 없습니다.")
-    private LocalTime startTime;
+    private String startTime;
+
+    @ApiModelProperty(value = "종료시간 (hh:mm)")
+    @NotNull(message="해당 값은 null 일 수 없습니다.")
+    private String endTime;
 
     @ApiModelProperty(value = "식사여부")
     @NotNull(message="해당 값은 null 일 수 없습니다.")
     private int isMeal;
-
-    @ApiModelProperty(value = "종료시간")
-    @NotNull(message="해당 값은 null 일 수 없습니다.")
-    private LocalTime endTime;
 
     @ApiModelProperty(value = "내용 (사유)")
     @NotNull(message="해당 값은 null 일 수 없습니다.")

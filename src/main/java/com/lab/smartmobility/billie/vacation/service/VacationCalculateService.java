@@ -64,7 +64,7 @@ public class VacationCalculateService {
 
     /*소진된 휴가계산 (건별)*/
     public double calculateVacationCount(String vacationType, int period){
-        if(vacationType.equals("반차")){
+        if(vacationType.contains("반차")){
             return 0.5;
         }else if(vacationType.equals("경조") || vacationType.equals("공가")){
             return 0;
@@ -73,7 +73,7 @@ public class VacationCalculateService {
     }
 
     public void restoreVacationCount(Staff applicant, String vacationType, int period){
-        if(vacationType.equals("반차")){
+        if(vacationType.contains("반차")){
             applicant.restoreVacationCount(0.5);
         }else if(vacationType.equals("경조") || vacationType.equals("공가")){
             applicant.restoreVacationCount(0);

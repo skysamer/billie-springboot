@@ -31,10 +31,10 @@ public class OvertimeReportForm {
     private final LocalDate dayOfOvertime;
 
     @ApiModelProperty(value = "시작시간")
-    private final LocalTime startTime;
+    private final String startTime;
 
     @ApiModelProperty(value = "종료시간")
-    private final LocalTime endTime;
+    private final String endTime;
 
     @ApiModelProperty(value = "내용 (사유)")
     private final String content;
@@ -51,8 +51,8 @@ public class OvertimeReportForm {
     @QueryProjection
     public OvertimeReportForm(Long id, Long staffNum, String name, String department,
                               double overtimeHour, LocalDate dayOfOvertime, int isMeal,
-                              double subTime, Double admitTime, LocalTime startTime,
-                              LocalTime endTime, String content) {
+                              double subTime, Double admitTime, String startTime,
+                              String endTime, String content) {
         this.id = id;
         this.staffNum = staffNum;
         this.name = name;

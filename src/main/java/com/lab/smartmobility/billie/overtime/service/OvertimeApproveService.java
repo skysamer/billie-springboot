@@ -122,7 +122,7 @@ public class OvertimeApproveService {
             cell = row.createCell(3);
             cell.setCellValue(excelForm.getContent());
             cell = row.createCell(4);
-            cell.setCellValue(excelForm.getStartTime().toString() + "-" + excelForm.getEndTime().toString());
+            cell.setCellValue(excelForm.getStartTime() + "-" + excelForm.getEndTime());
             cell = row.createCell(5);
             cell.setCellValue(excelForm.getId() == 1);
             cell = row.createCell(6);

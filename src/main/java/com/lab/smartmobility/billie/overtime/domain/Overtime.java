@@ -26,13 +26,13 @@ public class Overtime {
     @Column(name = "day_of_overtime")
     private LocalDate dayOfOvertime;
 
-    @ApiModelProperty(value = "시작시간")
+    @ApiModelProperty(value = "시작시간 (hh:mm)")
     @Column(name = "start_time")
-    private LocalTime startTime;
+    private String startTime;
 
-    @ApiModelProperty(value = "종료시간")
+    @ApiModelProperty(value = "종료시간 (hh:mm)")
     @Column(name = "end_time")
-    private LocalTime endTime;
+    private String endTime;
 
     @ApiModelProperty(value = "식사여부")
     @Column(name = "is_meal")
@@ -73,14 +73,14 @@ public class Overtime {
         }
     }
 
-    public void calculateSubTime(LocalTime startTime, LocalTime endTime, int isMeal){
-        Duration duration = Duration.between(startTime, endTime);
-        double subTime = (double) duration.getSeconds() / (60 * 60);
-        if(isMeal == 1){
-            this.subTime = subTime - 1;
-            return;
-        }
-        this.subTime = subTime;
+    public void calculateSubTime(String startTime, String endTime){
+        String[] startHHMM = startTime.split(":");
+        double start = Double.parseDouble(startHHMM[0]) + (Double.parseDouble(startHHMM[1]) == 30.0 ? 0.5 : 0);
+
+        String[] endHHMM = endTime.split(":");
+        double end = Double.parseDouble(endHHMM[0]) + (Double.parseDouble(endHHMM[1]) == 30.0 ? 0.5 : 0);
+
+        this.subTime = end - start;
     }
 
     public void setApplicant(Staff applicant){
@@ -92,7 +92,7 @@ public class Overtime {
         this.companionReason = reason;
     }
 
-    public void confirm(LocalTime startTime, LocalTime endTime){
+    public void confirm(String startTime, String endTime){
         this.startTime = startTime;
         this.endTime = endTime;
         this.approvalStatus = CONFIRMATION;

@@ -56,9 +56,7 @@ public class OvertimeApproveRepository {
 
     private long getApproveCountByManager(String baseDate, String department, String name){
         return jpaQueryFactory
-                .select(new QOvertimeApproveListForm(overtime.id, staff.name, staff.role, staff.employeeNumber,
-                        overtime.dayOfOvertime, overtime.startTime, overtime.endTime, overtime.isMeal, overtime.content,
-                        overtime.approvalStatus, overtime.subTime, overtime.admitTime))
+                .select(overtime)
                 .from(overtime)
                 .leftJoin(staff)
                 .on(overtime.staff.staffNum.eq(staff.staffNum))
