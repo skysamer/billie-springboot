@@ -1,14 +1,11 @@
 package com.lab.smartmobility.billie.overtime.service;
 
-import com.lab.smartmobility.billie.overtime.dto.OvertimeExcelForm;
+import com.lab.smartmobility.billie.overtime.dto.*;
 import com.lab.smartmobility.billie.global.dto.HttpBodyMessage;
 import com.lab.smartmobility.billie.global.dto.PageResult;
 import com.lab.smartmobility.billie.global.util.AssigneeToApprover;
 import com.lab.smartmobility.billie.global.util.NotificationSender;
 import com.lab.smartmobility.billie.overtime.domain.Overtime;
-import com.lab.smartmobility.billie.overtime.dto.OvertimeFinalApproveForm;
-import com.lab.smartmobility.billie.overtime.dto.OvertimeApproveListForm;
-import com.lab.smartmobility.billie.overtime.dto.OvertimeCompanionForm;
 import com.lab.smartmobility.billie.overtime.repository.OvertimeApproveRepository;
 import com.lab.smartmobility.billie.overtime.repository.OvertimeRepository;
 import com.lab.smartmobility.billie.staff.domain.Staff;
@@ -71,6 +68,10 @@ public class OvertimeApproveService {
     /*관리자의 추가근무 승인 요청목록 조회*/
     public PageResult<OvertimeApproveListForm> getApproveListByAdmin(String name, String department, String baseDate, Pageable pageable){
         return approveRepository.getApproveListPagingByAdmin(name, department, baseDate, pageable);
+    }
+
+    public TotalSubAndAdmitTimeDto getTotalSubAndAdmitTime(String name){
+        return approveRepository.getTotalSubAndAdmitTime(name);
     }
 
     /*최종승인*/

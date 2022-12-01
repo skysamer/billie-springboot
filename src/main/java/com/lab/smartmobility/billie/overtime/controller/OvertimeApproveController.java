@@ -6,6 +6,7 @@ import com.lab.smartmobility.billie.global.dto.PageResult;
 import com.lab.smartmobility.billie.overtime.dto.OvertimeFinalApproveForm;
 import com.lab.smartmobility.billie.overtime.dto.OvertimeApproveListForm;
 import com.lab.smartmobility.billie.overtime.dto.OvertimeCompanionForm;
+import com.lab.smartmobility.billie.overtime.dto.TotalSubAndAdmitTimeDto;
 import com.lab.smartmobility.billie.overtime.service.OvertimeApproveService;
 import io.swagger.annotations.*;
 import lombok.RequiredArgsConstructor;
@@ -112,6 +113,19 @@ public class OvertimeApproveController {
         if(result.getCount() == 0){
             return new ResponseEntity<>(result, HttpStatus.NO_CONTENT);
         }
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
+    @ApiOperation(value = "직원별 추가근무 총 인정시간 및 제출시간 조회")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "name", value = "직원이름 (필터링할 경우면 사용)")
+    })
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "조회성공")
+    })
+    @GetMapping("/approve/admin/total/{name}")
+    public ResponseEntity<TotalSubAndAdmitTimeDto> getTotalSubAndAdmitTime(@PathVariable String name){
+        TotalSubAndAdmitTimeDto result = service.getTotalSubAndAdmitTime(name);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 

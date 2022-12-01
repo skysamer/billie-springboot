@@ -1,12 +1,9 @@
 package com.lab.smartmobility.billie.overtime.repository;
 
-import com.lab.smartmobility.billie.overtime.dto.OvertimeExcelForm;
-import com.lab.smartmobility.billie.overtime.dto.QOvertimeExcelForm;
+import com.lab.smartmobility.billie.overtime.dto.*;
 import com.lab.smartmobility.billie.global.dto.PageResult;
 import com.lab.smartmobility.billie.global.util.DateTimeUtil;
 import com.lab.smartmobility.billie.overtime.domain.ApprovalStatus;
-import com.lab.smartmobility.billie.overtime.dto.OvertimeApproveListForm;
-import com.lab.smartmobility.billie.overtime.dto.QOvertimeApproveListForm;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
@@ -89,7 +86,7 @@ public class OvertimeApproveRepository {
                 )
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
-                .orderBy(overtime.approvalStatus.desc(), overtime.id.desc())
+                .orderBy(overtime.approvalStatus.desc(), overtime.dayOfOvertime.asc())
                 .fetch();
     }
 
@@ -107,6 +104,18 @@ public class OvertimeApproveRepository {
                         .and(nameLike(name))
                 )
                 .stream().count();
+    }
+
+    /*직원별 추가근무 총 인정시간 및 제출시간 조회*/
+    public TotalSubAndAdmitTimeDto getTotalSubAndAdmitTime(String name){
+        return jpaQueryFactory
+                .select(new QTotalSubAndAdmitTimeDto(overtime.subTime.sum().as("totalSubTime"),
+                        overtime.admitTime.sum().as("totalAdmitTime")))
+                .from(overtime)
+                .join(staff).on(overtime.staff.eq(staff))
+                .where(staff.name.eq(name))
+                .groupBy(staff)
+                .fetchFirst();
     }
 
     /*엑셀 다운로드용 데이터*/
