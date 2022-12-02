@@ -7,10 +7,9 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 @Component
-@Transactional
 @RequiredArgsConstructor
 public class OvertimeHourInitializer {
-    private StaffOvertimeRepository staffOvertimeRepository;
+    private final StaffOvertimeRepository staffOvertimeRepository;
 
     @Scheduled(cron = "0 0 3 1 * *")
     public void initialize(){

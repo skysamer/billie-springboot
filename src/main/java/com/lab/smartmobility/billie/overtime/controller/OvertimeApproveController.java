@@ -123,9 +123,10 @@ public class OvertimeApproveController {
     @ApiResponses({
             @ApiResponse(code = 200, message = "조회성공")
     })
-    @GetMapping("/approve/admin/total/{name}")
-    public ResponseEntity<TotalSubAndAdmitTimeDto> getTotalSubAndAdmitTime(@PathVariable String name){
-        TotalSubAndAdmitTimeDto result = service.getTotalSubAndAdmitTime(name);
+    @GetMapping("/approve/admin/total/{name}/{base-date}")
+    public ResponseEntity<TotalSubAndAdmitTimeDto> getTotalSubAndAdmitTime(@PathVariable String name,
+                                                                           @PathVariable("base-date") String baseDate){
+        TotalSubAndAdmitTimeDto result = service.getTotalSubAndAdmitTime(name, baseDate);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 

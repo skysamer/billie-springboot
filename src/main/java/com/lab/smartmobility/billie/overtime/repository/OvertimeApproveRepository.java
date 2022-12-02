@@ -107,13 +107,16 @@ public class OvertimeApproveRepository {
     }
 
     /*직원별 추가근무 총 인정시간 및 제출시간 조회*/
-    public TotalSubAndAdmitTimeDto getTotalSubAndAdmitTime(String name){
+    public TotalSubAndAdmitTimeDto getTotalSubAndAdmitTime(String name, String baseDate){
         return jpaQueryFactory
                 .select(new QTotalSubAndAdmitTimeDto(overtime.subTime.sum().as("totalSubTime"),
                         overtime.admitTime.sum().as("totalAdmitTime")))
                 .from(overtime)
                 .join(staff).on(overtime.staff.eq(staff))
-                .where(staff.name.eq(name))
+                .where(staff.name.eq(name)
+                        .and(baseDateEq(baseDate))
+                        .and( (overtime.approvalStatus.eq(ApprovalStatus.CONFIRMATION).or(overtime.approvalStatus.eq(ApprovalStatus.FINAL))) )
+                )
                 .groupBy(staff)
                 .fetchFirst();
     }
@@ -132,13 +135,13 @@ public class OvertimeApproveRepository {
                 .fetch();
     }
 
-    private BooleanExpression baseDateEq(String baseYear) {
-        if(baseYear.equals("all")){
+    private BooleanExpression baseDateEq(String baseDate) {
+        if(baseDate.equals("all")){
             return null;
         }
 
-        LocalDate startDate = dateTimeUtil.getStartDate(baseYear);
-        LocalDate endDate = dateTimeUtil.getEndDate(baseYear);
+        LocalDate startDate = dateTimeUtil.getStartDate(baseDate);
+        LocalDate endDate = dateTimeUtil.getEndDate(baseDate);
         return overtime.dayOfOvertime.between(startDate, endDate);
     }
 

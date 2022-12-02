@@ -8,7 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 import static com.lab.smartmobility.billie.staff.domain.QStaff.staff;
 
 @Repository
-@Transactional(readOnly = true)
+@Transactional
 @RequiredArgsConstructor
 public class StaffOvertimeRepository {
     private final JPAQueryFactory jpaQueryFactory;

@@ -70,8 +70,8 @@ public class OvertimeApproveService {
         return approveRepository.getApproveListPagingByAdmin(name, department, baseDate, pageable);
     }
 
-    public TotalSubAndAdmitTimeDto getTotalSubAndAdmitTime(String name){
-        return approveRepository.getTotalSubAndAdmitTime(name);
+    public TotalSubAndAdmitTimeDto getTotalSubAndAdmitTime(String name, String baseDate){
+        return approveRepository.getTotalSubAndAdmitTime(name, baseDate);
     }
 
     /*최종승인*/
