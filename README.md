@@ -395,4 +395,6 @@ public AnnouncementDetailsForm movePrev(Long id){
 
 </br>
 
+## 7. 회고록
+https://velog.io/@skysamer/%EC%82%AC%EB%82%B4%EC%A0%84%EC%82%AC%EA%B4%80%EB%A6%AC-%EC%8B%9C%EC%8A%A4%ED%85%9C-%EA%B0%9C%EB%B0%9C-%ED%9A%8C%EA%B3%A0%EB%A1%9D
 
